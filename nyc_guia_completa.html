@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NYC Nov 2026 — Guia de Viaje</title>
+<style>
+  :root {
+    --bg: #0e0e12;
+    --bg2: #16161c;
+    --bg3: #1e1e26;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #f0eff4;
+    --text2: #9b9aac;
+    --text3: #6b6a7a;
+    --accent: #e94560;
+    --gold: #f5a623;
+    --teal: #0d9e82;
+    --green: #34c673;
+    --blue: #4a90e2;
+    --purple: #9b59b6;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 100vh; }
+
+  /* HEADER */
+  .header { background: linear-gradient(135deg, #0e0e12 0%, #1a0a14 50%, #0e0e12 100%); border-bottom: 1px solid var(--border); padding: 0; position: sticky; top: 0; z-index: 100; }
+  .header-inner { max-width: 900px; margin: 0 auto; padding: 14px 16px; }
+  .header-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon { width: 36px; height: 36px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .logo-text { line-height: 1.1; }
+  .logo-text h1 { font-size: 15px; font-weight: 700; color: var(--text); }
+  .logo-text span { font-size: 11px; color: var(--text2); }
+  .flight-pill { background: rgba(52,198,115,0.12); border: 1px solid rgba(52,198,115,0.25); border-radius: 20px; padding: 4px 10px; font-size: 11px; color: var(--green); white-space: nowrap; }
+
+  /* FILTERS */
+  .filters { max-width: 900px; margin: 0 auto; padding: 12px 16px 0; }
+  .filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+  .filter-btn { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--border2); background: var(--bg2); color: var(--text2); transition: all 0.15s; white-space: nowrap; }
+  .filter-btn:hover { border-color: rgba(255,255,255,0.25); color: var(--text); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .filter-btn.day-active { background: var(--gold); border-color: var(--gold); color: #0e0e12; }
+  .skyview-toggle { display: flex; gap: 6px; }
+  .sky-btn { padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1px solid var(--border2); background: var(--bg2); color: var(--text2); transition: all 0.15s; }
+  .sky-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+  /* MAIN */
+  .main { max-width: 900px; margin: 0 auto; padding: 16px; }
+
+  /* STATS BAR */
+  .stats-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 12px; flex: 1; min-width: 80px; }
+  .stat-val { font-size: 18px; font-weight: 700; color: var(--text); }
+  .stat-label { font-size: 10px; color: var(--text3); margin-top: 1px; }
+
+  /* DAY SECTION */
+  .day-section { margin-bottom: 8px; }
+  .day-header { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; cursor: pointer; user-select: none; }
+  .day-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .day-title { font-size: 14px; font-weight: 600; color: var(--text); flex: 1; }
+  .day-count { font-size: 11px; color: var(--text3); }
+  .day-chevron { font-size: 12px; color: var(--text3); transition: transform 0.2s; }
+  .day-header.collapsed .day-chevron { transform: rotate(-90deg); }
+
+  /* PLACE CARDS GRID */
+  .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-bottom: 16px; }
+
+  /* PLACE CARD */
+  .place-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: border-color 0.15s, transform 0.15s; }
+  .place-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+  .place-card.extra { border-left: 3px solid var(--purple); }
+
+  .card-img { width: 100%; height: 160px; object-fit: cover; background: var(--bg3); display: block; position: relative; overflow: hidden; }
+  .card-img-placeholder { width: 100%; height: 160px; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-size: 40px; }
+  .card-img img { width: 100%; height: 100%; object-fit: cover; }
+
+  .card-body { padding: 12px; }
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+  .card-name { font-size: 13.5px; font-weight: 600; color: var(--text); line-height: 1.3; flex: 1; }
+  .price-badge { font-size: 10px; font-weight: 700; padding: 3px 7px; border-radius: 12px; white-space: nowrap; flex-shrink: 0; }
+  .price-free { background: rgba(52,198,115,0.15); color: var(--green); }
+  .price-paid { background: rgba(245,166,35,0.15); color: var(--gold); }
+  .price-other { background: rgba(155,154,172,0.15); color: var(--text2); }
+
+  .card-desc { font-size: 11.5px; color: var(--text2); line-height: 1.55; margin-bottom: 8px; }
+  .card-why { font-size: 11px; color: var(--teal); background: rgba(13,158,130,0.08); border-radius: 6px; padding: 6px 8px; line-height: 1.45; margin-bottom: 10px; }
+  .card-why::before { content: "✦ Por qué hacerlo: "; font-weight: 600; }
+
+  .card-footer { display: flex; align-items: center; gap: 8px; }
+  .maps-link { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--blue); text-decoration: none; padding: 5px 9px; border-radius: 20px; border: 1px solid rgba(74,144,226,0.25); background: rgba(74,144,226,0.06); transition: all 0.12s; flex: 1; }
+  .maps-link:hover { background: rgba(74,144,226,0.15); }
+  .cat-tag { font-size: 10px; color: var(--text3); padding: 4px 8px; background: var(--bg3); border-radius: 12px; white-space: nowrap; }
+
+  .extra-badge { font-size: 9px; font-weight: 700; background: rgba(155,89,182,0.15); color: var(--purple); padding: 2px 6px; border-radius: 8px; margin-bottom: 6px; display: inline-block; }
+
+  /* EMPTY STATE */
+  .empty { text-align: center; padding: 60px 20px; color: var(--text3); }
+  .empty-icon { font-size: 48px; margin-bottom: 12px; }
+
+  /* SKYVIEW BANNER */
+  .skyview-banner { background: rgba(74,144,226,0.08); border: 1px solid rgba(74,144,226,0.2); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 12px; font-size: 12px; color: var(--blue); display: flex; align-items: center; gap: 8px; }
+
+  /* DAY COLORS */
+  .dc-1 { background: #4a90e2; }
+  .dc-2 { background: #9b59b6; }
+  .dc-3 { background: #0d9e82; }
+  .dc-4 { background: #e94560; }
+  .dc-5 { background: #34c673; }
+  .dc-6 { background: #f5a623; }
+  .dc-7 { background: #e94560; }
+  .dc-8 { background: #d63384; }
+  .dc-9 { background: #0d9e82; }
+  .dc-0 { background: #9b59b6; }
+
+  /* CAT COLORS */
+  .cat-mirador { color: #4a90e2; }
+  .cat-museo { color: #9b59b6; }
+  .cat-barrio { color: #f5a623; }
+  .cat-parque { color: #34c673; }
+  .cat-gastronomia { color: #e94560; }
+  .cat-restaurante { color: #e94560; }
+  .cat-compras { color: #0d9e82; }
+  .cat-especial { color: #f5a623; }
+  .cat-historia { color: #e67e22; }
+  .cat-bar { color: #8e44ad; }
+  .cat-espectaculo { color: #e94560; }
+  .cat-cultural { color: #16a085; }
+  .cat-hotel { color: #4a90e2; }
+  .cat-icono { color: #e94560; }
+
+  @media (max-width: 600px) {
+    .cards-grid { grid-template-columns: 1fr; }
+    .stats-bar { gap: 6px; }
+    .stat-card { min-width: 60px; padding: 6px 8px; }
+    .stat-val { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-top">
+      <div class="logo">
+        <div class="logo-icon">🗽</div>
+        <div class="logo-text">
+          <h1>Nueva York — Nov 2026</h1>
+          <span>Guia completa · 3 personas · Holiday Inn Chelsea</span>
+        </div>
+      </div>
+      <div class="flight-pill">✈ AA EZE↔JFK</div>
+    </div>
+  </div>
+  <div class="filters">
+    <div class="filter-row" id="day-filters">
+      <button class="filter-btn active" onclick="filterDay('all',this)">Todos los dias</button>
+      <button class="filter-btn" onclick="filterDay(1,this)">Sab 22</button>
+      <button class="filter-btn" onclick="filterDay(2,this)">Dom 23</button>
+      <button class="filter-btn" onclick="filterDay(3,this)">Lun 24</button>
+      <button class="filter-btn" onclick="filterDay(4,this)">Mar 25</button>
+      <button class="filter-btn" onclick="filterDay(5,this)">Mie 26</button>
+      <button class="filter-btn" onclick="filterDay(6,this)">Jue 27</button>
+      <button class="filter-btn" onclick="filterDay(7,this)">Vie 28</button>
+      <button class="filter-btn" onclick="filterDay(8,this)">Sab 29</button>
+      <button class="filter-btn" onclick="filterDay(9,this)">Dom 29</button>
+      <button class="filter-btn" onclick="filterDay(0,this)">+ Extras</button>
+    </div>
+    <div class="filter-row">
+      <button class="filter-btn active" onclick="filterCat('all',this)">Todas</button>
+      <button class="filter-btn" onclick="filterCat('mirador',this)">Miradores</button>
+      <button class="filter-btn" onclick="filterCat('museo',this)">Museos</button>
+      <button class="filter-btn" onclick="filterCat('barrio',this)">Barrios</button>
+      <button class="filter-btn" onclick="filterCat('parque',this)">Parques</button>
+      <button class="filter-btn" onclick="filterCat('gastronomia',this)">Gastronomia</button>
+      <button class="filter-btn" onclick="filterCat('compras',this)">Compras</button>
+      <button class="filter-btn" onclick="filterCat('especial',this)">Especiales</button>
+      <div class="skyview-toggle" style="margin-left:auto;">
+        <button class="sky-btn active" id="btn-ambas" onclick="setSkyview('ambas')">Ambas versiones</button>
+        <button class="sky-btn" id="btn-con" onclick="setSkyview('con')">Con Skyview</button>
+        <button class="sky-btn" id="btn-sin" onclick="setSkyview('sin')">Sin Skyview</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="stats-bar">
+    <div class="stat-card"><div class="stat-val" id="stat-total">46</div><div class="stat-label">Lugares</div></div>
+    <div class="stat-card"><div class="stat-val" id="stat-free">18</div><div class="stat-label">Gratis</div></div>
+    <div class="stat-card"><div class="stat-val">8</div><div class="stat-label">Dias</div></div>
+    <div class="stat-card"><div class="stat-val">3</div><div class="stat-label">Personas</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--accent)">100°</div><div class="stat-label">Aniv. Parade</div></div>
+  </div>
+
+  <div id="content"></div>
+</div>
+
+<script>
+const CAT_EMOJI = {
+  mirador:"🏙️", museo:"🎨", barrio:"🚶", parque:"🌿", gastronomia:"🍕",
+  restaurante:"🍽️", compras:"🛍️", especial:"⭐", historia:"🏛️", bar:"🍸",
+  espectaculo:"🎭", cultural:"📚", hotel:"🏨", icono:"📍"
+};
+const CAT_LABEL = {
+  mirador:"Mirador", museo:"Museo", barrio:"Barrio", parque:"Parque",
+  gastronomia:"Gastronomia", restaurante:"Restaurante", compras:"Compras",
+  especial:"Especial", historia:"Historia", bar:"Bar/Rooftop",
+  espectaculo:"Espectaculo", cultural:"Cultural", hotel:"Hotel", icono:"Icono"
+};
+
+const PLACE_PHOTOS = {
+  "p01":"https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=400&q=80",
+  "p02":"https://images.unsplash.com/photo-1534430480872-3498386e7856?w=400&q=80",
+  "p03":"https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400&q=80",
+  "p04":"https://images.unsplash.com/photo-1538970272646-f61fabb3a8a2?w=400&q=80",
+  "p05":"https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=400&q=80",
+  "p06":"https://images.unsplash.com/photo-1568526381923-caf3fd520382?w=400&q=80",
+  "p07":"https://images.unsplash.com/photo-1517732306149-e8f829eb588a?w=400&q=80",
+  "p08":"https://images.unsplash.com/photo-1560969184-10fe8719e047?w=400&q=80",
+  "p09":"https://images.unsplash.com/photo-1610642372651-fe6e7bc4a9a3?w=400&q=80",
+  "p10":"https://images.unsplash.com/photo-1555992457-b8fefdd09069?w=400&q=80",
+  "p11":"https://images.unsplash.com/photo-1571115764595-644a1f56a55c?w=400&q=80",
+  "p12":"https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?w=400&q=80",
+  "p13":"https://images.unsplash.com/photo-1534430480872-3498386e7856?w=400&q=80",
+  "p14":"https://images.unsplash.com/photo-1546412414-e1885259563a?w=400&q=80",
+  "p15a":"https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&q=80",
+  "p15b":"https://images.unsplash.com/photo-1517732306149-e8f829eb588a?w=400&q=80",
+  "p16a":"https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&q=80",
+  "p16b":"https://images.unsplash.com/photo-1604580864964-0462f5d5b1a8?w=400&q=80",
+  "p17":"https://images.unsplash.com/photo-1546436836-07a91091f160?w=400&q=80",
+  "p18":"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80",
+  "p19":"https://images.unsplash.com/photo-1546436836-07a91091f160?w=400&q=80",
+  "p20":"https://images.unsplash.com/photo-1534430480872-3498386e7856?w=400&q=80",
+  "p21":"https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=400&q=80",
+  "p22":"https://images.unsplash.com/photo-1565799743361-456e3a9e59e8?w=400&q=80",
+  "p23":"https://images.unsplash.com/photo-1517732306149-e8f829eb588a?w=400&q=80",
+  "p24":"https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=400&q=80",
+  "p25":"https://images.unsplash.com/photo-1568526381923-caf3fd520382?w=400&q=80",
+  "p26":"https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&q=80",
+  "p27":"https://images.unsplash.com/photo-1565799743361-456e3a9e59e8?w=400&q=80",
+  "p28":"https://images.unsplash.com/photo-1552566626-52f8b828add9?w=400&q=80",
+  "p29":"https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&q=80",
+  "p30":"https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?w=400&q=80",
+  "p31":"https://images.unsplash.com/photo-1576867757603-05b134ebc379?w=400&q=80",
+  "p32":"https://images.unsplash.com/photo-1605371924599-2d0365da1ae0?w=400&q=80",
+  "p33":"https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?w=400&q=80",
+  "p34":"https://images.unsplash.com/photo-1585699324551-f6c309eedeca?w=400&q=80",
+  "p35":"https://images.unsplash.com/photo-1541336032412-2048a678540d?w=400&q=80",
+  "p36":"https://images.unsplash.com/photo-1541336032412-2048a678540d?w=400&q=80",
+  "p37":"https://images.unsplash.com/photo-1517732306149-e8f829eb588a?w=400&q=80",
+  "p38":"https://images.unsplash.com/photo-1560969184-10fe8719e047?w=400&q=80",
+  "p39":"https://images.unsplash.com/photo-1546436836-07a91091f160?w=400&q=80",
+  "p40":"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80",
+  "p41":"https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=400&q=80",
+  "p42":"https://images.unsplash.com/photo-1568926765516-08dfe2adf768?w=400&q=80",
+  "p43":"https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=400&q=80",
+  "p44":"https://images.unsplash.com/photo-1541336032412-2048a678540d?w=400&q=80",
+  "p45":"https://images.unsplash.com/photo-1558745543-97ee8ebfd870?w=400&q=80",
+  "p46":"https://images.unsplash.com/photo-1558745543-97ee8ebfd870?w=400&q=80",
+};
+
+const PLACES = [
+  {id:"p01",day:1,dayLabel:"Sab 22 Nov",cat:"hotel",isSkyview:null,isExtra:false,name:"Holiday Inn Chelsea",price:"--",addr:"125 W 26th St, New York, NY 10001",maps:"https://maps.google.com/?q=Holiday+Inn+Manhattan+6th+Ave+Chelsea+125+W+26th+St+New+York",desc:"Tu base para toda la semana. En el corazon de Chelsea, a 10 min caminando del Empire State, 10 min de Macys y a pasos del High Line. La linea C/E del subte en la puerta te conecta con toda la ciudad.",why:"Posicion estrategica: el 80% de las actividades estan a menos de 20 min a pie o en subte."},
+  {id:"p02",day:1,dayLabel:"Sab 22 Nov",cat:"icono",isSkyview:null,isExtra:false,name:"Flatiron Building + Madison Sq Park",price:"GRATIS",addr:"175 5th Ave, New York, NY 10010",maps:"https://maps.google.com/?q=Flatiron+Building+175+5th+Ave+New+York",desc:"El edificio triangular mas famoso de NYC, a 2 cuadras del hotel. Construido en 1902, fue durante un tiempo el mas alto del mundo. El parque enfrente es perfecto para sentarse y absorber la atmosfera del barrio.",why:"Es el primer contacto real con NYC. Orienta en el barrio del hotel y es totalmente a pie."},
+  {id:"p03",day:1,dayLabel:"Sab 22 Nov",cat:"bar",isSkyview:null,isExtra:false,name:"230 Fifth Rooftop Bar",price:"~$18-22 c/u",addr:"1150 Broadway, New York, NY 10001",maps:"https://maps.google.com/?q=230+Fifth+Rooftop+Bar+1150+Broadway+New+York",desc:"El rooftop mas famoso y accesible de NYC, a 3 cuadras del hotel. Vista directa e inmejorable al Empire State iluminado de noche. Sin reserva, sin codigo de vestimenta, abre hasta las 2 AM.",why:"El brindis perfecto para el primer atardecer en NYC. La vista al Empire State de noche desde aca no tiene precio."},
+  {id:"p04",day:1,dayLabel:"Sab 22 Nov",cat:"icono",isSkyview:null,isExtra:false,name:"Times Square de noche",price:"GRATIS",addr:"Times Square, Manhattan, NY 10036",maps:"https://maps.google.com/?q=Times+Square+New+York",desc:"El cruce mas fotografiado del mundo. De noche las pantallas LED gigantes crean una luz que no existe en ninguna otra ciudad. Hay actuaciones callejeras, personajes disfrazados y una energia que te despierta aunque estes agotada del vuelo.",why:"Primera impresion de noche. Si solo ves un lugar el dia de llegada, que sea este."},
+  {id:"p05",day:2,dayLabel:"Dom 23 Nov",cat:"barrio",isSkyview:null,isExtra:false,name:"SoHo — Spring y Prince St",price:"GRATIS",addr:"SoHo, New York, NY 10012",maps:"https://maps.google.com/?q=SoHo+Spring+Street+New+York",desc:"El barrio mas instagrameable de Manhattan. Arquitecturas de hierro fundido del siglo XIX conviven con tiendas de lujo, boutiques locales y galerias de arte. Zara, Uniqlo, H&M, Sezane, Kate Spade y decenas de marcas en pocas cuadras.",why:"El mejor barrio de compras y fotos de NYC. Mas local, mas variado y mas accesible en precios que la 5th Ave."},
+  {id:"p06",day:2,dayLabel:"Dom 23 Nov",cat:"barrio",isSkyview:null,isExtra:false,name:"Little Italy — Mulberry St",price:"GRATIS",addr:"Mulberry St, New York, NY 10013",maps:"https://maps.google.com/?q=Little+Italy+Mulberry+Street+New+York",desc:"El corazon italiano de Manhattan, a 5 minutos caminando de SoHo. Mulberry Street esta llena de restaurantes con mesas en la vereda, panaderias y tiendas de importacion italiana. El cannoli de aqui es obligatorio.",why:"La cultura italiana que forjo Manhattan. Perfecto para un cafe con cannoli entre SoHo y Chinatown."},
+  {id:"p07",day:2,dayLabel:"Dom 23 Nov",cat:"barrio",isSkyview:null,isExtra:false,name:"Chinatown — Canal St y Mott St",price:"GRATIS",addr:"Canal St, New York, NY 10013",maps:"https://maps.google.com/?q=Chinatown+Canal+Street+New+York",desc:"El Chinatown mas denso de Manhattan. Dumplings, bao, dim sum y noodles a precios locales. Canal St tiene los souvenirs mas baratos de toda NYC. Mott St es la calle mas fotografica del barrio.",why:"Los mejores precios de comida de toda Manhattan y el mejor lugar para souvenirs baratos."},
+  {id:"p08",day:2,dayLabel:"Dom 23 Nov",cat:"cultural",isSkyview:null,isExtra:false,name:"New York Public Library",price:"GRATIS",addr:"476 5th Ave, New York, NY 10018",maps:"https://maps.google.com/?q=New+York+Public+Library+476+5th+Ave+New+York",desc:"Uno de los edificios Beaux-Arts mas impresionantes de NYC. Los dos leones de marmol en la entrada son iconicos. La Rose Main Reading Room — con techos de 15 metros y lamparas de bronce — es de las salas mas hermosas del mundo.",why:"Una joya arquitectonica gratuita. La sala de lectura es mas impactante que muchos museos de pago."},
+  {id:"p09",day:2,dayLabel:"Dom 23 Nov",cat:"icono",isSkyview:null,isExtra:false,name:"Grand Central Terminal",price:"GRATIS",addr:"89 E 42nd St, New York, NY 10017",maps:"https://maps.google.com/?q=Grand+Central+Terminal+89+E+42nd+St+New+York",desc:"La estacion de trenes mas iconica del mundo. El techo celeste con constelaciones doradas, el reloj de cuatro caras y los rayos de sol que entran por las ventanas son una experiencia visual unica. Busca el susurro en el arco.",why:"No es solo una estacion: es un salon de arte vivo. El secreto del susurro en el arco es algo que no van a olvidar."},
+  {id:"p10",day:2,dayLabel:"Dom 23 Nov",cat:"historia",isSkyview:null,isExtra:false,name:"Edificio Chrysler",price:"GRATIS",addr:"405 Lexington Ave, New York, NY 10174",maps:"https://maps.google.com/?q=Chrysler+Building+405+Lexington+Ave+New+York",desc:"El edificio Art Deco mas bello de Nueva York. La corona con arcos de acero inoxidable inspirados en los radiadores de los autos Chrysler es unica. El lobby interior tiene marmol africano y madera de Corea. Se puede entrar gratis.",why:"La arquitectura mas elegante de NYC. Mucho mas personal e historico que el Empire State, y sin colas."},
+  {id:"p11",day:2,dayLabel:"Dom 23 Nov",cat:"barrio",isSkyview:null,isExtra:false,name:"Greenwich Village — Washington Square Park",price:"GRATIS",addr:"Washington Square Park, New York, NY 10012",maps:"https://maps.google.com/?q=Washington+Square+Park+New+York",desc:"El corazon bohemio de Manhattan. Washington Square Park con su arco triunfal es el punto de encuentro mas iconico del Village. Alrededor: cafes historicos, jazz en la calle, NYU y las callecitas adoquinadas mas fotografiadas de la ciudad.",why:"El barrio mas autentico y cinematografico de Manhattan. Ha salido en mas peliculas que cualquier otro lugar de NYC."},
+  {id:"p12",day:3,dayLabel:"Lun 24 Nov",cat:"barrio",isSkyview:"both",isExtra:false,name:"5th Avenue — Vidrieras navidenas",price:"GRATIS",addr:"5th Ave entre 49th y 59th St, New York",maps:"https://maps.google.com/?q=5th+Avenue+New+York+between+49th+and+59th+Street",desc:"La avenida mas famosa del mundo. En noviembre las vidrieras de Bergdorf Goodman, Saks y Tiffany ya estan decoradas para las fiestas. Apple Store, Louis Vuitton, Cartier y decenas de iconos de la moda en pocas cuadras.",why:"Ver la 5th Ave en temporada navidena es una experiencia visual que no tiene equivalente en ninguna otra ciudad."},
+  {id:"p13",day:3,dayLabel:"Lun 24 Nov",cat:"cultural",isSkyview:"both",isExtra:false,name:"Catedral de San Patricio",price:"GRATIS",addr:"5th Ave, New York, NY 10022",maps:"https://maps.google.com/?q=St+Patrick%27s+Cathedral+5th+Ave+New+York",desc:"La catedral gotica mas grande de los Estados Unidos, enclavada entre rascacielos. La fachada de marmol blanco contrasta dramaticamente con el vidrio y el acero de los edificios que la rodean. El interior con sus vitrales es impresionante.",why:"La imagen mas surrealista de NYC: una catedral medieval rodeada de torres de cristal. Totalmente gratuita."},
+  {id:"p14",day:3,dayLabel:"Lun 24 Nov",cat:"icono",isSkyview:"both",isExtra:false,name:"Rockefeller Center — Plaza",price:"GRATIS",addr:"30 Rockefeller Plaza, New York, NY 10112",maps:"https://maps.google.com/?q=Rockefeller+Center+30+Rockefeller+Plaza+New+York",desc:"Complejo de 19 edificios Art Deco, el corazon comercial de Midtown. En noviembre el arbol de Navidad puede estar en proceso de montaje. El Atlas de bronce en la entrada es uno de los iconos de NYC. La plaza baja es gratuita.",why:"El arbol de Navidad del Rockefeller es la imagen mas navidena de toda la ciudad. En noviembre puede estar montandose."},
+  {id:"p15a",day:3,dayLabel:"Lun 24 Nov",cat:"compras",isSkyview:"con",isExtra:false,name:"The Shops at Skyview — Flushing",price:"GRATIS entrar",addr:"40-24 College Point Blvd, Flushing, NY 11354",maps:"https://maps.google.com/?q=The+Shops+at+Skyview+40-24+College+Point+Blvd+Flushing+Queens",desc:"Centro comercial en Flushing, Queens, con tiendas variadas incluyendo Nike, Marshall's y marcas a precios de outlet. A 35 minutos del centro en el tren 7 directo desde Grand Central. El shopping que recomendo una amiga.",why:"Precios mas bajos que en Manhattan para muchas marcas. El bonus: Flushing tiene el Chinatown mas autentico de NYC."},
+  {id:"p15b",day:3,dayLabel:"Lun 24 Nov",cat:"barrio",isSkyview:"con",isExtra:false,name:"Chinatown de Flushing — Queens",price:"GRATIS",addr:"Main St, Flushing, NY 11354",maps:"https://maps.google.com/?q=Flushing+Chinatown+Main+Street+Queens+New+York",desc:"El Chinatown mas grande y autentico de toda Nueva York, mucho menos turistico que el de Manhattan. Los mejores dumplings, hot pot y bubble tea de la ciudad a precios locales. La calle Main St es una explosion de cultura asiatica.",why:"Los dumplings de Flushing son leyenda entre los neoyorquinos. Mas baratos y autenticos que cualquier cosa en Manhattan."},
+  {id:"p16a",day:3,dayLabel:"Lun 24 Nov",cat:"historia",isSkyview:"sin",isExtra:false,name:"Sede de las Naciones Unidas",price:"GRATIS exterior",addr:"405 E 45th St, New York, NY 10017",maps:"https://maps.google.com/?q=United+Nations+Headquarters+405+E+45th+St+New+York",desc:"La sede central de la ONU en suelo internacional, sobre el East River. Las banderas de los 193 paises miembro forman una de las imagenes mas poderosas de Manhattan. El exterior y el paseo sobre el rio son completamente gratuitos.",why:"Una imagen unica: todas las banderas de la humanidad juntas frente al agua. Solo en NYC existe algo asi."},
+  {id:"p16b",day:3,dayLabel:"Lun 24 Nov",cat:"historia",isSkyview:"sin",isExtra:false,name:"9/11 Memorial — Piletas de noche",price:"GRATIS exterior",addr:"180 Greenwich St, New York, NY 10007",maps:"https://maps.google.com/?q=9/11+Memorial+180+Greenwich+St+New+York",desc:"Las dos piletas reflejantes en los huecos exactos donde estaban las Torres Gemelas. De noche, iluminadas desde abajo con el agua cayendo en cascada, son absolutamente impactantes y muy diferentes a verlas de dia.",why:"De noche tiene una solemnidad y belleza que de dia no tiene. Es el lugar mas emotivo de toda la ciudad."},
+  {id:"p17",day:4,dayLabel:"Mar 25 Nov",cat:"mirador",isSkyview:null,isExtra:false,name:"Empire State Building",price:"~$48 c/u",addr:"20 W 34th St, New York, NY 10001",maps:"https://maps.google.com/?q=Empire+State+Building+20+W+34th+St+New+York",desc:"El edificio mas iconico de Nueva York y uno de los mas famosos del mundo. El mirador del piso 86 ofrece vistas 360 grados sobre Manhattan, Brooklyn, Queens y Nueva Jersey. Art Deco puro, inaugurado en 1931. Abierto hasta medianoche.",why:"No se puede ir a NYC sin subir al Empire State. Es el punto de referencia de toda la ciudad vista desde arriba."},
+  {id:"p18",day:4,dayLabel:"Mar 25 Nov",cat:"museo",isSkyview:null,isExtra:false,name:"MoMA — Museum of Modern Art",price:"~$30 c/u",addr:"11 W 53rd St, New York, NY 10019",maps:"https://maps.google.com/?q=MoMA+Museum+of+Modern+Art+11+W+53rd+St+New+York",desc:"Uno de los museos de arte moderno mas importantes del mundo. Alberga el Starry Night de Van Gogh, Picasso, Warhol, Dali y cientos de obras mas. Ir directo a Van Gogh al abrir para evitar aglomeraciones.",why:"Ver el Starry Night en persona es una de esas experiencias que te quedan para siempre."},
+  {id:"p19",day:4,dayLabel:"Mar 25 Nov",cat:"mirador",isSkyview:null,isExtra:false,name:"SUMMIT One Vanderbilt",price:"~$54 c/u",addr:"45 E 42nd St, New York, NY 10017",maps:"https://maps.google.com/?q=SUMMIT+One+Vanderbilt+45+E+42nd+St+New+York",desc:"El mirador mas inmersivo y fotografico de NYC. Desde el piso 93, los espejos infinitos, las esferas de cristal y la plataforma exterior crean una experiencia de arte y vistas sin igual. Al atardecer es especialmente espectacular.",why:"El mas instagrameable de todos los miradores de NYC. Combina arte, arquitectura y vistas de una manera unica."},
+  {id:"p20",day:5,dayLabel:"Mie 26 Nov",cat:"parque",isSkyview:null,isExtra:false,name:"Central Park — Paseo en bici",price:"GRATIS + ~$20 bici",addr:"Central Park, New York, NY",maps:"https://maps.google.com/?q=Central+Park+New+York",desc:"843 acres de parque en el corazon de Manhattan. En bici se recorren los 10 km del circuito principal en 1.5 hs. Bethesda Fountain, Strawberry Fields (homenaje a John Lennon), el Reservoir y el Bow Bridge son los puntos mas fotografiados.",why:"El paseo en bici es la mejor manera de ver el parque completo. En noviembre los arboles sin hojas tienen una belleza diferente a la del verano."},
+  {id:"p21",day:5,dayLabel:"Mie 26 Nov",cat:"parque",isSkyview:null,isExtra:false,name:"Jardin de Shakespeare + Puente Bow",price:"GRATIS",addr:"Central Park West, New York, NY 10024",maps:"https://maps.google.com/?q=Shakespeare+Garden+Central+Park+New+York",desc:"El Jardin de Shakespeare es un jardin historico escondido en el lado oeste del parque, con plantas mencionadas en las obras del autor. El Bow Bridge, a pasos de ahi, es el puente mas fotografiado del parque — una joya de hierro forjado sobre el lago.",why:"El lugar mas romantico y secreto del parque. La mayoria de los turistas no lo encuentra. El Bow Bridge es la foto mas buscada de Central Park."},
+  {id:"p22",day:5,dayLabel:"Mie 26 Nov",cat:"museo",isSkyview:null,isExtra:false,name:"The Metropolitan Museum of Art",price:"~$30 c/u",addr:"1000 5th Ave, New York, NY 10028",maps:"https://maps.google.com/?q=Metropolitan+Museum+of+Art+1000+5th+Ave+New+York",desc:"El museo mas grande de los Estados Unidos. 5000 anos de historia del arte en mas de 2 millones de objetos: arte egipcio con una tumba completa, impresionistas, armaduras medievales y arte americano. Planear al menos 3 horas.",why:"Un dia no alcanza para ver todo. Elegir 3 o 4 salas y profundizar en ellas es mas satisfactorio que intentar ver todo corriendo."},
+  {id:"p23",day:5,dayLabel:"Mie 26 Nov",cat:"barrio",isSkyview:null,isExtra:false,name:"Harlem — 125th Street",price:"GRATIS",addr:"125th St, New York, NY 10027",maps:"https://maps.google.com/?q=Harlem+125th+Street+New+York",desc:"El barrio afroamericano mas historico de NYC. La 125th St tiene el Apollo Theater donde comenzaron sus carreras Ella Fitzgerald y James Brown, murales historicos y la mejor soul food de la ciudad. Un barrio vivo y muy distinto a Midtown.",why:"Ver la NYC de los neoyorquinos reales, no la de los turistas. Harlem es historia americana viva."},
+  {id:"p24",day:6,dayLabel:"Jue 27 Nov",cat:"parque",isSkyview:null,isExtra:false,name:"The High Line",price:"GRATIS",addr:"Gansevoort St, New York, NY 10014",maps:"https://maps.google.com/?q=The+High+Line+Gansevoort+Street+New+York",desc:"Parque elevado de 2.5 km construido sobre una antigua via de tren abandonada. Arte publico, jardines y vistas unicas sobre los tejados de Chelsea y el Hudson. Conecta el Meatpacking District con Hudson Yards. A 10 min a pie del hotel.",why:"Una de las mejores ideas urbanas del siglo XXI. Ver Manhattan desde arriba de las calles, entre jardines y arte, es algo unico."},
+  {id:"p25",day:6,dayLabel:"Jue 27 Nov",cat:"gastronomia",isSkyview:null,isExtra:false,name:"Chelsea Market",price:"GRATIS entrar",addr:"75 9th Ave, New York, NY 10011",maps:"https://maps.google.com/?q=Chelsea+Market+75+9th+Ave+New+York",desc:"Mercado gourmet construido dentro de la fabrica original de las galletas Oreo. Tiene los mejores tacos de NYC (Los Tacos No.1), mariscos, pizza, croissants y decenas de opciones. Tambien tiendas artesanales y una galeria de arte.",why:"El mercado mas completo de NYC. Los Tacos No.1 estan rankeados como los mejores de toda la ciudad."},
+  {id:"p26",day:6,dayLabel:"Jue 27 Nov",cat:"historia",isSkyview:null,isExtra:false,name:"Sede ONU — Exterior y banderas",price:"GRATIS",addr:"405 E 45th St, New York, NY 10017",maps:"https://maps.google.com/?q=United+Nations+Headquarters+New+York",desc:"Las banderas de los 193 paises miembro sobre el East River es una imagen que no existe en ninguna otra ciudad. El edificio modernista de 1952 disenado por Oscar Niemeyer es un icono de la arquitectura internacional.",why:"Una imagen que no esta en ningun otro lugar del mundo: todas las banderas de la humanidad juntas frente al agua."},
+  {id:"p27",day:6,dayLabel:"Jue 27 Nov",cat:"museo",isSkyview:null,isExtra:false,name:"American Museum of Natural History",price:"~$35 c/u",addr:"200 Central Park W, New York, NY 10024",maps:"https://maps.google.com/?q=American+Museum+Natural+History+200+Central+Park+W+New+York",desc:"El museo de historia natural mas grande del mundo, con 33 millones de objetos en 45 salas. El dinosaurio de 37 metros, la ballena azul de 29 metros colgando del techo y el Rose Center de astronomia son los puntos mas impresionantes.",why:"La ballena azul colgando del techo es una de las imagenes mas iconicas de todos los museos del mundo. El efecto en persona es incomparable."},
+  {id:"p28",day:6,dayLabel:"Jue 27 Nov",cat:"restaurante",isSkyview:null,isExtra:false,name:"Ellen's Stardust Diner",price:"~$30-40 c/u",addr:"1650 Broadway, New York, NY 10019",maps:"https://maps.google.com/?q=Ellen%27s+Stardust+Diner+1650+Broadway+New+York",desc:"Diner tematico de los anos 50 en Times Square donde los mozos son actores y cantantes de Broadway que hacen shows en vivo mientras comes. Interpretan desde Hamilton hasta Lady Gaga. Comida americana clasica. RESERVAR con semanas de anticipacion para 3 personas.",why:"Una experiencia que solo existe en NYC. Cenas mientras un mozo canta Broadway a metros de tu mesa."},
+  {id:"p29",day:6,dayLabel:"Jue 27 Nov",cat:"especial",isSkyview:null,isExtra:false,name:"Inflado de Globos — Central Park West",price:"GRATIS",addr:"Central Park West y 79th St, New York, NY 10024",maps:"https://maps.google.com/?q=Balloon+Inflation+Central+Park+West+79th+Street+New+York",desc:"La noche anterior al desfile de Thanksgiving, los globos gigantes del Macys Parade se inflan en las calles del Upper West Side. Los personajes de decenas de metros tomando forma lentamente en la calle, rodeados de neoyorquinos.",why:"Muchos dicen que es mas emocionante que el desfile mismo. La escala de los globos de cerca es algo que no se puede describir."},
+  {id:"p30",day:7,dayLabel:"Vie 28 Nov",cat:"especial",isSkyview:null,isExtra:false,name:"Macy's Thanksgiving Parade — 100 Aniversario",price:"GRATIS",addr:"Central Park West y 77th St, New York",maps:"https://maps.google.com/?q=Macys+Thanksgiving+Day+Parade+Central+Park+West+New+York",desc:"El desfile mas famoso de los Estados Unidos en su edicion numero 100. Globos gigantes iconicos, carrozas musicales, bandas de todo el pais y artistas en vivo. Recorre Central Park West, baja por la 6th Ave y termina en Macys en Herald Square.",why:"El 100 aniversario del Macys Parade es un evento historico. Es la unica vez que pueden estar en el centenario."},
+  {id:"p31",day:7,dayLabel:"Vie 28 Nov",cat:"compras",isSkyview:null,isExtra:false,name:"Bryant Park Winter Village",price:"GRATIS entrar",addr:"42nd St y 6th Ave, New York, NY 10018",maps:"https://maps.google.com/?q=Bryant+Park+Winter+Village+42nd+Street+New+York",desc:"El mercado de invierno mas bonito de NYC, con 200 vendedores en cabanas decoradas alrededor de una pista de hielo. Productos artesanales, ropa, joyas, comida caliente y una atmosfera navidena unica. Abierto desde finales de octubre.",why:"La alternativa mas autentica a los souvenirs de Times Square. Productos unicos que no conseguis en ningun otro lugar."},
+  {id:"p32",day:8,dayLabel:"Sab 29 Nov",cat:"compras",isSkyview:null,isExtra:false,name:"Macy's Herald Square — Black Friday",price:"GRATIS entrar",addr:"151 W 34th St, New York, NY 10001",maps:"https://maps.google.com/?q=Macys+Herald+Square+151+W+34th+St+New+York",desc:"El Macys mas grande del mundo: 11 pisos, 200.000 m2 y millones de productos. En Black Friday hay descuentos reales. Las escaleras mecanicas de madera originales de 1902 son ya un atractivo en si mismas. La bolsa marron es el souvenir mas emblematico.",why:"Una sola vez en la vida hay que entrar al Macys original. El Black Friday hace que valga doble."},
+  {id:"p33",day:8,dayLabel:"Sab 29 Nov",cat:"compras",isSkyview:null,isExtra:false,name:"5th Avenue — Black Friday",price:"GRATIS",addr:"5th Ave, New York, NY 10019",maps:"https://maps.google.com/?q=Fifth+Avenue+New+York+Shopping",desc:"El Black Friday en la 5th Ave entre la 34th y la 59th St es el dia de mas actividad comercial del ano. Descuentos en Apple, colas en Nike, vidrieras navidenas en su maximo esplendor. El Saks tiene uno de los despliegues de luces mas fotografiados.",why:"El mejor dia del ano para ver la 5th Ave. La energia del Black Friday mas las decoraciones navidenas ocurren solo una vez al ano."},
+  {id:"p34",day:8,dayLabel:"Sab 29 Nov",cat:"espectaculo",isSkyview:null,isExtra:false,name:"Broadway — Show en vivo",price:"~$70-120 c/u",addr:"Times Square Theater District, New York, NY 10036",maps:"https://maps.google.com/?q=TKTS+Times+Square+New+York+Broadway+tickets",desc:"El Theater District de NYC tiene mas de 40 teatros. Comprar en la taquilla TKTS de Times Square el mismo dia permite ahorrar hasta 50% del precio. Los mas populares: Hamilton, Wicked, El Rey Leon, Aladdin, Chicago.",why:"Ir a Broadway en NYC es diferente a cualquier otro teatro del mundo. La produccion, los actores y el teatro historico hacen de cada show una experiencia unica."},
+  {id:"p35",day:9,dayLabel:"Dom 29 Nov",cat:"barrio",isSkyview:null,isExtra:false,name:"Brooklyn Heights Promenade",price:"GRATIS",addr:"Brooklyn Heights Promenade, Brooklyn, NY 11201",maps:"https://maps.google.com/?q=Brooklyn+Heights+Promenade+Brooklyn+New+York",desc:"El paseo elevado sobre el East River con la vista panoramica mas completa del skyline de Manhattan. Puente de Brooklyn a la derecha, Lower Manhattan al frente y el rio debajo. Mucho mas serena y completa que desde Times Square.",why:"La mejor vista del skyline completo de Manhattan. Sin multitudes, sin pagar nada, con el puente de Brooklyn en primer plano."},
+  {id:"p36",day:9,dayLabel:"Dom 29 Nov",cat:"barrio",isSkyview:null,isExtra:false,name:"DUMBO + Brooklyn Bridge Park",price:"GRATIS",addr:"65 Plymouth St, Brooklyn, NY 11201",maps:"https://maps.google.com/?q=DUMBO+Brooklyn+Bridge+Park+65+Plymouth+St+Brooklyn",desc:"DUMBO (Down Under the Manhattan Bridge Overpass) es el barrio mas fotogenico de Brooklyn. La interseccion de Washington St con el Manhattan Bridge de fondo es la foto mas buscada de todo Brooklyn. El parque tiene vistas directas al puente y al skyline.",why:"Washington St con el puente de fondo es una de las fotos mas replicadas de NYC. Hay que sacarla si o si."},
+  {id:"p37",day:9,dayLabel:"Dom 29 Nov",cat:"barrio",isSkyview:null,isExtra:false,name:"Williamsburg — Street Art y Cafes",price:"GRATIS",addr:"Bedford Ave, Williamsburg, Brooklyn, NY 11211",maps:"https://maps.google.com/?q=Williamsburg+Bedford+Avenue+Brooklyn+New+York",desc:"El barrio mas trendy de Brooklyn, con la concentracion de street art mas alta de NYC. Bedford Ave tiene cafes de especialidad, restaurantes de todas las cocinas y tiendas de diseno independiente. Ambiente muy distinto a Manhattan.",why:"Ver Brooklyn mas alla de DUMBO. Williamsburg es donde viven los artistas y creativos de NYC."},
+  {id:"p38",day:9,dayLabel:"Dom 29 Nov",cat:"parque",isSkyview:null,isExtra:false,name:"Prospect Park",price:"GRATIS",addr:"Brooklyn, NY 11225",maps:"https://maps.google.com/?q=Prospect+Park+Brooklyn+New+York",desc:"El gran parque de Brooklyn, disenado por los mismos paisajistas que Central Park. Lago, senderos arbolados, pista de patinaje en invierno y mucho mas espacio que su par en Manhattan. El favorito de los brooklynitas.",why:"Ver Brooklyn desde adentro. Prospect Park te muestra una ciudad completamente diferente a la que conociste en Manhattan."},
+  {id:"p39",day:0,dayLabel:"Extras",cat:"mirador",isSkyview:null,isExtra:true,name:"Top of the Rock — Rockefeller",price:"~$46 c/u",addr:"30 Rockefeller Plaza, New York, NY 10112",maps:"https://maps.google.com/?q=Top+of+the+Rock+30+Rockefeller+Plaza+New+York",desc:"El mirador del Rockefeller Center con tres niveles de terrazas. La vista unica: desde aqui podes VER el Empire State desde afuera, algo imposible desde el mismo Empire State. Ir al atardecer para verlo encenderse de noche.",why:"El unico mirador desde el que se ve el Empire State completo en primer plano. Al atardecer la transicion es magica."},
+  {id:"p40",day:0,dayLabel:"Extras",cat:"museo",isSkyview:null,isExtra:true,name:"Museo Guggenheim",price:"~$30 c/u",addr:"1071 5th Ave, New York, NY 10128",maps:"https://maps.google.com/?q=Guggenheim+Museum+1071+5th+Ave+New+York",desc:"El edificio espiral de Frank Lloyd Wright es tan impresionante como el arte que contiene. La rampa helicoidal que rodea el atrio central es una de las obras arquitectonicas mas audaces del siglo XX. Tiene Picasso, Kandinsky, Klimt y Mondrian.",why:"Si quieren mas arte, el Guggenheim combina arquitectura unica con arte de primer nivel. Esta a pasos del Met."},
+  {id:"p41",day:0,dayLabel:"Extras",cat:"cultural",isSkyview:null,isExtra:true,name:"The Strand Bookstore",price:"GRATIS entrar",addr:"828 Broadway, New York, NY 10003",maps:"https://maps.google.com/?q=The+Strand+Bookstore+828+Broadway+New+York",desc:"La libreria independiente mas famosa de NYC, con 18 millas de libros. Libros usados, raros, de arte y de diseno a precios muy accesibles. Es un destino en si mismo para cualquier amante de los libros. Cerca de SoHo y Union Square.",why:"El mejor souvenir literario que podes llevarte de NYC es un libro viejo comprado en el Strand."},
+  {id:"p42",day:0,dayLabel:"Extras",cat:"gastronomia",isSkyview:null,isExtra:true,name:"Katz's Delicatessen",price:"~$25 c/u",addr:"205 E Houston St, New York, NY 10002",maps:"https://maps.google.com/?q=Katz%27s+Delicatessen+205+E+Houston+St+New+York",desc:"El deli mas famoso de NYC, abierto desde 1888. El sandwich de pastrami cortado a mano es la razon por la que existe. Tomas un ticket al entrar, lo llevas a uno de los cortadores y ves como preparan tu sandwich frente a vos. Ruidoso, caotico y completamente autentico.",why:"Comer en Katz's es una experiencia historica. Es el mismo lugar de la escena mas famosa de Cuando Harry conocio a Sally."},
+  {id:"p43",day:0,dayLabel:"Extras",cat:"barrio",isSkyview:null,isExtra:true,name:"Nolita — Norte de Little Italy",price:"GRATIS",addr:"Nolita, New York, NY 10012",maps:"https://maps.google.com/?q=Nolita+neighborhood+New+York",desc:"El barrio mas chic e intimista de Lower Manhattan, entre SoHo y Little Italy. Boutiques de diseno local, cafes de especialidad y calles adoquinadas mas tranquilas que SoHo. Elizabeth St y Spring St tienen las tiendas mas exclusivas y menos conocidas.",why:"Si SoHo se siente demasiado masivo, Nolita tiene el mismo espiritu pero mas tranquilo y mas local."},
+  {id:"p44",day:0,dayLabel:"Extras",cat:"icono",isSkyview:null,isExtra:true,name:"Brooklyn Bridge — Caminata",price:"GRATIS",addr:"Brooklyn Bridge, New York, NY 10038",maps:"https://maps.google.com/?q=Brooklyn+Bridge+New+York",desc:"Caminar el puente de Brooklyn desde Manhattan hacia Brooklyn es una de las experiencias mas iconicas de NYC. Los 30 minutos de caminata sobre el carril elevado de madera ofrecen vistas del Lower Manhattan y el East River.",why:"El puente de Brooklyn es una obra de ingenieria del siglo XIX que sigue siendo impresionante. La foto del skyline desde el camino es la mas clasica de toda NYC."},
+  {id:"p45",day:0,dayLabel:"Extras",cat:"gastronomia",isSkyview:null,isExtra:true,name:"Levain Bakery",price:"~$5 c/u",addr:"167 W 74th St, New York, NY 10023",maps:"https://maps.google.com/?q=Levain+Bakery+167+W+74th+St+New+York",desc:"La bakery mas famosa de NYC. Su cookie de chocolate negro con nueces pesa 170 gramos y siempre sale tibia y con el interior suave. La fila puede ser larga pero avanza rapido. Hay sucursal en Midtown.",why:"La cookie mas famosa de Nueva York. Si son fans de los dulces, es una parada obligatoria."},
+  {id:"p46",day:0,dayLabel:"Extras",cat:"gastronomia",isSkyview:null,isExtra:true,name:"Magnolia Bakery",price:"~$8 c/u",addr:"401 Bleecker St, New York, NY 10014",maps:"https://maps.google.com/?q=Magnolia+Bakery+401+Bleecker+St+New+York",desc:"La bakery que popularizo Sex and the City. El banana pudding — capas de galletas Nilla, crema de vainilla y bananas — es la estrella. Los cupcakes de colores pasteles son casi tan fotografiados como la tienda misma. En el West Village.",why:"El banana pudding es la experiencia dulce mas fotografiada e imitada de NYC. Una vez que lo prueban van a entender por que."},
+];
+
+const PHOTO_URLS = {
+  "p01":"https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=400&q=80",
+  "p02":"https://images.unsplash.com/photo-1534430480872-3498386e7856?w=400&q=80",
+  "p03":"https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400&q=80",
+  "p04":"https://images.unsplash.com/photo-1538970272646-f61fabb3a8a2?w=400&q=80",
+  "p05":"https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=400&q=80",
+  "p06":"https://images.unsplash.com/photo-1568526381923-caf3fd520382?w=400&q=80",
+  "p07":"https://images.unsplash.com/photo-1517732306149-e8f829eb588a?w=400&q=80",
+  "p08":"https://images.unsplash.com/photo-1560969184-10fe8719e047?w=400&q=80",
+  "p09":"https://images.unsplash.com/photo-1610642372651-fe6e7bc4a9a3?w=400&q=80",
+  "p10":"https://images.unsplash.com/photo-1555992457-b8fefdd09069?w=400&q=80",
+  "p11":"https://images.unsplash.com/photo-1571115764595-644a1f56a55c?w=400&q=80",
+  "p12":"https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?w=400&q=80",
+  "p13":"https://images.unsplash.com/photo-1524398092280-0a2a0c9aaeff?w=400&q=80",
+  "p14":"https://images.unsplash.com/photo-1546412414-e1885259563a?w=400&q=80",
+  "p15a":"https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&q=80",
+  "p15b":"https://images.unsplash.com/photo-1553361371-9b22f78e8b1d?w=400&q=80",
+  "p16a":"https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&q=80",
+  "p16b":"https://images.unsplash.com/photo-1604580864964-0462f5d5b1a8?w=400&q=80",
+  "p17":"https://images.unsplash.com/photo-1546436836-07a91091f160?w=400&q=80",
+  "p18":"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80",
+  "p19":"https://images.unsplash.com/photo-1483653085484-eb63c9f02c96?w=400&q=80",
+  "p20":"https://images.unsplash.com/photo-1534430480872-3498386e7856?w=400&q=80",
+  "p21":"https://images.unsplash.com/photo-1582711012124-a56cf82307a0?w=400&q=80",
+  "p22":"https://images.unsplash.com/photo-1565799743361-456e3a9e59e8?w=400&q=80",
+  "p23":"https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=400&q=80",
+  "p24":"https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=400&q=80",
+  "p25":"https://images.unsplash.com/photo-1568526381923-caf3fd520382?w=400&q=80",
+  "p26":"https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&q=80",
+  "p27":"https://images.unsplash.com/photo-1565799743361-456e3a9e59e8?w=400&q=80",
+  "p28":"https://images.unsplash.com/photo-1552566626-52f8b828add9?w=400&q=80",
+  "p29":"https://images.unsplash.com/photo-1576867757603-05b134ebc379?w=400&q=80",
+  "p30":"https://images.unsplash.com/photo-1576867757603-05b134ebc379?w=400&q=80",
+  "p31":"https://images.unsplash.com/photo-1576867757603-05b134ebc379?w=400&q=80",
+  "p32":"https://images.unsplash.com/photo-1605371924599-2d0365da1ae0?w=400&q=80",
+  "p33":"https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?w=400&q=80",
+  "p34":"https://images.unsplash.com/photo-1585699324551-f6c309eedeca?w=400&q=80",
+  "p35":"https://images.unsplash.com/photo-1541336032412-2048a678540d?w=400&q=80",
+  "p36":"https://images.unsplash.com/photo-1541336032412-2048a678540d?w=400&q=80",
+  "p37":"https://images.unsplash.com/photo-1517732306149-e8f829eb588a?w=400&q=80",
+  "p38":"https://images.unsplash.com/photo-1560969184-10fe8719e047?w=400&q=80",
+  "p39":"https://images.unsplash.com/photo-1546436836-07a91091f160?w=400&q=80",
+  "p40":"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80",
+  "p41":"https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=400&q=80",
+  "p42":"https://images.unsplash.com/photo-1568926765516-08dfe2adf768?w=400&q=80",
+  "p43":"https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=400&q=80",
+  "p44":"https://images.unsplash.com/photo-1541336032412-2048a678540d?w=400&q=80",
+  "p45":"https://images.unsplash.com/photo-1558745543-97ee8ebfd870?w=400&q=80",
+  "p46":"https://images.unsplash.com/photo-1558745543-97ee8ebfd870?w=400&q=80",
+};
+
+const DAY_COLORS = {1:"#4a90e2",2:"#9b59b6",3:"#0d9e82",4:"#e94560",5:"#34c673",6:"#f5a623",7:"#e94560",8:"#d63384",9:"#0d9e82",0:"#8e44ad"};
+const DAY_NAMES = {1:"Sabado 22 Nov — Llegada",2:"Domingo 23 Nov — SoHo, Little Italy, Chinatown, Village",3:"Lunes 24 Nov — Midtown Este",4:"Martes 25 Nov — Empire, MoMA, SUMMIT",5:"Miercoles 26 Nov — Central Park, Met, Harlem",6:"Jueves 27 Nov — High Line, Chelsea, Inflado de Globos",7:"Viernes 28 Nov — Thanksgiving Parade 100 Aniversario",8:"Sabado 29 Nov — Black Friday + Broadway",9:"Domingo 29 Nov — Brooklyn + Vuelo nocturno",0:"Extras — Si sobra tiempo"};
+
+let currentDay = 'all';
+let currentCat = 'all';
+let currentSkyview = 'ambas';
+
+function filterDay(day, btn) {
+  currentDay = day;
+  document.querySelectorAll('#day-filters .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+function filterCat(cat, btn) {
+  currentCat = cat;
+  document.querySelectorAll('.filter-row:not(#day-filters) .filter-btn:not(.sky-btn)').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+function setSkyview(v) {
+  currentSkyview = v;
+  ['btn-ambas','btn-con','btn-sin'].forEach(id => document.getElementById(id).classList.remove('active'));
+  document.getElementById('btn-'+v).classList.add('active');
+  render();
+}
+
+function priceClass(p) {
+  if (p === 'GRATIS' || p === 'GRATIS entrar' || p === 'GRATIS exterior') return 'price-free';
+  if (p === '--' || p === '—') return 'price-other';
+  return 'price-paid';
+}
+
+function cardHTML(p) {
+  const photo = PHOTO_URLS[p.id] || '';
+  const skyTag = p.isSkyview === 'con' ? '<span style="font-size:9px;background:rgba(74,144,226,0.15);color:#4a90e2;padding:2px 6px;border-radius:8px;margin-left:6px;">Solo version CON Skyview</span>'
+    : p.isSkyview === 'sin' ? '<span style="font-size:9px;background:rgba(13,158,130,0.15);color:#0d9e82;padding:2px 6px;border-radius:8px;margin-left:6px;">Solo version SIN Skyview</span>' : '';
+  const extraBadge = p.isExtra ? '<div class="extra-badge">⚡ Si sobra tiempo</div>' : '';
+  return `<div class="place-card${p.isExtra?' extra':''}">
+    <div class="card-img">${photo ? `<img src="${photo}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">` : `<div style="height:160px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:48px">${CAT_EMOJI[p.cat]||'📍'}</div>`}</div>
+    <div class="card-body">
+      ${extraBadge}
+      <div class="card-top">
+        <div class="card-name">${p.name}${skyTag}</div>
+        <span class="price-badge ${priceClass(p.price)}">${p.price}</span>
+      </div>
+      <p class="card-desc">${p.desc}</p>
+      <div class="card-why">${p.why}</div>
+      <div class="card-footer">
+        <a class="maps-link" href="${p.maps}" target="_blank">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          ${p.addr}
+        </a>
+        <span class="cat-tag cat-${p.cat}">${CAT_EMOJI[p.cat]||''} ${CAT_LABEL[p.cat]||p.cat}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function render() {
+  let filtered = PLACES.filter(p => {
+    if (currentDay !== 'all' && p.day !== currentDay) return false;
+    if (currentCat !== 'all' && p.cat !== currentCat && !(currentCat==='gastronomia' && p.cat==='restaurante')) return false;
+    if (p.isSkyview === 'con' && currentSkyview === 'sin') return false;
+    if (p.isSkyview === 'sin' && currentSkyview === 'con') return false;
+    return true;
+  });
+
+  document.getElementById('stat-total').textContent = filtered.length;
+  document.getElementById('stat-free').textContent = filtered.filter(p => p.price.startsWith('GRATIS')).length;
+
+  const content = document.getElementById('content');
+  if (filtered.length === 0) {
+    content.innerHTML = '<div class="empty"><div class="empty-icon">🔍</div><p>No hay lugares con esos filtros</p></div>';
+    return;
+  }
+
+  if (currentDay !== 'all') {
+    const showSkyviewBanner = currentDay === 3 && currentSkyview === 'ambas';
+    content.innerHTML = `
+      ${showSkyviewBanner ? '<div class="skyview-banner">ℹ️ El lunes 24 tiene dos versiones. Usa el filtro de arriba para ver solo CON o SIN Skyview, o ve ambas juntas.</div>' : ''}
+      <div class="cards-grid">${filtered.map(cardHTML).join('')}</div>`;
+  } else {
+    const days = [...new Set(filtered.map(p => p.day))].sort((a,b) => a-b);
+    let html = '';
+    for (const day of days) {
+      const dayPlaces = filtered.filter(p => p.day === day);
+      const col = DAY_COLORS[day] || '#888';
+      html += `<div class="day-section">
+        <div class="day-header" onclick="toggleDay(this, 'dc${day}')">
+          <div class="day-dot" style="background:${col}"></div>
+          <div class="day-title">${DAY_NAMES[day] || 'Dia '+day}</div>
+          <div class="day-count">${dayPlaces.length} lugar${dayPlaces.length>1?'es':''}</div>
+          <div class="day-chevron">▼</div>
+        </div>
+        <div id="dc${day}" class="cards-grid">${dayPlaces.map(cardHTML).join('')}</div>
+      </div>`;
+    }
+    content.innerHTML = html;
+  }
+}
+
+function toggleDay(btn, id) {
+  const el = document.getElementById(id);
+  const collapsed = el.style.display === 'none';
+  el.style.display = collapsed ? 'grid' : 'none';
+  btn.classList.toggle('collapsed', !collapsed);
+}
+
+render();
+</script>
+</body>
+</html>
