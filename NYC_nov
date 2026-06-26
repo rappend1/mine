@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Nueva York · Nov 2026 · Reni, Mateo & Nico</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+--bg:#07070f;--s1:#0f0f1a;--s2:#161624;--s3:#1e1e30;--s4:#26263e;
+--br:rgba(255,255,255,0.06);--br2:rgba(255,255,255,0.11);--br3:rgba(255,255,255,0.18);
+--tx:#f0effe;--tx2:#9e9cc0;--tx3:#5c5a80;
+--red:#ff3b5c;--gold:#ffb020;--teal:#00e5a0;--blue:#5b8fff;--purple:#a070ff;--pink:#ff6eb0;
+--reni:#ff3b5c;--mateo:#5b8fff;--nico:#00e5a0;
+--r:12px;--r2:8px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,sans-serif;font-size:14px;line-height:1.55;overflow-x:hidden}
+
+/* ── HERO ─────────────────────────────────────────────────────────────────── */
+.hero{position:relative;overflow:hidden;background:var(--s1);border-bottom:1px solid var(--br)}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 80% 20%,rgba(90,60,255,0.18) 0%,transparent 60%),radial-gradient(ellipse 40% 60% at 10% 80%,rgba(255,59,92,0.12) 0%,transparent 60%)}
+.hero-inner{position:relative;max-width:1120px;margin:0 auto;padding:48px 24px 0}
+.eyebrow{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--red)}
+.eyebrow-txt{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3)}
+.hero-title{font-size:clamp(36px,7vw,72px);font-weight:800;letter-spacing:-2px;line-height:1;margin-bottom:14px;color:var(--tx)}
+.hero-title em{color:var(--red);font-style:normal}
+.hero-sub{font-size:16px;color:var(--tx2);margin-bottom:32px;max-width:480px;line-height:1.6}
+.hero-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:36px}
+.chip{display:flex;align-items:center;gap:6px;background:var(--s3);border:1px solid var(--br2);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:500;color:var(--tx2)}
+.chip-dot{width:5px;height:5px;border-radius:50%}
+.hero-travelers{display:flex;gap:10px;margin-bottom:36px;flex-wrap:wrap}
+.traveler{display:flex;align-items:center;gap:8px;background:var(--s3);border:1px solid var(--br2);border-radius:20px;padding:8px 14px}
+.traveler-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0}
+.traveler-name{font-size:12px;font-weight:600;color:var(--tx)}
+.hero-stats-row{display:flex;border-top:1px solid var(--br);background:var(--s2)}
+.hstat{flex:1;padding:18px 16px;text-align:center;border-right:1px solid var(--br);min-width:70px}
+.hstat:last-child{border-right:none}
+.hstat-n{font-size:22px;font-weight:800;color:var(--tx);letter-spacing:-1px}
+.hstat-l{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.flight-ribbon{background:rgba(91,143,255,0.08);border-top:1px solid rgba(91,143,255,0.14);padding:10px 24px;font-size:11.5px;color:var(--blue);display:flex;gap:20px;flex-wrap:wrap;max-width:100%}
+.flight-item{display:flex;align-items:center;gap:6px;white-space:nowrap}
+
+/* ── TABS ─────────────────────────────────────────────────────────────────── */
+.nav{background:var(--s1);border-bottom:1px solid var(--br);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+.nav-inner{max-width:1120px;margin:0 auto;display:flex;overflow-x:auto;scrollbar-width:none;gap:2px;padding:0 4px}
+.nav-inner::-webkit-scrollbar{display:none}
+.tab{padding:14px 18px;font-size:12.5px;font-weight:600;color:var(--tx3);cursor:pointer;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap;letter-spacing:.01em}
+.tab:hover{color:var(--tx2)}
+.tab.on{color:var(--tx);border-bottom-color:var(--red)}
+
+/* ── MAIN ─────────────────────────────────────────────────────────────────── */
+.main{max-width:1120px;margin:0 auto;padding:28px 20px}
+.section{display:none}.section.on{display:block}
+
+/* ── FILTERS ─────────────────────────────────────────────────────────────── */
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
+.fb{padding:6px 13px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--br2);background:var(--s2);color:var(--tx3);transition:all .15s;white-space:nowrap}
+.fb:hover{color:var(--tx2);border-color:var(--br3)}
+.fb.on{background:var(--red);border-color:var(--red);color:#fff}
+.fb.sky-on{background:var(--blue);border-color:var(--blue);color:#fff}
+.sky-grp{display:flex;gap:4px;margin-left:auto}
+
+/* ── ITINERARY VIEW ───────────────────────────────────────────────────────── */
+.itinerary-view{display:grid;gap:32px}
+.day-block{}
+.day-hdr{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--br)}
+.day-num{font-size:11px;font-weight:800;color:var(--tx3);letter-spacing:.08em;text-transform:uppercase}
+.day-name{font-size:15px;font-weight:700;color:var(--tx);flex:1}
+.day-badge{font-size:10px;padding:3px 9px;border-radius:12px;font-weight:700}
+.day-line{width:3px;height:20px;border-radius:2px;flex-shrink:0}
+
+/* ── PLACE CARDS ──────────────────────────────────────────────────────────── */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.card{background:var(--s2);border:1px solid var(--br);border-radius:var(--r);overflow:hidden;transition:border-color .2s,transform .2s;cursor:default}
+.card:hover{border-color:var(--br2);transform:translateY(-3px)}
+.card.extra{border-left:2px solid var(--purple)}
+.card-img{position:relative;height:176px;overflow:hidden;background:var(--s3)}
+.card-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
+.card:hover .card-img img{transform:scale(1.04)}
+.card-img-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:52px;background:linear-gradient(135deg,var(--s3),var(--s4))}
+.price-tag{position:absolute;top:10px;right:10px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:800;letter-spacing:.02em}
+.pt-free{background:rgba(0,229,160,0.9);color:#001a0e}
+.pt-paid{background:rgba(255,176,32,0.9);color:#120800}
+.pt-na{display:none}
+.extra-tag{position:absolute;top:10px;left:10px;background:rgba(160,112,255,0.9);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:12px}
+.sky-tag{position:absolute;bottom:0;left:0;right:0;padding:6px 10px;font-size:10px;font-weight:700;text-align:center}
+.sky-con{background:rgba(91,143,255,0.85);color:#fff}
+.sky-sin{background:rgba(0,229,160,0.85);color:#00100a}
+.card-body{padding:14px}
+.card-name{font-size:13px;font-weight:700;color:var(--tx);margin-bottom:5px;line-height:1.3}
+.card-desc{font-size:12px;color:var(--tx2);line-height:1.65;margin-bottom:8px}
+.why{background:rgba(0,229,160,0.06);border-left:2px solid rgba(0,229,160,0.3);border-radius:0 6px 6px 0;padding:6px 9px;font-size:11.5px;color:var(--teal);line-height:1.5;margin-bottom:10px}
+.why::before{content:"↳ ";font-weight:800}
+.card-foot{display:flex;align-items:center;gap:8px}
+.mlink{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--blue);text-decoration:none;padding:5px 10px;border-radius:20px;border:1px solid rgba(91,143,255,0.2);background:rgba(91,143,255,0.05);flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;transition:background .12s;min-width:0}
+.mlink:hover{background:rgba(91,143,255,0.12)}
+.mlink svg{flex-shrink:0}
+.mlink-txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cpill{font-size:10px;color:var(--tx3);padding:4px 8px;background:var(--s3);border-radius:12px;white-space:nowrap;flex-shrink:0}
+
+/* ── VOTES ────────────────────────────────────────────────────────────────── */
+.vote-card{background:var(--s2);border:1px solid var(--br);border-radius:var(--r);padding:16px;margin-bottom:10px;display:flex;flex-direction:column;gap:12px}
+.vote-top{display:flex;gap:12px;align-items:flex-start}
+.vote-img{width:60px;height:60px;border-radius:8px;object-fit:cover;background:var(--s3);flex-shrink:0}
+.vote-img-ph{width:60px;height:60px;border-radius:8px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.vote-info{flex:1;min-width:0}
+.vote-name{font-size:13.5px;font-weight:700;color:var(--tx);margin-bottom:2px}
+.vote-meta{font-size:11px;color:var(--tx3)}
+.vote-tally{display:flex;gap:12px;font-size:11px;margin-top:4px}
+.tv{color:var(--teal);font-weight:600}.tn{color:var(--red);font-weight:600}.tna{color:var(--tx3)}
+.vote-row{display:flex;gap:8px;flex-wrap:wrap}
+.voter{display:flex;align-items:center;gap:8px;background:var(--s3);border:1px solid var(--br);border-radius:8px;padding:8px 12px;flex:1;min-width:120px}
+.vav{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0}
+.vname{font-size:12px;font-weight:600;color:var(--tx);flex:1}
+.vbtns{display:flex;gap:4px}
+.vb{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--br2);background:transparent;color:var(--tx2);transition:all .12s}
+.vb:hover{border-color:var(--br3)}
+.vb.vy{background:rgba(0,229,160,0.12);border-color:rgba(0,229,160,0.35);color:var(--teal)}
+.vb.vn{background:rgba(255,59,92,0.12);border-color:rgba(255,59,92,0.35);color:var(--red)}
+
+/* ── RATINGS ──────────────────────────────────────────────────────────────── */
+.rtab-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.rtab{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--br2);background:var(--s2);color:var(--tx3);transition:all .15s}
+.rtab.on{background:var(--gold);border-color:var(--gold);color:#0d0700}
+.rating-card{background:var(--s2);border:1px solid var(--br);border-radius:var(--r);padding:16px;margin-bottom:10px}
+.rating-top{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}
+.rating-img{width:60px;height:60px;border-radius:8px;object-fit:cover;background:var(--s3);flex-shrink:0}
+.rating-img-ph{width:60px;height:60px;border-radius:8px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.rating-info{flex:1}
+.rating-name{font-size:13.5px;font-weight:700;color:var(--tx);margin-bottom:2px}
+.rating-avg{font-size:11px;color:var(--tx3)}
+.stars{display:flex;gap:3px;margin-bottom:8px}
+.star{font-size:24px;cursor:pointer;transition:color .1s,transform .1s;color:var(--s4);user-select:none;display:inline-block}
+.star.lit{color:var(--gold)}
+.star:hover{transform:scale(1.2)}
+.who-row-r{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.who-rbtn{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:2px solid transparent;transition:all .12s;opacity:.4}
+.who-rbtn.on{opacity:1}
+.rtextarea{width:100%;background:var(--s3);border:1px solid var(--br2);border-radius:8px;padding:9px 11px;color:var(--tx);font-size:12px;resize:none;font-family:inherit;transition:border-color .15s;margin-bottom:8px}
+.rtextarea:focus{outline:none;border-color:var(--br3)}
+.save-btn{padding:7px 18px;border-radius:20px;background:var(--red);border:none;color:#fff;font-size:12px;font-weight:700;cursor:pointer;transition:opacity .15s}
+.save-btn:hover{opacity:.85}
+.review-list{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.review-item{background:var(--s3);border-radius:8px;padding:10px 12px}
+.review-who{display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap}
+.review-av{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800}
+.review-uname{font-size:12px;font-weight:700;color:var(--tx)}
+.review-stars{color:var(--gold);font-size:12px;letter-spacing:1px}
+.review-date{font-size:10px;color:var(--tx3);margin-left:auto}
+.review-txt{font-size:12px;color:var(--tx2);line-height:1.55}
+
+/* ── ITINERARY VIEW ────────────────────────────────────────────────────────── */
+.itin-selector{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap}
+.itin-choice{flex:1;min-width:200px;background:var(--s2);border:2px solid var(--br2);border-radius:var(--r);padding:16px 18px;cursor:pointer;transition:all .15s;text-align:center}
+.itin-choice:hover{border-color:var(--br3)}
+.itin-choice.on{border-color:var(--blue);background:rgba(91,143,255,0.06)}
+.itin-choice-title{font-size:14px;font-weight:700;color:var(--tx);margin-bottom:4px}
+.itin-choice-sub{font-size:11px;color:var(--tx3)}
+.itin-day{background:var(--s2);border:1px solid var(--br);border-radius:var(--r);margin-bottom:12px;overflow:hidden}
+.itin-day-hdr{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none}
+.itin-day-hdr:hover{background:var(--s3)}
+.itin-day-stripe{width:4px;height:36px;border-radius:2px;flex-shrink:0}
+.itin-day-info{flex:1}
+.itin-day-label{font-size:11px;font-weight:800;color:var(--tx3);letter-spacing:.07em;text-transform:uppercase}
+.itin-day-title{font-size:14px;font-weight:700;color:var(--tx)}
+.itin-day-meta{font-size:11px;color:var(--tx3);margin-top:1px}
+.itin-toggle{font-size:12px;color:var(--tx3);transition:transform .2s}
+.itin-body{display:none;padding:0 16px 16px;border-top:1px solid var(--br)}
+.itin-body.open{display:block}
+.itin-stop{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--br)}
+.itin-stop:last-child{border-bottom:none}
+.itin-time{font-size:11px;font-weight:700;color:var(--tx3);min-width:64px;flex-shrink:0;padding-top:1px}
+.itin-content{flex:1;min-width:0}
+.itin-place{font-size:13px;font-weight:700;color:var(--tx);margin-bottom:2px}
+.itin-note{font-size:11.5px;color:var(--tx2);line-height:1.5}
+.itin-price{font-size:11px;font-weight:700;padding:3px 8px;border-radius:12px;white-space:nowrap;flex-shrink:0;align-self:flex-start;margin-top:2px}
+.ip-free{background:rgba(0,229,160,0.12);color:var(--teal)}
+.ip-paid{background:rgba(255,176,32,0.12);color:var(--gold)}
+.ip-na{background:var(--s3);color:var(--tx3)}
+.geo-tip{background:rgba(91,143,255,0.06);border:1px solid rgba(91,143,255,0.15);border-radius:8px;padding:8px 12px;margin-top:10px;font-size:11.5px;color:var(--blue)}
+.day-budget{display:flex;justify-content:flex-end;margin-top:8px;font-size:11.5px;color:var(--tx2)}
+.day-budget strong{color:var(--gold);margin-left:4px}
+
+/* ── COSTS ────────────────────────────────────────────────────────────────── */
+.costs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:24px}
+.cost-card{background:var(--s2);border:1px solid var(--br);border-radius:var(--r);padding:16px}
+.cost-icon{font-size:28px;margin-bottom:8px;display:block}
+.cost-label{font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.cost-val{font-size:20px;font-weight:800;color:var(--tx);letter-spacing:-0.5px}
+.cost-sub{font-size:11px;color:var(--tx3);margin-top:2px}
+.cost-table{background:var(--s2);border:1px solid var(--br);border-radius:var(--r);overflow:hidden;margin-bottom:20px}
+.ct-row{display:flex;align-items:center;padding:11px 16px;border-bottom:1px solid var(--br);gap:12px}
+.ct-row:last-child{border-bottom:none}
+.ct-row.total{background:rgba(255,59,92,0.06);border-top:1px solid rgba(255,59,92,0.2)}
+.ct-icon{font-size:18px;flex-shrink:0;width:24px;text-align:center}
+.ct-name{font-size:13px;color:var(--tx);flex:1}
+.ct-pp{font-size:12px;color:var(--tx3);text-align:right;min-width:80px}
+.ct-x3{font-size:13px;font-weight:700;color:var(--tx);text-align:right;min-width:80px}
+.ct-row.total .ct-name{font-weight:800;color:var(--tx)}
+.ct-row.total .ct-x3{color:var(--red)}
+.ct-header{display:flex;padding:9px 16px;background:var(--s3);font-size:10px;font-weight:800;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;gap:12px}
+.tipbox{background:rgba(0,229,160,0.06);border:1px solid rgba(0,229,160,0.2);border-radius:var(--r);padding:16px;margin-top:16px}
+.tipbox-title{font-size:13px;font-weight:700;color:var(--teal);margin-bottom:10px}
+.tipitem{display:flex;gap:8px;margin-bottom:8px;font-size:12px;color:var(--tx2);line-height:1.5;align-items:flex-start}
+.tipitem:last-child{margin-bottom:0}
+.tipdot{color:var(--teal);font-weight:800;flex-shrink:0;margin-top:1px}
+
+/* ── RECOMMENDATIONS ─────────────────────────────────────────────────────── */
+.rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:28px}
+.rec-card{background:var(--s2);border:1px solid var(--br);border-radius:var(--r);overflow:hidden;transition:border-color .2s,transform .2s}
+.rec-card:hover{border-color:var(--br2);transform:translateY(-2px)}
+.rec-img{height:150px;overflow:hidden;background:var(--s3)}
+.rec-img img{width:100%;height:100%;object-fit:cover;display:block}
+.rec-img-ph{height:100%;display:flex;align-items:center;justify-content:center;font-size:44px}
+.rec-body{padding:14px}
+.rec-eyebrow{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.rec-name{font-size:13px;font-weight:700;color:var(--tx);margin-bottom:5px}
+.rec-desc{font-size:12px;color:var(--tx2);line-height:1.6;margin-bottom:10px}
+.rec-foot{display:flex;gap:6px;flex-wrap:wrap}
+.rec-tag{font-size:10px;padding:3px 8px;border-radius:12px;font-weight:700}
+.rec-addr{font-size:11px;color:var(--blue);text-decoration:none;display:flex;align-items:center;gap:4px;margin-top:8px}
+.rec-addr:hover{text-decoration:underline}
+.rec-section-title{font-size:16px;font-weight:800;color:var(--tx);margin-bottom:14px;margin-top:8px;display:flex;align-items:center;gap:8px}
+.rst-dot{width:8px;height:8px;border-radius:50%}
+
+/* ── WISHLIST ────────────────────────────────────────────────────────────── */
+.wish-form{background:var(--s2);border:1px solid var(--br);border-radius:var(--r);padding:22px;margin-bottom:24px}
+.wish-form h3{font-size:16px;font-weight:800;color:var(--tx);margin-bottom:16px}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.fg.full{grid-template-columns:1fr}
+.fi{width:100%;background:var(--s3);border:1px solid var(--br2);border-radius:8px;padding:9px 12px;color:var(--tx);font-size:13px;font-family:inherit;transition:border-color .15s}
+.fi:focus{outline:none;border-color:var(--br3)}
+.fi::placeholder{color:var(--tx3)}
+.fsel{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23666' d='m7 10 5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.fsel option{background:#161624}
+.who-label{font-size:11px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.who-sel{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.who-btn{padding:7px 16px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:2px solid transparent;transition:all .12s;opacity:.35}
+.who-btn.on{opacity:1;transform:scale(1.05)}
+.add-btn{padding:9px 22px;border-radius:20px;background:var(--red);border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s;margin-top:4px}
+.add-btn:hover{opacity:.85}
+.wish-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.wish-item{background:var(--s2);border:1px solid var(--br);border-radius:var(--r);padding:15px;position:relative;transition:border-color .15s}
+.wish-item:hover{border-color:var(--br2)}
+.wi-top{display:flex;justify-content:space-between;gap:8px;margin-bottom:5px}
+.wi-name{font-size:14px;font-weight:700;color:var(--tx)}
+.wi-del{background:none;border:none;color:var(--tx3);cursor:pointer;font-size:18px;line-height:1;padding:0;transition:color .12s;flex-shrink:0}
+.wi-del:hover{color:var(--red)}
+.wi-addr{font-size:11px;color:var(--tx3);margin-bottom:8px}
+.wi-note{font-size:12px;color:var(--tx2);margin-bottom:8px;line-height:1.5}
+.wi-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.wi-tag{font-size:10px;padding:3px 8px;border-radius:12px;font-weight:700}
+.wi-maps{font-size:11px;color:var(--blue);text-decoration:none;display:flex;align-items:center;gap:4px}
+.wi-maps:hover{text-decoration:underline}
+.vote-section-div{height:1px;background:var(--br);margin:20px 0}
+
+/* ── SECTION INTRO ─────────────────────────────────────────────────────────── */
+.sec-intro{color:var(--tx2);font-size:13px;margin-bottom:20px;line-height:1.6;max-width:600px}
+
+/* ── RESPONSIVE ───────────────────────────────────────────────────────────── */
+@media(max-width:620px){
+.cards,.wish-list,.rec-grid,.costs-grid{grid-template-columns:1fr}
+.fg{grid-template-columns:1fr}
+.hero-stats-row{overflow-x:auto}
+.hstat{min-width:72px;padding:14px 10px}
+.hstat-n{font-size:18px}
+.itin-selector{flex-direction:column}
+.ct-header,.ct-row{gap:8px}
+.ct-pp{display:none}
+.vote-row{flex-direction:column}
+.voter{min-width:unset}
+}
+
+/* ── EMPTY ─────────────────────────────────────────────────────────────────── */
+.empty{text-align:center;padding:60px 20px;color:var(--tx3)}
+.empty-icon{font-size:52px;margin-bottom:12px}
+.empty-txt{font-size:14px}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+<div class="hero-bg"></div>
+<div class="hero-inner">
+<div class="eyebrow"><div class="eyebrow-dot"></div><span class="eyebrow-txt">Noviembre 2026 · American Airlines</span></div>
+<div class="hero-title">Nueva<br><em>York.</em></div>
+<div class="hero-sub">El viaje que teníamos pendiente. 8 días, 3 personas y el 100° aniversario del Macy's Parade esperándonos.</div>
+<div class="hero-chips">
+<div class="chip"><div class="chip-dot" style="background:#ff3b5c"></div>Sab 22 Nov — llegada 06:00 AM</div>
+<div class="chip"><div class="chip-dot" style="background:#5b8fff"></div>Dom 29 Nov — vuelo 22:00 PM</div>
+<div class="chip"><div class="chip-dot" style="background:#a070ff"></div>Holiday Inn Chelsea · 125 W 26th St</div>
+</div>
+<div class="hero-travelers">
+<div class="traveler"><div class="traveler-av" style="background:var(--reni);color:#fff">R</div><div class="traveler-name">Reni</div></div>
+<div class="traveler"><div class="traveler-av" style="background:var(--mateo);color:#fff">M</div><div class="traveler-name">Mateo</div></div>
+<div class="traveler"><div class="traveler-av" style="background:var(--nico);color:#001a0e">N</div><div class="traveler-name">Nico</div></div>
+</div>
+</div>
+<div class="hero-stats-row">
+<div class="hstat"><div class="hstat-n" style="color:var(--red)">100°</div><div class="hstat-l">Aniv. Parade</div></div>
+<div class="hstat"><div class="hstat-n">8</div><div class="hstat-l">Días</div></div>
+<div class="hstat"><div class="hstat-n">46</div><div class="hstat-l">Lugares</div></div>
+<div class="hstat"><div class="hstat-n" style="color:var(--teal)">18</div><div class="hstat-l">Gratis</div></div>
+<div class="hstat"><div class="hstat-n" style="color:var(--gold)">~$1.100</div><div class="hstat-l">Entradas c/u</div></div>
+</div>
+<div class="flight-ribbon">
+<div class="flight-item">✈️ <strong>Ida:</strong> EZE Vie 21/11 21:10 → JFK Sab 22/11 06:00 · AA · Directo 10h50</div>
+<div class="flight-item">🛬 <strong>Vuelta:</strong> JFK Dom 29/11 22:00 → EZE Lun 30/11 10:45 · AA · Directo 10h45</div>
+</div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+<div class="nav-inner">
+<div class="tab on" onclick="showTab('lugares',this)">🗺 Lugares</div>
+<div class="tab" onclick="showTab('itinerario',this)">📅 Itinerario</div>
+<div class="tab" onclick="showTab('otras',this)">✨ Otras opciones</div>
+<div class="tab" onclick="showTab('costos',this)">💰 Costos</div>
+<div class="tab" onclick="showTab('recomendaciones',this)">⭐ Tips</div>
+<div class="tab" onclick="showTab('votos',this)">✋ Votar</div>
+<div class="tab" onclick="showTab('calificaciones',this)">🌟 Calificar</div>
+<div class="tab" onclick="showTab('wishlist',this)">💡 Agregar</div>
+</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- ── LUGARES ─────────────────────────────────────────────────────────────── -->
+<div class="section on" id="sec-lugares">
+<div class="filter-row">
+<button class="fb on" onclick="fDay('all',this)">Todos</button>
+<button class="fb" onclick="fDay(1,this)">Sab 22</button>
+<button class="fb" onclick="fDay(2,this)">Dom 23</button>
+<button class="fb" onclick="fDay(3,this)">Lun 24</button>
+<button class="fb" onclick="fDay(4,this)">Mar 25</button>
+<button class="fb" onclick="fDay(5,this)">Mie 26</button>
+<button class="fb" onclick="fDay(6,this)">Jue 27</button>
+<button class="fb" onclick="fDay(7,this)">Vie 28</button>
+<button class="fb" onclick="fDay(8,this)">Sab 29</button>
+<button class="fb" onclick="fDay(9,this)">Dom 29</button>
+<div class="sky-grp">
+<button class="fb sky-on" id="sky-a" onclick="fSky('ambas',this)">Ambas</button>
+<button class="fb" id="sky-c" onclick="fSky('con',this)">Con Skyview</button>
+<button class="fb" id="sky-s" onclick="fSky('sin',this)">Sin Skyview</button>
+</div>
+</div>
+<div id="places-out"></div>
+</div>
+
+<!-- ── ITINERARIO ──────────────────────────────────────────────────────────── -->
+<div class="section" id="sec-itinerario">
+<p class="sec-intro">Dos versiones del itinerario día a día, optimizadas geográficamente para minimizar traslados. Elegí la que más les copa.</p>
+<div class="itin-selector">
+<div class="itin-choice on" id="ich-con" onclick="setItin('con')">
+<div class="itin-choice-title">🛍 Con The Shops at Skyview</div>
+<div class="itin-choice-sub">Lun 24: Grand Central → tren 7 → Flushing, Queens</div>
+</div>
+<div class="itin-choice" id="ich-sin" onclick="setItin('sin')">
+<div class="itin-choice-title">🏛 Sin Skyview</div>
+<div class="itin-choice-sub">Lun 24: Midtown Este completo → ONU → 9/11 de noche</div>
+</div>
+</div>
+<div id="itin-out"></div>
+</div>
+
+<!-- ── OTRAS OPCIONES ──────────────────────────────────────────────────────── -->
+<div class="section" id="sec-otras">
+<p class="sec-intro">Lugares que no están en el itinerario principal pero que vale la pena considerar si sobra tiempo, cambian de opinión o quieren explorar más allá de lo planeado.</p>
+<div id="otras-out"></div>
+</div>
+
+<!-- ── COSTOS ──────────────────────────────────────────────────────────────── -->
+<div class="section" id="sec-costos">
+<p class="sec-intro">Estimación real de gastos para 3 personas. Sin vuelos ni hospedaje. Precios en USD de 2026.</p>
+<div class="costs-grid">
+<div class="cost-card"><span class="cost-icon">🚇</span><div class="cost-label">Transporte NYC</div><div class="cost-val">~$40</div><div class="cost-sub">por persona · MetroCard 8 días</div></div>
+<div class="cost-card"><span class="cost-icon">🎡</span><div class="cost-label">Entradas totales</div><div class="cost-val">~$390</div><div class="cost-sub">por persona · todos los lugares pagos</div></div>
+<div class="cost-card"><span class="cost-icon">🍕</span><div class="cost-label">Comida</div><div class="cost-val">~$360</div><div class="cost-sub">por persona · ~$45/día promedio</div></div>
+<div class="cost-card"><span class="cost-icon">🛍️</span><div class="cost-label">Souvenirs</div><div class="cost-val">~$120</div><div class="cost-sub">por persona · estimado conservador</div></div>
+<div class="cost-card"><span class="cost-icon">✈️</span><div class="cost-label">Aeropuerto</div><div class="cost-val">~$30</div><div class="cost-sub">por persona · AirTrain+Subway ida+vuelta</div></div>
+<div class="cost-card" style="border-color:rgba(255,59,92,0.3);background:rgba(255,59,92,0.05)"><span class="cost-icon">💰</span><div class="cost-label" style="color:var(--red)">TOTAL por persona</div><div class="cost-val" style="color:var(--red)">~$940</div><div class="cost-sub">x3 personas: ~$2.820 USD</div></div>
+</div>
+
+<div class="ct-header">
+<span style="flex:1">Rubro</span>
+<span style="min-width:80px;text-align:right">c/u</span>
+<span style="min-width:80px;text-align:right">x3</span>
+</div>
+<div class="cost-table">
+<div class="ct-row"><div class="ct-icon">🚇</div><div class="ct-name">MetroCard 8 días (ilimitado)</div><div class="ct-pp">~$40</div><div class="ct-x3">~$120</div></div>
+<div class="ct-row"><div class="ct-icon">✈️</div><div class="ct-name">Aeropuerto (AirTrain + Subway x2)</div><div class="ct-pp">~$30</div><div class="ct-x3">~$90</div></div>
+<div class="ct-row"><div class="ct-icon">🏙️</div><div class="ct-name">Empire State Building (piso 86)</div><div class="ct-pp">~$48</div><div class="ct-x3">~$144</div></div>
+<div class="ct-row"><div class="ct-icon">🎨</div><div class="ct-name">MoMA — Museum of Modern Art</div><div class="ct-pp">~$30</div><div class="ct-x3">~$90</div></div>
+<div class="ct-row"><div class="ct-icon">🔮</div><div class="ct-name">SUMMIT One Vanderbilt</div><div class="ct-pp">~$54</div><div class="ct-x3">~$162</div></div>
+<div class="ct-row"><div class="ct-icon">🏛️</div><div class="ct-name">The Metropolitan Museum (Met)</div><div class="ct-pp">~$30</div><div class="ct-x3">~$90</div></div>
+<div class="ct-row"><div class="ct-icon">🦕</div><div class="ct-name">Amer. Museum Natural History</div><div class="ct-pp">~$35</div><div class="ct-x3">~$105</div></div>
+<div class="ct-row"><div class="ct-icon">🎭</div><div class="ct-name">Ellen's Stardust Diner (cena musical)</div><div class="ct-pp">~$35</div><div class="ct-x3">~$105</div></div>
+<div class="ct-row"><div class="ct-icon">🎬</div><div class="ct-name">Broadway — 1 show vía TKTS (50% off)</div><div class="ct-pp">~$90</div><div class="ct-x3">~$270</div></div>
+<div class="ct-row"><div class="ct-icon">🚲</div><div class="ct-name">Bicicletas Central Park (2 horas)</div><div class="ct-pp">~$20</div><div class="ct-x3">~$60</div></div>
+<div class="ct-row"><div class="ct-icon">🍸</div><div class="ct-name">230 Fifth Rooftop Bar (tragos)</div><div class="ct-pp">~$25</div><div class="ct-x3">~$75</div></div>
+<div class="ct-row"><div class="ct-icon">🍕</div><div class="ct-name">Comida (8 días × ~$45 promedio)</div><div class="ct-pp">~$360</div><div class="ct-x3">~$1.080</div></div>
+<div class="ct-row"><div class="ct-icon">🛍️</div><div class="ct-name">Souvenirs y compras (estimado)</div><div class="ct-pp">~$120</div><div class="ct-x3">~$360</div></div>
+<div class="ct-row"><div class="ct-icon">🔀</div><div class="ct-name">Imprevistos (10%)</div><div class="ct-pp">~$80</div><div class="ct-x3">~$240</div></div>
+<div class="ct-row total"><div class="ct-icon">💰</div><div class="ct-name">TOTAL (sin vuelo ni hotel)</div><div class="ct-pp">~$957</div><div class="ct-x3" style="color:var(--red)">~$2.870</div></div>
+</div>
+
+<div class="tipbox">
+<div class="tipbox-title">💡 Tips para ahorrar</div>
+<div class="tipitem"><span class="tipdot">→</span><span>El <strong>CityPASS NYC</strong> (~$146 c/u) te ahorra ~40% en 5 atracciones. Con Empire State + Met + AMNH + dos más ya conviene.</span></div>
+<div class="tipitem"><span class="tipdot">→</span><span>El <strong>MoMA es gratis los viernes de noche</strong> (5:30 a 9 PM). Si pueden mover ese día al viernes, ahorran $30 c/u.</span></div>
+<div class="tipitem"><span class="tipdot">→</span><span>La entrada del <strong>Met es voluntaria para turistas</strong>. La tarifa sugerida de $30 no es obligatoria.</span></div>
+<div class="tipitem"><span class="tipdot">→</span><span><strong>TKTS Times Square</strong> vende entradas de Broadway el mismo día con hasta 50% de descuento. Ir antes de las 6 PM.</span></div>
+<div class="tipitem"><span class="tipdot">→</span><span>Comer en <strong>Chinatown, Flushing o Hell's Kitchen</strong> cuesta 40-60% menos que en Midtown o Times Square.</span></div>
+<div class="tipitem"><span class="tipdot">→</span><span>El <strong>AirTrain + Subway desde JFK</strong> sale ~$15. El taxi sale $60-80. Ahorran ~$45 por persona solo en el aeropuerto.</span></div>
+</div>
+</div>
+
+<!-- ── RECOMENDACIONES ──────────────────────────────────────────────────────── -->
+<div class="section" id="sec-recomendaciones">
+<div id="recs-out"></div>
+</div>
+
+<!-- ── VOTOS ────────────────────────────────────────────────────────────────── -->
+<div class="section" id="sec-votos">
+<p class="sec-intro">Cada uno marca si quiere ir o no a cada lugar. El tally se actualiza en tiempo real para ver el consenso del grupo.</p>
+<div id="votes-out"></div>
+</div>
+
+<!-- ── CALIFICACIONES ──────────────────────────────────────────────────────── -->
+<div class="section" id="sec-calificaciones">
+<p class="sec-intro">Al volver o durante el viaje, califiquen cada lugar del 1 al 5 y dejen su experiencia.</p>
+<div id="ratings-out"></div>
+</div>
+
+<!-- ── WISHLIST ─────────────────────────────────────────────────────────────── -->
+<div class="section" id="sec-wishlist">
+<div class="wish-form">
+<h3>Agregar un lugar que quieren visitar</h3>
+<div class="fg">
+<input class="fi" id="wn" type="text" placeholder="Nombre del lugar">
+<input class="fi" id="wa" type="text" placeholder="Dirección o barrio">
+</div>
+<div class="fg">
+<select class="fi fsel" id="wc">
+<option value="">Tipo de lugar...</option>
+<option value="comida">🍕 Para comer</option>
+<option value="compras">🛍️ Compras</option>
+<option value="museo">🎨 Museo</option>
+<option value="barrio">🚶 Barrio / paseo</option>
+<option value="bar">🍸 Bar / vida nocturna</option>
+<option value="espectaculo">🎭 Show / espectáculo</option>
+<option value="mirador">🏙️ Mirador</option>
+<option value="parque">🌿 Parque / naturaleza</option>
+<option value="otro">📍 Otro</option>
+</select>
+<input class="fi" id="wm" type="text" placeholder="Link Google Maps (opcional)">
+</div>
+<div class="fg full">
+<input class="fi" id="wt" type="text" placeholder="¿Por qué quieren ir? (opcional)">
+</div>
+<div class="who-label">¿Quién lo sugiere?</div>
+<div class="who-sel" id="who-wish">
+<button class="who-btn" id="wwho-reni" style="background:rgba(255,59,92,0.15);border-color:var(--reni);color:var(--reni)" onclick="toggleWho('reni')">Reni</button>
+<button class="who-btn" id="wwho-mateo" style="background:rgba(91,143,255,0.15);border-color:var(--mateo);color:var(--mateo)" onclick="toggleWho('mateo')">Mateo</button>
+<button class="who-btn" id="wwho-nico" style="background:rgba(0,229,160,0.15);border-color:var(--nico);color:var(--nico)" onclick="toggleWho('nico')">Nico</button>
+</div>
+<button class="add-btn" onclick="addWish()">+ Agregar lugar</button>
+</div>
+<div id="wish-out"></div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+const USERS={reni:{name:"Reni",color:"#ff3b5c",tc:"#fff",init:"R"},mateo:{name:"Mateo",color:"#5b8fff",tc:"#fff",init:"M"},nico:{name:"Nico",color:"#00e5a0",tc:"#001a0e",init:"N"}};
+const CE={hotel:"🏨",mirador:"🏙️",museo:"🎨",barrio:"🚶",parque:"🌿",gastronomia:"🍕",restaurante:"🍽️",compras:"🛍️",especial:"⭐",historia:"🏛️",bar:"🍸",espectaculo:"🎭",cultural:"📚",icono:"📍",gastronomia:"🍕"};
+const CL={hotel:"Hotel",mirador:"Mirador",museo:"Museo",barrio:"Barrio",parque:"Parque",gastronomia:"Gastro",restaurante:"Restaurante",compras:"Compras",especial:"Especial",historia:"Historia",bar:"Bar / Rooftop",espectaculo:"Espectáculo",cultural:"Cultural",icono:"Ícono"};
+const DN={1:"Sab 22 — Llegada de madrugada",2:"Dom 23 — SoHo · Little Italy · Chinatown",3:"Lun 24 — Midtown Este",4:"Mar 25 — Empire · MoMA · SUMMIT",5:"Mie 26 — Central Park · Met · Harlem",6:"Jue 27 — High Line · Chelsea · Globos",7:"Vie 28 — Thanksgiving Parade 100°",8:"Sab 29 — Black Friday · Broadway",9:"Dom 29 — Brooklyn · Vuelo nocturno",0:"Extras"};
+const DC={1:"#5b8fff",2:"#a070ff",3:"#00e5a0",4:"#ff3b5c",5:"#00e5a0",6:"#ffb020",7:"#ff3b5c",8:"#ff6eb0",9:"#00e5a0",0:"#a070ff"};
+
+/* ── PHOTOS ── mejor representativas ── */
+const PH={
+p01:"https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=500&q=80",
+p02:"https://images.unsplash.com/photo-1588880331179-bc9b93a8cb5e?w=500&q=80",
+p03:"https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=500&q=80",
+p04:"https://images.unsplash.com/photo-1522083165195-3424ed129620?w=500&q=80",
+p05:"https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=500&q=80",
+p06:"https://images.unsplash.com/photo-1568526381923-caf3fd520382?w=500&q=80",
+p07:"https://images.unsplash.com/photo-1517732306149-e8f829eb588a?w=500&q=80",
+p08:"https://images.unsplash.com/photo-1560969184-10fe8719e047?w=500&q=80",
+p09:"https://images.unsplash.com/photo-1610642372651-fe6e7bc4a9a3?w=500&q=80",
+p10:"https://images.unsplash.com/photo-1555992457-b8fefdd09069?w=500&q=80",
+p11:"https://images.unsplash.com/photo-1571115764595-644a1f56a55c?w=500&q=80",
+p12:"https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?w=500&q=80",
+p13:"https://images.unsplash.com/photo-1524398092280-0a2a0c9aaeff?w=500&q=80",
+p14:"https://images.unsplash.com/photo-1546412414-e1885259563a?w=500&q=80",
+p15a:"https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=500&q=80",
+p15b:"https://images.unsplash.com/photo-1553361371-9b22f78e8b1d?w=500&q=80",
+p16a:"https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=500&q=80",
+p16b:"https://images.unsplash.com/photo-1604580864964-0462f5d5b1a8?w=500&q=80",
+p17:"https://images.unsplash.com/photo-1546436836-07a91091f160?w=500&q=80",
+p18:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80",
+p19:"https://images.unsplash.com/photo-1483653085484-eb63c9f02c96?w=500&q=80",
+p20:"https://images.unsplash.com/photo-1534430480872-3498386e7856?w=500&q=80",
+p21:"https://images.unsplash.com/photo-1582711012124-a56cf82307a0?w=500&q=80",
+p22:"https://images.unsplash.com/photo-1565799743361-456e3a9e59e8?w=500&q=80",
+p23:"https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=500&q=80",
+p24:"https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=500&q=80",
+p25:"https://images.unsplash.com/photo-1568526381923-caf3fd520382?w=500&q=80",
+p26:"https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=500&q=80",
+p27:"https://images.unsplash.com/photo-1565799743361-456e3a9e59e8?w=500&q=80",
+p28:"https://images.unsplash.com/photo-1552566626-52f8b828add9?w=500&q=80",
+p29:"https://images.unsplash.com/photo-1576867757603-05b134ebc379?w=500&q=80",
+p30:"https://images.unsplash.com/photo-1576867757603-05b134ebc379?w=500&q=80",
+p31:"https://images.unsplash.com/photo-1576867757603-05b134ebc379?w=500&q=80",
+p32:"https://images.unsplash.com/photo-1605371924599-2d0365da1ae0?w=500&q=80",
+p33:"https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?w=500&q=80",
+p34:"https://images.unsplash.com/photo-1585699324551-f6c309eedeca?w=500&q=80",
+p35:"https://images.unsplash.com/photo-1541336032412-2048a678540d?w=500&q=80",
+p36:"https://images.unsplash.com/photo-1541336032412-2048a678540d?w=500&q=80",
+p37:"https://images.unsplash.com/photo-1517732306149-e8f829eb588a?w=500&q=80",
+p38:"https://images.unsplash.com/photo-1560969184-10fe8719e047?w=500&q=80",
+pe1:"https://images.unsplash.com/photo-1546436836-07a91091f160?w=500&q=80",
+pe2:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80",
+pe3:"https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=500&q=80",
+pe4:"https://images.unsplash.com/photo-1568926765516-08dfe2adf768?w=500&q=80",
+pe5:"https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=500&q=80",
+pe6:"https://images.unsplash.com/photo-1541336032412-2048a678540d?w=500&q=80",
+pe7:"https://images.unsplash.com/photo-1558745543-97ee8ebfd870?w=500&q=80",
+pe8:"https://images.unsplash.com/photo-1558745543-97ee8ebfd870?w=500&q=80",
+};
+
+/* ── PLACES DATA ── */
+const PLACES=[
+{id:"p01",day:1,cat:"hotel",sky:null,name:"Holiday Inn Chelsea",price:"--",addr:"125 W 26th St, NY 10001",maps:"https://maps.google.com/?q=Holiday+Inn+Chelsea+125+W+26th+St+New+York",desc:"Tu base para toda la semana. En el corazón de Chelsea, a 10 min del Empire State, Macy's y a pasos del High Line.",why:"El 80% de las actividades están a menos de 20 min a pie o en subte desde aquí."},
+{id:"p02",day:1,cat:"icono",sky:null,name:"Flatiron Building + Madison Sq Park",price:"GRATIS",addr:"175 5th Ave, New York, NY 10010",maps:"https://maps.google.com/?q=Flatiron+Building+New+York",desc:"El edificio triangular más famoso de NYC, a 2 cuadras del hotel. El parque enfrente es perfecto para absorber la ciudad.",why:"Primer contacto real con NYC. Totalmente a pie desde el hotel."},
+{id:"p03",day:1,cat:"bar",sky:null,name:"230 Fifth Rooftop Bar",price:"~$18-22 c/u",addr:"1150 Broadway, New York, NY 10001",maps:"https://maps.google.com/?q=230+Fifth+Rooftop+Bar+New+York",desc:"El rooftop más famoso y accesible de NYC, a 3 cuadras del hotel. Vista directa al Empire State iluminado de noche.",why:"El brindis perfecto para el primer atardecer en Nueva York."},
+{id:"p04",day:1,cat:"icono",sky:null,name:"Times Square de noche",price:"GRATIS",addr:"Times Square, Manhattan, NY 10036",maps:"https://maps.google.com/?q=Times+Square+New+York",desc:"El cruce más fotografiado del mundo. Las pantallas LED gigantes de noche crean una energía que no existe en ninguna otra ciudad.",why:"Primera impresión de noche. Si solo ven un lugar el día de llegada, que sea este."},
+{id:"p05",day:2,cat:"barrio",sky:null,name:"SoHo — Spring y Prince St",price:"GRATIS",addr:"SoHo, New York, NY 10012",maps:"https://maps.google.com/?q=SoHo+Spring+Street+New+York",desc:"El barrio más instagrameable de Manhattan. Arquitectura de hierro fundido del siglo XIX, boutiques y galerías de arte.",why:"El mejor barrio de compras y fotos de NYC. Más local y variado que la 5th Ave."},
+{id:"p06",day:2,cat:"barrio",sky:null,name:"Little Italy — Mulberry St",price:"GRATIS",addr:"Mulberry St, New York, NY 10013",maps:"https://maps.google.com/?q=Little+Italy+Mulberry+Street+New+York",desc:"El corazón italiano de Manhattan a 5 min de SoHo. Restaurantes en la vereda, panaderías y el cannoli obligatorio.",why:"La cultura italiana que forjó Manhattan. Perfecto entre SoHo y Chinatown."},
+{id:"p07",day:2,cat:"barrio",sky:null,name:"Chinatown — Canal St y Mott St",price:"GRATIS",addr:"Canal St, New York, NY 10013",maps:"https://maps.google.com/?q=Chinatown+Canal+Street+New+York",desc:"Dumplings, bao, dim sum a precios locales. Canal St tiene los souvenirs más baratos de toda NYC.",why:"Los mejores precios de comida y souvenirs de toda Manhattan."},
+{id:"p08",day:2,cat:"cultural",sky:null,name:"New York Public Library",price:"GRATIS",addr:"476 5th Ave, New York, NY 10018",maps:"https://maps.google.com/?q=New+York+Public+Library+476+5th+Ave",desc:"Los dos leones de mármol en la entrada son icónicos. La Rose Main Reading Room con techos de 15 metros es de las salas más hermosas del mundo.",why:"Una joya arquitectónica gratuita. Más impactante que muchos museos de pago."},
+{id:"p09",day:2,cat:"icono",sky:null,name:"Grand Central Terminal",price:"GRATIS",addr:"89 E 42nd St, New York, NY 10017",maps:"https://maps.google.com/?q=Grand+Central+Terminal+New+York",desc:"El techo celeste con constelaciones doradas, el reloj de cuatro caras y los rayos de sol que entran por las ventanas.",why:"No es solo una estación: es un salón de arte vivo. Busquen el susurro en el arco."},
+{id:"p10",day:2,cat:"historia",sky:null,name:"Edificio Chrysler",price:"GRATIS",addr:"405 Lexington Ave, New York, NY 10174",maps:"https://maps.google.com/?q=Chrysler+Building+New+York",desc:"El edificio Art Deco más bello de Nueva York. La corona con arcos de acero inspirados en los radiadores Chrysler es única en el mundo.",why:"Más elegante e histórico que el Empire State, y sin colas. Lobby gratis."},
+{id:"p11",day:2,cat:"barrio",sky:null,name:"Greenwich Village — Washington Square",price:"GRATIS",addr:"Washington Square Park, NY 10012",maps:"https://maps.google.com/?q=Washington+Square+Park+New+York",desc:"El arco triunfal, cafés históricos, jazz en la calle y las calles adoquinadas más fotografiadas de Manhattan.",why:"El barrio más auténtico y cinematográfico de NYC."},
+{id:"p12",day:3,cat:"barrio",sky:"both",name:"5th Avenue — Vidrieras navideñas",price:"GRATIS",addr:"5th Ave entre 49th y 59th St",maps:"https://maps.google.com/?q=5th+Avenue+New+York",desc:"En noviembre las vidrieras de Bergdorf, Saks y Tiffany ya están decoradas. Apple, Louis Vuitton, Cartier en pocas cuadras.",why:"Las vidrieras navideñas de la 5th Ave en noviembre no tienen equivalente en el mundo."},
+{id:"p13",day:3,cat:"cultural",sky:"both",name:"Catedral de San Patricio",price:"GRATIS",addr:"5th Ave, New York, NY 10022",maps:"https://maps.google.com/?q=St+Patrick%27s+Cathedral+New+York",desc:"La catedral gótica más grande de EEUU. La fachada de mármol blanco contrasta dramáticamente con los rascacielos que la rodean.",why:"La imagen más surrealista de NYC: catedral medieval rodeada de torres de cristal."},
+{id:"p14",day:3,cat:"icono",sky:"both",name:"Rockefeller Center — Plaza",price:"GRATIS",addr:"30 Rockefeller Plaza, New York, NY 10112",maps:"https://maps.google.com/?q=Rockefeller+Center+New+York",desc:"En noviembre el árbol de Navidad más famoso del mundo puede estar en proceso de montaje. El Atlas de bronce es icónico.",why:"El árbol del Rockefeller es la imagen más navideña de toda la ciudad."},
+{id:"p15a",day:3,cat:"compras",sky:"con",name:"The Shops at Skyview — Flushing",price:"GRATIS entrar",addr:"40-24 College Point Blvd, Flushing, NY",maps:"https://maps.google.com/?q=The+Shops+at+Skyview+Flushing+Queens",desc:"Centro comercial en Flushing, Queens, con Nike, Marshall's y marcas a precios de outlet. 35 min en el tren 7 desde Grand Central.",why:"Precios más bajos que Manhattan para muchas marcas. El bonus es el Chinatown más auténtico de NYC al lado."},
+{id:"p15b",day:3,cat:"barrio",sky:"con",name:"Chinatown de Flushing — Queens",price:"GRATIS",addr:"Main St, Flushing, NY 11354",maps:"https://maps.google.com/?q=Flushing+Chinatown+Queens+New+York",desc:"El Chinatown más grande y auténtico de NYC. Los mejores dumplings, hot pot y bubble tea de la ciudad a precios locales.",why:"Los dumplings de Flushing son leyenda entre los neoyorquinos."},
+{id:"p16a",day:3,cat:"historia",sky:"sin",name:"Sede de las Naciones Unidas",price:"GRATIS exterior",addr:"405 E 45th St, New York, NY 10017",maps:"https://maps.google.com/?q=United+Nations+Headquarters+New+York",desc:"Las banderas de los 193 países sobre el East River. El edificio modernista de 1952 diseñado por Oscar Niemeyer.",why:"Una imagen que no existe en ningún otro lugar del mundo."},
+{id:"p16b",day:3,cat:"historia",sky:"sin",name:"9/11 Memorial — Piletas de noche",price:"GRATIS exterior",addr:"180 Greenwich St, New York, NY 10007",maps:"https://maps.google.com/?q=9/11+Memorial+New+York",desc:"Las dos piletas reflejantes en los huecos de las Torres Gemelas. De noche, iluminadas desde abajo, son absolutamente impactantes.",why:"De noche tiene una solemnidad que de día no tiene. El lugar más emotivo de la ciudad."},
+{id:"p17",day:4,cat:"mirador",sky:null,name:"Empire State Building",price:"~$48 c/u",addr:"20 W 34th St, New York, NY 10001",maps:"https://maps.google.com/?q=Empire+State+Building+New+York",desc:"El edificio más icónico de Nueva York. El mirador del piso 86 ofrece vistas 360° sobre Manhattan, Brooklyn y Queens.",why:"No se puede ir a NYC sin subir al Empire State."},
+{id:"p18",day:4,cat:"museo",sky:null,name:"MoMA — Museum of Modern Art",price:"~$30 c/u",addr:"11 W 53rd St, New York, NY 10019",maps:"https://maps.google.com/?q=MoMA+New+York",desc:"El Starry Night de Van Gogh, Picasso, Warhol, Dalí. Uno de los museos de arte moderno más importantes del mundo.",why:"Ver el Starry Night en persona es una de esas experiencias que quedan para siempre."},
+{id:"p19",day:4,cat:"mirador",sky:null,name:"SUMMIT One Vanderbilt",price:"~$54 c/u",addr:"45 E 42nd St, New York, NY 10017",maps:"https://maps.google.com/?q=SUMMIT+One+Vanderbilt+New+York",desc:"Desde el piso 93, los espejos infinitos, las esferas de cristal y la plataforma exterior crean una experiencia de arte y vistas única.",why:"El más instagrameable de todos los miradores. Combina arte, arquitectura y vistas."},
+{id:"p20",day:5,cat:"parque",sky:null,name:"Central Park — Paseo en bici",price:"GRATIS + ~$20 bici",addr:"Central Park, New York, NY",maps:"https://maps.google.com/?q=Central+Park+New+York",desc:"843 acres en el corazón de Manhattan. En bici recorren los 10 km del circuito en 1.5 horas.",why:"El paseo en bici es la mejor manera de ver el parque completo."},
+{id:"p21",day:5,cat:"parque",sky:null,name:"Jardín Shakespeare + Puente Bow",price:"GRATIS",addr:"Central Park West, New York, NY 10024",maps:"https://maps.google.com/?q=Shakespeare+Garden+Central+Park",desc:"El Jardín de Shakespeare escondido en el lado oeste del parque. El Bow Bridge es el puente más fotografiado del parque.",why:"El lugar más romántico y secreto del parque. La mayoría de los turistas no lo encuentra."},
+{id:"p22",day:5,cat:"museo",sky:null,name:"The Metropolitan Museum of Art",price:"~$30 c/u",addr:"1000 5th Ave, New York, NY 10028",maps:"https://maps.google.com/?q=Metropolitan+Museum+of+Art+New+York",desc:"El museo más grande de EEUU. 5000 años de historia del arte: arte egipcio, impresionistas, armaduras medievales.",why:"Un día no alcanza para ver todo. Elegir 3 o 4 salas y profundizar."},
+{id:"p23",day:5,cat:"barrio",sky:null,name:"Harlem — 125th Street",price:"GRATIS",addr:"125th St, New York, NY 10027",maps:"https://maps.google.com/?q=Harlem+125th+Street+New+York",desc:"El Apollo Theater, murales históricos y la mejor soul food de la ciudad. Un barrio vivo y auténtico.",why:"Ver la NYC de los neoyorquinos reales, no la de los turistas."},
+{id:"p24",day:6,cat:"parque",sky:null,name:"The High Line",price:"GRATIS",addr:"Gansevoort St, New York, NY 10014",maps:"https://maps.google.com/?q=The+High+Line+New+York",desc:"Parque elevado de 2.5 km sobre una antigua vía de tren. Arte público, jardines y vistas únicas. A 10 min a pie del hotel.",why:"Una de las mejores ideas urbanas del siglo XXI. Único en el mundo."},
+{id:"p25",day:6,cat:"gastronomia",sky:null,name:"Chelsea Market",price:"GRATIS entrar",addr:"75 9th Ave, New York, NY 10011",maps:"https://maps.google.com/?q=Chelsea+Market+New+York",desc:"Mercado gourmet en la fábrica original de las galletas Oreo. Los mejores tacos de NYC (Los Tacos No.1).",why:"Los Tacos No.1 están rankeados como los mejores de toda la ciudad."},
+{id:"p26",day:6,cat:"historia",sky:null,name:"Sede ONU — Exterior y banderas",price:"GRATIS",addr:"405 E 45th St, New York, NY 10017",maps:"https://maps.google.com/?q=United+Nations+Headquarters+New+York",desc:"Las banderas de los 193 países sobre el East River. El edificio de Oscar Niemeyer es un ícono de la arquitectura internacional.",why:"Una imagen que no está en ningún otro lugar del mundo."},
+{id:"p27",day:6,cat:"museo",sky:null,name:"Amer. Museum Natural History",price:"~$35 c/u",addr:"200 Central Park W, New York, NY 10024",maps:"https://maps.google.com/?q=American+Museum+Natural+History+New+York",desc:"El dinosaurio de 37 metros, la ballena azul de 29 metros colgando del techo y el Rose Center son impresionantes.",why:"La ballena azul colgando del techo es una de las imágenes más icónicas de todos los museos del mundo."},
+{id:"p28",day:6,cat:"restaurante",sky:null,name:"Ellen's Stardust Diner",price:"~$30-40 c/u",addr:"1650 Broadway, New York, NY 10019",maps:"https://maps.google.com/?q=Ellen%27s+Stardust+Diner+New+York",desc:"Los mozos son actores de Broadway que cantan en vivo mientras cenas. Desde Hamilton hasta Lady Gaga. RESERVAR para 3 personas.",why:"Una experiencia que solo existe en NYC."},
+{id:"p29",day:6,cat:"especial",sky:null,name:"Inflado de Globos — Central Park West",price:"GRATIS",addr:"Central Park West y 79th St",maps:"https://maps.google.com/?q=Balloon+Inflation+Central+Park+West+79th",desc:"La noche anterior al desfile, los globos gigantes del Macy's Parade toman forma en las calles del Upper West Side.",why:"Muchos dicen que es más emocionante que el desfile mismo."},
+{id:"p30",day:7,cat:"especial",sky:null,name:"Macy's Thanksgiving Parade 100°",price:"GRATIS",addr:"Central Park West y 77th St",maps:"https://maps.google.com/?q=Macys+Thanksgiving+Parade+Central+Park+West",desc:"El desfile más famoso de EEUU en su edición número 100. Globos gigantes, carrozas, bandas y artistas en vivo. 3 horas.",why:"El 100 aniversario es un evento histórico. Van a poder decir que estuvieron."},
+{id:"p31",day:7,cat:"compras",sky:null,name:"Bryant Park Winter Village",price:"GRATIS entrar",addr:"42nd St y 6th Ave, New York, NY 10018",maps:"https://maps.google.com/?q=Bryant+Park+Winter+Village+New+York",desc:"El mercado de invierno más bonito de NYC con 200 vendedores en cabañas decoradas. Productos artesanales únicos.",why:"La alternativa más auténtica a los souvenirs de Times Square."},
+{id:"p32",day:8,cat:"compras",sky:null,name:"Macy's Herald Square — Black Friday",price:"GRATIS entrar",addr:"151 W 34th St, New York, NY 10001",maps:"https://maps.google.com/?q=Macys+Herald+Square+New+York",desc:"El Macy's más grande del mundo: 11 pisos y 200.000 m². En Black Friday hay descuentos reales. Las escaleras de madera de 1902 son un atractivo.",why:"Una sola vez en la vida hay que entrar al Macy's original."},
+{id:"p33",day:8,cat:"compras",sky:null,name:"5th Avenue — Black Friday",price:"GRATIS",addr:"5th Ave, New York, NY 10019",maps:"https://maps.google.com/?q=Fifth+Avenue+New+York+Shopping",desc:"El mejor día del año para ver la 5th Ave. Descuentos en Apple, colas en Nike, vidrieras navideñas en su máximo esplendor.",why:"La energía del Black Friday más las decoraciones navideñas ocurren solo una vez al año."},
+{id:"p34",day:8,cat:"espectaculo",sky:null,name:"Broadway — Show en vivo",price:"~$70-120 c/u",addr:"Times Square Theater District",maps:"https://maps.google.com/?q=TKTS+Times+Square+New+York",desc:"TKTS en Times Square: hasta 50% de descuento el mismo día. Hamilton, Wicked, El Rey León, Aladdin, Chicago.",why:"Ir a Broadway en NYC es diferente a cualquier otro teatro del mundo."},
+{id:"p35",day:9,cat:"barrio",sky:null,name:"Brooklyn Heights Promenade",price:"GRATIS",addr:"Brooklyn Heights Promenade, Brooklyn",maps:"https://maps.google.com/?q=Brooklyn+Heights+Promenade+Brooklyn",desc:"El paseo sobre el East River con la vista panorámica más completa del skyline de Manhattan.",why:"La mejor vista del skyline completo de Manhattan sin pagar nada."},
+{id:"p36",day:9,cat:"barrio",sky:null,name:"DUMBO + Brooklyn Bridge Park",price:"GRATIS",addr:"65 Plymouth St, Brooklyn, NY 11201",maps:"https://maps.google.com/?q=DUMBO+Brooklyn+Bridge+Park",desc:"La intersección de Washington St con el Manhattan Bridge de fondo es la foto más buscada de todo Brooklyn.",why:"Washington St es una de las fotos más replicadas de NYC. Hay que sacarla sí o sí."},
+{id:"p37",day:9,cat:"barrio",sky:null,name:"Williamsburg — Street Art y Cafés",price:"GRATIS",addr:"Bedford Ave, Williamsburg, Brooklyn",maps:"https://maps.google.com/?q=Williamsburg+Bedford+Avenue+Brooklyn",desc:"El barrio más trendy de Brooklyn. Cafés de especialidad, restaurantes y tiendas de diseño independiente.",why:"Ver Brooklyn más allá de DUMBO. Es donde viven los artistas y creativos de NYC."},
+{id:"p38",day:9,cat:"parque",sky:null,name:"Prospect Park",price:"GRATIS",addr:"Brooklyn, NY 11225",maps:"https://maps.google.com/?q=Prospect+Park+Brooklyn",desc:"El gran parque de Brooklyn, diseñado por los mismos paisajistas que Central Park. Lago, senderos y pista de patinaje.",why:"Ver Brooklyn desde adentro. Muestra una ciudad diferente a Manhattan."},
+];
+
+/* ── OTRAS OPCIONES ── */
+const OTRAS=[
+{id:"pe1",cat:"mirador",name:"Top of the Rock",price:"~$46 c/u",addr:"30 Rockefeller Plaza",maps:"https://maps.google.com/?q=Top+of+the+Rock+Rockefeller+Center+New+York",desc:"El único mirador desde donde se ve el Empire State en primer plano. Tres niveles de terrazas. Ir al atardecer para verlo encenderse de noche.",why:"La única vista del Empire State desde afuera, de noche. Mágica.",cat_color:"#5b8fff",when:"Si no les alcanzó el tiempo en Mar 25"},
+{id:"pe2",cat:"museo",name:"Guggenheim Museum",price:"~$30 c/u",addr:"1071 5th Ave, New York, NY 10128",maps:"https://maps.google.com/?q=Guggenheim+Museum+New+York",desc:"El edificio espiral de Frank Lloyd Wright es tan impresionante como el arte que contiene. La rampa helicoidal que rodea el atrio central es audaz y única.",why:"Combina arquitectura icónica con arte de primer nivel. A pasos del Met.",cat_color:"#a070ff",when:"Si quieren más arte además del Met"},
+{id:"pe3",cat:"cultural",name:"The Strand Bookstore",price:"GRATIS entrar",addr:"828 Broadway, New York, NY 10003",maps:"https://maps.google.com/?q=The+Strand+Bookstore+828+Broadway",desc:"La librería independiente más famosa de NYC con 18 millas de libros. Usados, raros, de arte y diseño a precios muy accesibles.",why:"El mejor souvenir literario que pueden llevarse de NYC.",cat_color:"#00e5a0",when:"Dom 23 o Sab 29, cerca de SoHo"},
+{id:"pe4",cat:"gastronomia",name:"Katz's Delicatessen",price:"~$25 c/u",addr:"205 E Houston St, New York, NY 10002",maps:"https://maps.google.com/?q=Katz%27s+Delicatessen+New+York",desc:"El deli más famoso de NYC, abierto desde 1888. El pastrami cortado a mano es la razón de su existencia. El mismo lugar de 'Cuando Harry conoció a Sally'.",why:"Comer aquí es una experiencia histórica.",cat_color:"#ffb020",when:"Cualquier día por Lower East Side"},
+{id:"pe5",cat:"barrio",name:"Nolita — Norte de Little Italy",price:"GRATIS",addr:"Nolita, New York, NY 10012",maps:"https://maps.google.com/?q=Nolita+neighborhood+New+York",desc:"El barrio más chic e intimista de Lower Manhattan. Boutiques de diseño local, cafés de especialidad y calles adoquinadas más tranquilas que SoHo.",why:"Si SoHo se siente muy masivo, Nolita tiene el mismo espíritu pero más tranquilo.",cat_color:"#ff6eb0",when:"Dom 23, combinable con SoHo"},
+{id:"pe6",cat:"icono",name:"Brooklyn Bridge — Caminata",price:"GRATIS",addr:"Brooklyn Bridge, New York, NY 10038",maps:"https://maps.google.com/?q=Brooklyn+Bridge+New+York",desc:"Caminar el puente desde Manhattan hacia Brooklyn. 30 min con vistas del Lower Manhattan y el East River.",why:"La foto del skyline desde el camino es la más clásica de toda NYC.",cat_color:"#ff3b5c",when:"Sab 22 llegada o Dom 29 Brooklyn"},
+{id:"pe7",cat:"gastronomia",name:"Levain Bakery",price:"~$5 c/u",addr:"167 W 74th St, New York, NY 10023",maps:"https://maps.google.com/?q=Levain+Bakery+New+York",desc:"La bakery más famosa de NYC. La cookie de chocolate con nueces pesa 170 gramos y siempre sale tibia.",why:"La cookie más famosa de Nueva York.",cat_color:"#ffb020",when:"Mie 26 camino al parque o Met"},
+{id:"pe8",cat:"gastronomia",name:"Magnolia Bakery",price:"~$8 c/u",addr:"401 Bleecker St, New York, NY 10014",maps:"https://maps.google.com/?q=Magnolia+Bakery+401+Bleecker+St",desc:"La bakery que popularizó Sex and the City. El banana pudding con galletas Nilla, crema de vainilla y bananas es la estrella.",why:"Una vez que lo prueban van a entender por qué es tan famoso.",cat_color:"#ff6eb0",when:"Dom 23 en el Village"},
+{id:"pe9",cat:"espectaculo",name:"Jazz en vivo — Village Vanguard",price:"~$30-40 c/u",addr:"178 7th Ave S, New York, NY 10014",maps:"https://maps.google.com/?q=Village+Vanguard+New+York",desc:"El club de jazz más legendario de Nueva York, abierto desde 1935. Miles Davis, Coltrane y Monk tocaron aquí. Shows a las 8 y 10 PM todos los días.",why:"Jazz en vivo en el local más icónico de la historia. Una experiencia única.",cat_color:"#a070ff",when:"Cualquier noche, especialmente Dom o Lun"},
+{id:"pe10",cat:"bar",name:"Bemelmans Bar — Hotel Carlyle",price:"~$25-35/trago",addr:"35 E 76th St, New York, NY 10021",maps:"https://maps.google.com/?q=Bemelmans+Bar+Hotel+Carlyle+New+York",desc:"El bar más elegante y histórico de Manhattan, en el Hotel Carlyle. Murales originales de Ludwig Bemelmans. Música en vivo casi todos los días.",why:"Un trago en el bar más refinado de NYC es una experiencia que no se olvida.",cat_color:"#a070ff",when:"Mie 26 después del Met o Harlem"},
+{id:"pe11",cat:"gastronomia",name:"Russ & Daughters — Bagel con lox",price:"~$20 c/u",addr:"179 E Houston St, New York, NY 10002",maps:"https://maps.google.com/?q=Russ+%26+Daughters+Lower+East+Side",desc:"Desde 1914 en el Lower East Side. Bagel + salmón ahumado cortado a mano + cream cheese. El desayuno más icónico de NYC.",why:"No hay desayuno más neoyorquino que un bagel con lox de Russ & Daughters.",cat_color:"#ffb020",when:"Dom 23 mañana, camino a SoHo"},
+{id:"pe12",cat:"compras",name:"Bloomingdale's + bolsa marrón",price:"GRATIS entrar",addr:"1000 3rd Ave, New York, NY 10022",maps:"https://maps.google.com/?q=Bloomingdale%27s+New+York+City",desc:"El segundo souvenir más emblemático de NYC después de la bolsa de Macy's. La bolsa marrón de Bloomingdale's es reconocida en todo el mundo.",why:"La bolsa marrón es tan icónica que merece el viaje.",cat_color:"#00e5a0",when:"Sab 29 Black Friday"},
+];
+
+/* ── ITINERARY DATA ── */
+const ITIN_CON=[
+{day:1,label:"Sab 22 — Llegada de madrugada",color:DC[1],zone:"JFK → Hotel Chelsea → Midtown suave",budget:"~$0 entradas",geo:"Llegada de madrugada. Día suave: barrio del hotel, rooftop y Times Square si tienen energía.",stops:[
+{t:"06:00",p:"Aterrizaje JFK",n:"Migración puede tardar 45-90 min. AirTrain + Subway al hotel: ~$15 c/u.",pr:"~$15 c/u",pc:"paid"},
+{t:"09:30",p:"Check-in Holiday Inn Chelsea",n:"125 W 26th St. Si la habitación no está lista, dejen valijas y salgan.",pr:"--",pc:"na"},
+{t:"11:00",p:"Flatiron + Madison Square Park",n:"A 2 cuadras del hotel. Primer contacto real con NYC.",pr:"GRATIS",pc:"free"},
+{t:"17:00",p:"230 Fifth Rooftop Bar",n:"A 3 cuadras del hotel. Primer atardecer en NYC con vista al Empire State.",pr:"~$18-22",pc:"paid"},
+{t:"20:00",p:"Times Square de noche",n:"Si tienen energía. 15 min en subte. Primera impresión de noche.",pr:"GRATIS",pc:"free"},
+]},
+{day:2,label:"Dom 23 — SoHo · Little Italy · Chinatown · Village",color:DC[2],zone:"Chelsea → SoHo → Little Italy → Chinatown → W Village",budget:"~$0 entradas",geo:"Todo el sur de Manhattan. SoHo, Chinatown y Village están a 5 min caminando entre sí.",stops:[
+{t:"10:00",p:"SoHo — Spring y Prince St",n:"Linea C/E desde 23rd St hasta Spring St. Vidrieras, arquitectura icónica.",pr:"GRATIS",pc:"free"},
+{t:"11:30",p:"Little Italy — Mulberry St",n:"5 min caminando. Café italiano, cannoli obligatorio.",pr:"GRATIS",pc:"free"},
+{t:"12:30",p:"Chinatown — almuerzo",n:"Dumplings, pork buns, dim sum. Almuerzo por $5-10.",pr:"GRATIS",pc:"free"},
+{t:"14:30",p:"New York Public Library",n:"Subte a Midtown. La Rose Main Reading Room es impresionante.",pr:"GRATIS",pc:"free"},
+{t:"15:30",p:"Grand Central Terminal",n:"3 cuadras al este. Techo celeste y el susurro en el arco.",pr:"GRATIS",pc:"free"},
+{t:"16:30",p:"Edificio Chrysler (exterior)",n:"2 cuadras por Lex Ave. Techo art déco inigualable.",pr:"GRATIS",pc:"free"},
+{t:"17:30",p:"Greenwich Village — Washington Square",n:"Subte al oeste. El barrio más cinematográfico de NYC.",pr:"GRATIS",pc:"free"},
+{t:"20:00",p:"Cena en Hell's Kitchen",n:"9th Ave entre 44th y 54th. Mejor relación precio-calidad de Midtown.",pr:"--",pc:"na"},
+]},
+{day:3,label:"Lun 24 — Midtown Este + Skyview Flushing",color:DC[3],zone:"Chelsea → Midtown Este → Flushing, Queens (tren 7) → Chelsea",budget:"~$0 entradas (+ compras)",geo:"De mañana Midtown Este a pie. De tarde: tren 7 directo a Flushing desde Grand Central, ~35 min.",stops:[
+{t:"09:00",p:"5th Avenue — paseo matutino",n:"Menos gente de mañana. Vidrieras navideñas ya encendidas.",pr:"GRATIS",pc:"free"},
+{t:"10:00",p:"Catedral de San Patricio (exterior)",n:"5th Ave y 50th St. La fachada gótica frente a los rascacielos.",pr:"GRATIS",pc:"free"},
+{t:"10:30",p:"Rockefeller Center — plaza",n:"El árbol puede estar en montaje. El Atlas de bronce es fotogénico.",pr:"GRATIS",pc:"free"},
+{t:"11:30",p:"New York Public Library",n:"Si no fue el día anterior. La Rose Room es impresionante.",pr:"GRATIS",pc:"free"},
+{t:"12:30",p:"Grand Central Terminal",n:"El techo celeste y el susurro en el arco.",pr:"GRATIS",pc:"free"},
+{t:"13:30",p:"Edificio Chrysler (exterior)",n:"2 cuadras de Grand Central por Lex Ave.",pr:"GRATIS",pc:"free"},
+{t:"14:30",p:"Tren 7 a Flushing — Queens",n:"Desde Grand Central. ~35 min directo a Flushing-Main St.",pr:"~$3 c/u",pc:"paid"},
+{t:"15:00",p:"Chinatown de Flushing",n:"El más auténtico de NYC. Dumplings, bubble tea a precios locales.",pr:"GRATIS",pc:"free"},
+{t:"16:00",p:"The Shops at Skyview",n:"Nike, Marshall's, marcas variadas. Abierto hasta las 10 PM.",pr:"GRATIS entrar",pc:"free"},
+{t:"20:00",p:"Regreso al hotel",n:"Tren 7 a Times Square, luego C/E hasta 23rd St. ~50 min.",pr:"~$3 c/u",pc:"paid"},
+]},
+{day:4,label:"Mar 25 — Empire · MoMA · SUMMIT · Rooftop",color:DC[4],zone:"Midtown Manhattan (casi todo a pie desde el hotel)",budget:"~$132 c/u",geo:"Todo concentrado en la 34th-57th St. Muchas cosas se hacen caminando desde el hotel.",stops:[
+{t:"08:30",p:"Empire State Building",n:"10 min a pie del hotel. Llegar temprano para evitar filas.",pr:"~$48 c/u",pc:"paid"},
+{t:"10:30",p:"MoMA — Museum of Modern Art",n:"10 min caminando al norte. Ir directo a Van Gogh al entrar.",pr:"~$30 c/u",pc:"paid"},
+{t:"13:00",p:"5th Avenue — tarde de vidrieras",n:"Decoraciones navideñas en su máximo esplendor.",pr:"GRATIS",pc:"free"},
+{t:"14:30",p:"Rockefeller Center — segunda pasada",n:"El árbol puede estar ya encendido.",pr:"GRATIS",pc:"free"},
+{t:"16:30",p:"SUMMIT One Vanderbilt",n:"Al atardecer. El más instagrameable de todos los miradores.",pr:"~$54 c/u",pc:"paid"},
+{t:"19:30",p:"230 Fifth Rooftop (segunda vuelta)",n:"Celebrar el día con el Empire State iluminado de fondo.",pr:"~$20-30",pc:"paid"},
+]},
+{day:5,label:"Mie 26 — Central Park · Met · Harlem",color:DC[5],zone:"Chelsea → Upper West Side → Central Park → Upper East Side → Harlem",budget:"~$50 c/u",geo:"Bici de mañana, museos de tarde, Harlem al caer el sol. Eje norte de Manhattan.",stops:[
+{t:"09:00",p:"Subte al parque",n:"Línea C desde 23rd St hasta 72nd St (15 min).",pr:"~$3 c/u",pc:"paid"},
+{t:"09:15",p:"Alquiler de bicicletas",n:"Citi Bike o alquiler en Columbus Circle. Tres bicis.",pr:"~$20 c/u",pc:"paid"},
+{t:"09:30",p:"Paseo en bici — Central Park",n:"Strawberry Fields, Bethesda Fountain, el Reservoir.",pr:"GRATIS",pc:"free"},
+{t:"11:00",p:"Jardín Shakespeare + Puente Bow",n:"El lugar más romántico y secreto del parque.",pr:"GRATIS",pc:"free"},
+{t:"12:30",p:"Devolver bici + almorzar",n:"Carritos en el parque o Columbus Ave.",pr:"--",pc:"na"},
+{t:"13:30",p:"The Metropolitan Museum of Art",n:"5th Ave y 82nd St. Al menos 2-3 horas.",pr:"~$30 c/u",pc:"paid"},
+{t:"17:00",p:"Harlem — 125th Street",n:"15 min en subte. Apollo Theater, street art, soul food.",pr:"GRATIS",pc:"free"},
+{t:"19:30",p:"Cena en Harlem",n:"Sylvia's o Red Rooster. Soul food auténtica.",pr:"--",pc:"na"},
+]},
+{day:6,label:"Jue 27 — High Line · Chelsea · ONU · Globos",color:DC[6],zone:"Chelsea (a pie) → Hudson Yards → Midtown Este → Upper West Side",budget:"~$105-125 c/u",geo:"High Line y Chelsea Market están a pie desde el hotel. El día más eficiente del viaje.",stops:[
+{t:"09:30",p:"High Line — entrada sur",n:"Gansevoort St, 10 min a pie del hotel.",pr:"GRATIS",pc:"free"},
+{t:"11:30",p:"Chelsea Market — almuerzo",n:"Al bajar del High Line. Los Tacos No.1 adentro.",pr:"~$15-20",pc:"paid"},
+{t:"13:00",p:"Vessel desde afuera — Hudson Yards",n:"20 min caminando por el High Line hacia el norte.",pr:"GRATIS",pc:"free"},
+{t:"14:30",p:"Sede de las Naciones Unidas",n:"Subte al este. Banderas sobre el East River.",pr:"GRATIS",pc:"free"},
+{t:"16:00",p:"American Museum Natural History",n:"Línea C al norte. Dinosaurios, ballena azul, Rose Center.",pr:"~$35 c/u",pc:"paid"},
+{t:"18:30",p:"Ellen's Stardust Diner — cena",n:"Times Square. RESERVAR ONLINE YA para 3 personas.",pr:"~$30-40 c/u",pc:"paid"},
+{t:"22:00",p:"INFLADO DE GLOBOS",n:"Central Park West y 79th St. Línea C hasta 72nd St.",pr:"GRATIS",pc:"free"},
+]},
+{day:7,label:"Vie 28 — Thanksgiving Parade 100° Aniversario",color:DC[7],zone:"Upper West Side → Midtown → Bryant Park → Chelsea",budget:"~$0 entradas",geo:"Del desfile al hotel: línea C desde 72nd St hasta 23rd St. 15 min directo.",stops:[
+{t:"05:30",p:"Salir al desfile — subte",n:"Línea C desde 23rd St hasta 72nd St. LLEGAR ANTES DE LAS 7 AM.",pr:"~$3 c/u",pc:"paid"},
+{t:"07:00",p:"Posición en Central Park West",n:"Entre 60th y 70th St. Abrigo, guantes, bufanda y snacks. Imprescindible.",pr:"GRATIS",pc:"free"},
+{t:"09:00",p:"Macy's Thanksgiving Day Parade",n:"3 horas. 100° ANIVERSARIO. Globos, bandas, artistas en vivo.",pr:"GRATIS",pc:"free"},
+{t:"12:00",p:"Almuerzo post-desfile",n:"Alejarse de la zona del desfile. Volver a Chelsea a comer tranquilos.",pr:"--",pc:"na"},
+{t:"15:00",p:"Bryant Park Winter Village",n:"200 vendedores artesanales. Souvenirs únicos y comida caliente.",pr:"GRATIS",pc:"free"},
+{t:"17:00",p:"5th Avenue — vidrieras de noche",n:"Las de Bergdorf y Saks son obras de arte en noviembre.",pr:"GRATIS",pc:"free"},
+{t:"19:00",p:"Cena de Thanksgiving",n:"Menú especial: pavo, puré, cranberry sauce y pumpkin pie.",pr:"~$35-50 c/u",pc:"paid"},
+]},
+{day:8,label:"Sab 29 — Black Friday · Broadway",color:DC[8],zone:"Chelsea → Midtown → SoHo → Theater District",budget:"~$70-120 c/u Broadway",geo:"Macy's a 10 min a pie. SoHo a 20 min en subte. Broadway a 15 min en subte.",stops:[
+{t:"09:00",p:"Macy's Herald Square — apertura BF",n:"10 min del hotel. El Macy's más grande del mundo.",pr:"GRATIS entrar",pc:"free"},
+{t:"10:30",p:"5th Avenue — Black Friday",n:"El día más increíble para ver la 5th Ave.",pr:"GRATIS",pc:"free"},
+{t:"12:30",p:"Bryant Park Winter Village",n:"Si quieren volver. Souvenirs únicos.",pr:"GRATIS",pc:"free"},
+{t:"14:00",p:"SoHo — compras finales",n:"Línea C/E hasta Spring St. Zara, Uniqlo, boutiques.",pr:"--",pc:"na"},
+{t:"17:00",p:"Regreso al hotel — descanso",n:"Dejar bolsas y prepararse para Broadway.",pr:"--",pc:"na"},
+{t:"19:30",p:"Broadway — show en vivo",n:"TKTS Times Square: hasta 50% OFF el mismo día.",pr:"~$70-120 c/u",pc:"paid"},
+]},
+{day:9,label:"Dom 29 — Brooklyn · Vuelo nocturno",color:DC[9],zone:"Chelsea → Brooklyn Heights → DUMBO → Williamsburg → JFK",budget:"~$0 entradas",geo:"Check-out al mediodía. Dejar valijas en consigna. Del hotel a JFK: Subte A desde 23rd St ~50 min.",stops:[
+{t:"09:30",p:"Brooklyn Heights Promenade",n:"Línea A o C hasta High St. Mejor vista panorámica de Manhattan.",pr:"GRATIS",pc:"free"},
+{t:"10:30",p:"DUMBO + Brooklyn Bridge Park",n:"La foto de Washington St es la más buscada de todo Brooklyn.",pr:"GRATIS",pc:"free"},
+{t:"12:30",p:"Williamsburg — almuerzo y street art",n:"Línea L. Bedford Ave: el barrio más trendy de Brooklyn.",pr:"--",pc:"na"},
+{t:"14:30",p:"Check-out del hotel — dejar valijas",n:"Pedir consigna. El hotel las guarda hasta la noche.",pr:"--",pc:"na"},
+{t:"15:30",p:"Última vuelta por Chelsea",n:"El barrio del hotel. Fotos finales y última compra.",pr:"GRATIS",pc:"free"},
+{t:"17:30",p:"Cena de despedida en Hell's Kitchen",n:"La última cena en NYC.",pr:"--",pc:"na"},
+{t:"19:30",p:"Traslado al aeropuerto JFK",n:"Subte A desde 23rd St. ~50 min. Salir con 3 horas de anticipación.",pr:"~$15 c/u",pc:"paid"},
+{t:"22:00",p:"Vuelo JFK → EZE (American Airlines)",n:"10h 45min. Llegan a Buenos Aires el lunes 30 a las 10:45.",pr:"--",pc:"na"},
+]},
+];
+
+/* ITIN SIN SKYVIEW — solo cambia el día 3 */
+const ITIN_SIN=ITIN_CON.map((d,i)=>i===2?{
+day:3,label:"Lun 24 — Midtown Este Completo + 9/11 de noche",color:DC[3],zone:"Chelsea → Midtown Este → Lower Manhattan → Chelsea",budget:"~$0 entradas",geo:"Todo en Manhattan. De mañana la 5th Ave, de tarde Midtown Este completo, de noche Lower Manhattan.",stops:[
+{t:"09:00",p:"5th Avenue — paseo matutino",n:"Vidrieras navideñas ya encendidas. Menos gente de mañana.",pr:"GRATIS",pc:"free"},
+{t:"10:00",p:"Catedral de San Patricio (exterior)",n:"5th Ave y 50th St. La fachada gótica frente a los rascacielos.",pr:"GRATIS",pc:"free"},
+{t:"10:30",p:"Rockefeller Center — plaza",n:"El árbol puede estar en montaje. El Atlas de bronce.",pr:"GRATIS",pc:"free"},
+{t:"11:30",p:"New York Public Library",n:"La Rose Main Reading Room es espectacular.",pr:"GRATIS",pc:"free"},
+{t:"12:30",p:"Grand Central Terminal",n:"El techo celeste y el susurro en el arco.",pr:"GRATIS",pc:"free"},
+{t:"13:30",p:"Almuerzo Grand Central Oyster Bar",n:"Clam chowder en el subsuelo de Grand Central. Muy NYC.",pr:"~$20-25 c/u",pc:"paid"},
+{t:"14:30",p:"Edificio Chrysler (exterior)",n:"2 cuadras por Lex Ave. Uno de los más bellos de NYC.",pr:"GRATIS",pc:"free"},
+{t:"15:30",p:"Sede de las Naciones Unidas",n:"15 min caminando al este. Banderas sobre el East River.",pr:"GRATIS",pc:"free"},
+{t:"17:00",p:"9/11 Memorial — piletas de noche",n:"Subte a Lower Manhattan. Las piletas iluminadas son impactantes.",pr:"GRATIS",pc:"free"},
+{t:"18:30",p:"El Oculus — estación del WTC",n:"A pasos del memorial. Arquitectura increíble. Gratis.",pr:"GRATIS",pc:"free"},
+{t:"20:00",p:"Cena en Chinatown",n:"10 min caminando. Dumplings, noodles a precio local.",pr:"--",pc:"na"},
+]
+}:d);
+
+/* ── RECOMENDACIONES DATA ── */
+const RECS={
+gastronomia:[
+{name:"Dollar Slice — Joe's Pizza",desc:"El slice más famoso de NYC. Una porción al paso, parado en la vereda. $3-4. Caminando en Greenwich Village.",price:"~$3-4",tag:"🍕 Callejero",color:"#ff3b5c"},
+{name:"Pastrami on Rye — Katz's Deli",desc:"El sándwich más famoso de NYC desde 1888. Pastrami cortado a mano. Sin mayo, nunca. En Lower East Side.",price:"~$25",tag:"🥩 Histórico",color:"#ffb020"},
+{name:"Bagel con lox — Russ & Daughters",desc:"Desde 1914. Bagel + salmón ahumado + cream cheese. El desayuno más neoyorquino que existe.",price:"~$20",tag:"🥯 Clásico",color:"#ff6eb0"},
+{name:"Dumplings — Chinatown o Flushing",desc:"$4-6 por 8 piezas. Más baratos y auténticos que cualquier restaurante de Manhattan. Flushing es la meca.",price:"~$5-8",tag:"🥟 Auténtico",color:"#00e5a0"},
+{name:"Soul Food — Sylvia's Harlem",desc:"Fried chicken, mac & cheese, ribs y corn bread. La historia afroamericana en un plato. En Harlem.",price:"~$20-25",tag:"🍗 Histórico",color:"#a070ff"},
+{name:"Cookie de Levain Bakery",desc:"170 gramos de chocolate y nueces que siempre salen tibias. La cookie más famosa de NYC. Hay sucursal en Midtown.",price:"~$5",tag:"🍪 Viral",color:"#ffb020"},
+{name:"Banana Pudding — Magnolia Bakery",desc:"El postre que popularizó Sex and the City. Capas de galletas Nilla, crema de vainilla y bananas.",price:"~$8",tag:"🍌 Viral",color:"#ff6eb0"},
+{name:"Clam Chowder — Grand Central Oyster Bar",desc:"Sopa de almejas en el subsuelo de la estación más icónica de NYC. Experiencia gastronómica histórica.",price:"~$20",tag:"🦪 Único",color:"#5b8fff"},
+{name:"Hot Dog de Nathan's — Coney Island",desc:"Desde 1916. El snack más americano de la historia. Solo en Coney Island vale el viaje.",price:"~$5",tag:"🌭 Icónico",color:"#ffb020"},
+{name:"Tacos No.1 — Chelsea Market",desc:"Los mejores tacos de toda la ciudad según los rankings. Están dentro del Chelsea Market, a pasos del hotel.",price:"~$10",tag:"🌮 Mejores NYC",color:"#00e5a0"},
+],
+logistica:[
+{name:"MetroCard semanal",desc:"$34 por 7 días ilimitados de subte. Comprarla en cualquier estación al llegar. Indispensable.",price:"~$34",tag:"🚇 Transporte",color:"#5b8fff"},
+{name:"AirTrain + Subway desde JFK",desc:"La forma más barata de llegar al hotel: AirTrain hasta Jamaica, luego tren A hasta 23rd St. ~50 min, ~$15. El taxi sale $60-80.",price:"~$15",tag:"✈️ Aeropuerto",color:"#5b8fff"},
+{name:"TKTS Times Square — Broadway",desc:"La taquilla con descuentos de hasta 50% en shows del mismo día. Ir antes de las 6 PM. En la escalinata roja de Times Square.",price:"50% off",tag:"🎭 Broadway",color:"#ff3b5c"},
+{name:"Reservar con anticipación",desc:"Ellen's Stardust Diner: con 2-3 semanas. Estatua de la Libertad (corona): con 1 mes. Empire State, SUMMIT y Top of the Rock: comprar online.",price:"—",tag:"📅 Urgente",color:"#ff3b5c"},
+{name:"Llegar temprano al Parade",desc:"El 28 de noviembre salir del hotel a las 5:30 AM. Para el Thanksgiving Parade hay que estar en posición antes de las 7 AM para ver bien.",price:"—",tag:"🎉 Parade",color:"#ffb020"},
+{name:"Ropa de abrigo — noviembre en NYC",desc:"Temperaturas entre -1°C y 12°C. Para el desfile van a estar horas afuera. Campera de plumas, bufanda, guantes y gorro son indispensables.",price:"—",tag:"🧥 Clima",color:"#00e5a0"},
+],
+compras:[
+{name:"Macy's Herald Square",desc:"El Macy's más grande del mundo. La bolsa marrón es el souvenir más emblemático de NYC. Black Friday (Sab 29) con descuentos reales.",price:"—",tag:"🛍️ Icónico",color:"#ff3b5c"},
+{name:"Bryant Park Winter Village",desc:"200 vendedores artesanales alrededor de la pista de hielo. Productos únicos que no conseguís en otro lugar. Abierto desde octubre.",price:"—",tag:"❄️ Navideño",color:"#5b8fff"},
+{name:"Chinatown — Canal St",desc:"Los precios más bajos de toda NYC. Imanes, remeras, bolsas, regalos. Regatear es válido y esperado.",price:"Baratísimo",tag:"🐉 Barato",color:"#00e5a0"},
+{name:"SoHo — Spring y Prince St",desc:"Zara, Uniqlo, H&M, Sezane, & Other Stories. Lo mejor de accesible a boutique local en pocas cuadras.",price:"—",tag:"✨ Boutique",color:"#a070ff"},
+{name:"Bloomingdale's — bolsa marrón",desc:"La bolsa marrón de Bloomingdale's es el segundo souvenir más emblemático de NYC. El solo hecho de entrar vale la visita.",price:"—",tag:"🟤 Souvenir",color:"#ffb020"},
+]
+};
+
+/* ── STATE ── */
+const ST={
+dayF:'all',skyF:'ambas',
+itinV:'con',
+votes:{},ratings:{},reviews:{},
+wishlist:[],whoSel:[],
+whoRating:{},
+};
+
+/* ── HELPERS ── */
+function pClass(p){return p.startsWith('GRATIS')?'pt-free':p==='--'||p==='—'?'pt-na':'pt-paid'}
+function imgTag(id,h,cls,style){
+const u=PH[id];
+return u?`<img class="${cls}" src="${u}" alt="" loading="lazy" style="${style||''}" onerror="this.closest('.${cls.split(' ')[0]}').innerHTML='<div style=\\'height:${h||176}px;display:flex;align-items:center;justify-content:center;font-size:44px;background:var(--s3)\\'>📍</div>'">`:`<div style="height:${h||176}px;display:flex;align-items:center;justify-content:center;font-size:44px;background:var(--s3)">📍</div>`;
+}
+
+/* ── CARD HTML ── */
+function cardH(p){
+const pc=pClass(p.price);
+const skyTag=p.sky==='con'?'<div class="sky-tag sky-con">Solo CON Skyview</div>':p.sky==='sin'?'<div class="sky-tag sky-sin">Solo SIN Skyview</div>':'';
+return `<div class="card">
+<div class="card-img">
+${imgTag(p.id,176,'card-img','')}
+<div class="price-tag ${pc}">${p.price}</div>
+${skyTag}
+</div>
+<div class="card-body">
+<div class="card-name">${p.name}</div>
+<div class="card-desc">${p.desc}</div>
+<div class="why">${p.why}</div>
+<div class="card-foot">
+<a class="mlink" href="${p.maps}" target="_blank">
+<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+<span class="mlink-txt">${p.addr}</span>
+</a>
+<div class="cpill">${CE[p.cat]||''} ${CL[p.cat]||p.cat}</div>
+</div>
+</div>
+</div>`;
+}
+
+/* ── RENDER PLACES ── */
+function renderPlaces(){
+const out=document.getElementById('places-out');
+const filt=PLACES.filter(p=>{
+if(ST.dayF!=='all'&&p.day!==ST.dayF)return false;
+if(p.sky==='con'&&ST.skyF==='sin')return false;
+if(p.sky==='sin'&&ST.skyF==='con')return false;
+return true;
+});
+if(!filt.length){out.innerHTML='<div class="empty"><div class="empty-icon">🔍</div><p class="empty-txt">No hay lugares con esos filtros</p></div>';return;}
+if(ST.dayF!=='all'){
+out.innerHTML=`<div class="cards">${filt.map(cardH).join('')}</div>`;
+} else {
+const days=[...new Set(filt.map(p=>p.day))].sort((a,b)=>a-b);
+out.innerHTML=days.map(d=>{
+const pl=filt.filter(p=>p.day===d);
+const col=DC[d]||'#888';
+return `<div class="day-block">
+<div class="day-hdr">
+<div class="day-line" style="background:${col}"></div>
+<div>
+<div class="day-num">Día ${d===0?'Extra':d}</div>
+<div class="day-name">${DN[d]}</div>
+</div>
+<div class="day-badge" style="background:${col}22;color:${col}">${pl.length} lugar${pl.length>1?'es':''}</div>
+</div>
+<div class="cards">${pl.map(cardH).join('')}</div>
+</div>`;
+}).join('');
+}
+}
+function fDay(d,btn){
+ST.dayF=d;
+document.querySelectorAll('#sec-lugares .fb:not([id^=sky])').forEach(b=>b.classList.remove('on'));
+btn.classList.add('on');renderPlaces();
+}
+function fSky(s,btn){
+ST.skyF=s;
+['sky-a','sky-c','sky-s'].forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('sky-on');el.classList.remove('on');}});
+btn.classList.add('sky-on');renderPlaces();
+}
+
+/* ── ITINERARY ── */
+function setItin(v){
+ST.itinV=v;
+document.getElementById('ich-con').classList.toggle('on',v==='con');
+document.getElementById('ich-sin').classList.toggle('on',v==='sin');
+renderItin();
+}
+function toggleDay(id){
+const b=document.getElementById('body-'+id);
+const t=document.getElementById('toggle-'+id);
+if(!b)return;
+const open=b.classList.toggle('open');
+if(t)t.style.transform=open?'rotate(180deg)':'rotate(0deg)';
+}
+function priceTagI(pr,pc){
+if(pc==='na')return '';
+const cls=pc==='free'?'ip-free':pc==='paid'?'ip-paid':'ip-na';
+return `<div class="itin-price ${cls}">${pr}</div>`;
+}
+function renderItin(){
+const data=ST.itinV==='con'?ITIN_CON:ITIN_SIN;
+const out=document.getElementById('itin-out');
+out.innerHTML=data.map((d,i)=>`
+<div class="itin-day">
+<div class="itin-day-hdr" onclick="toggleDay(${i})">
+<div class="itin-day-stripe" style="background:${d.color}"></div>
+<div class="itin-day-info">
+<div class="itin-day-label">${d.label}</div>
+<div class="itin-day-meta">📍 ${d.zone}</div>
+</div>
+<div class="itin-price ${d.budget.includes('$0')?'ip-free':'ip-paid'}">${d.budget}</div>
+<div class="itin-toggle" id="toggle-${i}" style="font-size:14px;color:var(--tx3);margin-left:8px">▼</div>
+</div>
+<div class="itin-body" id="body-${i}">
+${d.stops.map(s=>`<div class="itin-stop">
+<div class="itin-time">${s.t}</div>
+<div class="itin-content">
+<div class="itin-place">${s.p}</div>
+<div class="itin-note">${s.n}</div>
+</div>
+${priceTagI(s.pr,s.pc)}
+</div>`).join('')}
+<div class="geo-tip">📍 ${d.geo}</div>
+</div>
+</div>`).join('');
+}
+
+/* ── OTRAS OPCIONES ── */
+function renderOtras(){
+const out=document.getElementById('otras-out');
+out.innerHTML=`<div class="rec-grid">${OTRAS.map(o=>`
+<div class="rec-card">
+<div class="rec-img">${PH[o.id]?`<img src="${PH[o.id]}" alt="${o.name}" loading="lazy" style="width:100%;height:100%;object-fit:cover">`:
+`<div class="rec-img-ph">${CE[o.cat]||'📍'}</div>`}</div>
+<div class="rec-body">
+<div class="rec-name" style="font-size:14px;font-weight:700;color:var(--tx);margin-bottom:5px">${o.name}</div>
+<div class="rec-desc">${o.desc}</div>
+<div style="font-size:11px;color:var(--teal);margin-bottom:8px;font-weight:600">↳ ${o.why}</div>
+<div class="rec-foot">
+<span class="rec-tag" style="background:${o.cat_color}18;color:${o.cat_color}">${CE[o.cat]||''} ${CL[o.cat]||o.cat}</span>
+<span class="rec-tag" style="background:var(--s3);color:var(--tx3)">📅 ${o.when}</span>
+<span class="rec-tag" style="background:rgba(255,176,32,0.12);color:var(--gold)">💰 ${o.price}</span>
+</div>
+<a class="rec-addr" href="https://maps.google.com/?q=${encodeURIComponent(o.name+' '+o.addr)}" target="_blank">
+<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+${o.addr}
+</a>
+</div>
+</div>`).join('')}</div>`;
+}
+
+/* ── RECOMENDACIONES ── */
+function renderRecs(){
+const out=document.getElementById('recs-out');
+const sections=[
+{key:'gastronomia',title:'🍕 Gastronomía — Lo que no se pueden ir sin probar',color:'#ff3b5c'},
+{key:'logistica',title:'✈️ Logística — Tips clave para el viaje',color:'#5b8fff'},
+{key:'compras',title:'🛍️ Compras — Dónde y qué llevar',color:'#00e5a0'},
+];
+out.innerHTML=sections.map(sec=>`
+<div class="rec-section-title">
+<div class="rst-dot" style="background:${sec.color}"></div>
+${sec.title}
+</div>
+<div class="rec-grid" style="margin-bottom:32px">${RECS[sec.key].map(r=>`
+<div class="rec-card">
+<div class="rec-body" style="padding:16px">
+<div class="rec-eyebrow" style="color:${r.color}">${r.tag}</div>
+<div class="rec-name">${r.name}</div>
+<div class="rec-desc">${r.desc}</div>
+<div class="rec-foot">
+${r.price!=='—'?`<span class="rec-tag" style="background:rgba(255,176,32,0.12);color:var(--gold)">💰 ${r.price}</span>`:''}
+</div>
+</div>
+</div>`).join('')}
+</div>`).join('');
+}
+
+/* ── VOTES ── */
+function renderVotes(){
+const out=document.getElementById('votes-out');
+const main=PLACES.filter(p=>p.day!==0);
+const days=[...new Set(main.map(p=>p.day))].sort((a,b)=>a-b);
+out.innerHTML=days.map(d=>{
+const pl=main.filter(p=>p.day===d);
+const col=DC[d]||'#888';
+return `<div style="margin-bottom:24px">
+<div class="day-hdr">
+<div class="day-line" style="background:${col}"></div>
+<div class="day-name">${DN[d]}</div>
+</div>
+${pl.map(p=>{
+const v=ST.votes[p.id]||{};
+const yc=Object.values(v).filter(x=>x==='yes').length;
+const nc=Object.values(v).filter(x=>x==='no').length;
+const uc=3-yc-nc;
+return `<div class="vote-card">
+<div class="vote-top">
+<div class="vote-img-ph">${CE[p.cat]||'📍'}</div>
+<div class="vote-info">
+<div class="vote-name">${p.name}</div>
+<div class="vote-meta">${p.price}</div>
+<div class="vote-tally">
+<span class="tv">✓ Van: ${yc}</span>
+<span class="tn">✗ Pasan: ${nc}</span>
+<span class="tna">• Pendiente: ${uc}</span>
+</div>
+</div>
+</div>
+<div class="vote-row">
+${['reni','mateo','nico'].map(u=>{
+const u2=USERS[u];const cur=v[u];
+return `<div class="voter">
+<div class="vav" style="background:${u2.color};color:${u2.tc}">${u2.init}</div>
+<div class="vname">${u2.name}</div>
+<div class="vbtns">
+<button class="vb${cur==='yes'?' vy':''}" onclick="doVote('${p.id}','${u}','yes')">Voy</button>
+<button class="vb${cur==='no'?' vn':''}" onclick="doVote('${p.id}','${u}','no')">Paso</button>
+</div>
+</div>`;
+}).join('')}
+</div>
+</div>`;
+}).join('')}
+</div>`;
+}).join('');
+}
+function doVote(pid,u,v){
+if(!ST.votes[pid])ST.votes[pid]={};
+ST.votes[pid][u]=ST.votes[pid][u]===v?null:v;
+renderVotes();
+}
+
+/* ── RATINGS ── */
+function renderRatings(){
+const out=document.getElementById('ratings-out');
+out.innerHTML=PLACES.filter(p=>p.day!==0).map(p=>{
+const revs=ST.reviews[p.id]||[];
+const avg=revs.length?(revs.reduce((a,r)=>a+r.s,0)/revs.length).toFixed(1):null;
+const cur=ST.ratings[p.id]||0;
+const who=ST.whoRating[p.id]||'reni';
+return `<div class="rating-card">
+<div class="rating-top">
+<div class="rating-img-ph">${CE[p.cat]||'📍'}</div>
+<div class="rating-info">
+<div class="rating-name">${p.name}</div>
+<div class="rating-avg">${avg?`⭐ ${avg}/5 — ${revs.length} reseña${revs.length!==1?'s':''}`:' Sin calificación todavía'}</div>
+</div>
+</div>
+<div class="stars">${[1,2,3,4,5].map(n=>`<span class="star${cur>=n?' lit':''}" onclick="setStar('${p.id}',${n})" data-pid="${p.id}" data-n="${n}">★</span>`).join('')}</div>
+<div class="who-row-r">
+${['reni','mateo','nico'].map(u=>`<button class="who-rbtn${who===u?' on':''}" style="background:${USERS[u].color}18;border-color:${USERS[u].color};color:${USERS[u].color}" onclick="setWhoR('${p.id}','${u}')">${USERS[u].name}</button>`).join('')}
+</div>
+<textarea class="rtextarea" id="rta-${p.id}" rows="2" placeholder="¿Qué les pareció? Dejen su experiencia..."></textarea>
+<button class="save-btn" onclick="saveReview('${p.id}')">Guardar reseña</button>
+${revs.length?`<div class="review-list">${revs.map(r=>`<div class="review-item">
+<div class="review-who">
+<div class="review-av" style="background:${USERS[r.u].color};color:${USERS[r.u].tc}">${USERS[r.u].init}</div>
+<span class="review-uname">${USERS[r.u].name}</span>
+<span class="review-stars">${'★'.repeat(r.s)}${'☆'.repeat(5-r.s)}</span>
+<span class="review-date">${r.d}</span>
+</div>
+${r.t?`<div class="review-txt">${r.t}</div>`:''}
+</div>`).join('')}</div>`:''}
+</div>`;
+}).join('');
+}
+function setStar(pid,n){
+ST.ratings[pid]=n;
+document.querySelectorAll(`[data-pid="${pid}"]`).forEach(s=>s.classList.toggle('lit',+s.dataset.n<=n));
+}
+function setWhoR(pid,u){
+ST.whoRating[pid]=u;renderRatings();
+}
+function saveReview(pid){
+const ta=document.getElementById('rta-'+pid);
+const s=ST.ratings[pid]||0;
+const t=ta?ta.value.trim():'';
+const u=ST.whoRating[pid]||'reni';
+if(!s&&!t)return;
+if(!ST.reviews[pid])ST.reviews[pid]=[];
+ST.reviews[pid].push({u,s,t,d:new Date().toLocaleDateString('es-AR')});
+ST.ratings[pid]=0;
+if(ta)ta.value='';
+renderRatings();
+}
+
+/* ── WISHLIST ── */
+function toggleWho(u){
+const i=ST.whoSel.indexOf(u);
+if(i>-1)ST.whoSel.splice(i,1);else ST.whoSel.push(u);
+['reni','mateo','nico'].forEach(usr=>{
+const b=document.getElementById('wwho-'+usr);
+if(b){b.classList.toggle('on',ST.whoSel.includes(usr));}
+});
+}
+const WCAT_L={comida:"🍕 Para comer",compras:"🛍️ Compras",museo:"🎨 Museo",barrio:"🚶 Barrio",bar:"🍸 Bar / nocturna",espectaculo:"🎭 Show",mirador:"🏙️ Mirador",parque:"🌿 Parque",otro:"📍 Otro"};
+const WCAT_C={comida:"#ff3b5c",compras:"#00e5a0",museo:"#a070ff",barrio:"#ffb020",bar:"#a070ff",espectaculo:"#ff3b5c",mirador:"#5b8fff",parque:"#00e5a0",otro:"#5c5a80"};
+function addWish(){
+const n=document.getElementById('wn').value.trim();
+const a=document.getElementById('wa').value.trim();
+const c=document.getElementById('wc').value;
+const m=document.getElementById('wm').value.trim();
+const t=document.getElementById('wt').value.trim();
+if(!n||!c){alert('Ponele un nombre y tipo al lugar');return;}
+ST.wishlist.unshift({id:'w'+Date.now(),n,a,c,m,t,who:[...ST.whoSel]});
+['wn','wa','wm','wt'].forEach(id=>document.getElementById(id).value='');
+document.getElementById('wc').value='';
+ST.whoSel=[];
+['reni','mateo','nico'].forEach(u=>{const b=document.getElementById('wwho-'+u);if(b)b.classList.remove('on');});
+renderWish();
+}
+function delWish(id){ST.wishlist=ST.wishlist.filter(w=>w.id!==id);renderWish();}
+function renderWish(){
+const out=document.getElementById('wish-out');
+if(!ST.wishlist.length){
+out.innerHTML='<div class="empty"><div class="empty-icon">💡</div><p class="empty-txt">Todavía no hay sugerencias. ¡Sean los primeros!</p></div>';return;
+}
+out.innerHTML=`<div class="wish-list">${ST.wishlist.map(w=>{
+const col=WCAT_C[w.c]||'#888';
+const mUrl=w.m||(w.a?`https://maps.google.com/?q=${encodeURIComponent(w.n+' '+w.a)}`:'');
+return `<div class="wish-item">
+<div class="wi-top"><div class="wi-name">${w.n}</div><button class="wi-del" onclick="delWish('${w.id}')">×</button></div>
+${w.a?`<div class="wi-addr">📍 ${w.a}</div>`:''}
+${w.t?`<div class="wi-note">${w.t}</div>`:''}
+<div class="wi-tags">
+<span class="wi-tag" style="background:${col}18;color:${col}">${WCAT_L[w.c]||w.c}</span>
+${w.who.map(u=>`<span class="wi-tag" style="background:${USERS[u].color}18;color:${USERS[u].color}">${USERS[u].name}</span>`).join('')}
+</div>
+${mUrl?`<a class="wi-maps" href="${mUrl}" target="_blank">
+<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+Ver en Google Maps
+</a>`:''}
+</div>`;
+}).join('')}</div>`;
+}
+
+/* ── TABS ── */
+function showTab(id,tab){
+document.querySelectorAll('.section').forEach(s=>s.classList.remove('on'));
+document.getElementById('sec-'+id).classList.add('on');
+document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+tab.classList.add('on');
+if(id==='votos')renderVotes();
+if(id==='calificaciones')renderRatings();
+if(id==='wishlist')renderWish();
+if(id==='itinerario')renderItin();
+if(id==='otras')renderOtras();
+if(id==='recomendaciones')renderRecs();
+}
+
+/* ── INIT ── */
+renderPlaces();renderWish();
+</script>
+</body>
+</html>
