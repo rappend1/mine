@@ -77,6 +77,18 @@ nav{background:var(--ink);position:sticky;top:0;z-index:100;border-bottom:1px so
 .section-title{font-size:clamp(26px,4vw,38px);font-weight:700;color:var(--ink);line-height:1.1}
 .section-sub{font-size:14px;color:var(--ink3);margin-top:10px;max-width:560px;line-height:1.6}
 
+/* SEARCH BAR */
+.search-wrap{padding:14px 24px 0;max-width:1100px;margin:0 auto}
+.search-box{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--border2);border-radius:32px;padding:10px 16px;box-shadow:var(--shadow);transition:border-color .15s,box-shadow .15s;margin-bottom:14px}
+.search-box:focus-within{border-color:var(--ink);box-shadow:0 2px 16px rgba(0,0,0,.1)}
+.search-icon{color:var(--ink3);flex-shrink:0;font-size:16px}
+.search-input{flex:1;border:none;background:transparent;font-size:14px;font-family:inherit;color:var(--ink);outline:none;min-width:0;cursor:text}
+.search-input::placeholder{color:var(--ink3)}
+.search-clear{background:none;border:none;color:var(--ink3);font-size:20px;line-height:1;padding:0 2px;cursor:pointer;display:none;transition:color .12s;flex-shrink:0}
+.search-clear.visible{display:block}
+.search-clear:hover{color:var(--red)}
+.search-count{font-size:11px;font-weight:600;color:var(--ink3);white-space:nowrap;flex-shrink:0;background:var(--paper2);padding:3px 9px;border-radius:12px}
+
 /* FILTERS */
 .filter-bar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:28px;align-items:center}
 .f-btn{padding:7px 14px;border-radius:24px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:transparent;color:var(--ink3);transition:all .15s;white-space:nowrap}
@@ -334,6 +346,14 @@ nav{background:var(--ink);position:sticky;top:0;z-index:100;border-bottom:1px so
     <h2 class="section-title">Todos los lugares</h2>
     <p class="section-sub">Fotos, descripción, por qué hacerlo, ubicación en Google Maps y calificación del grupo.</p>
   </div>
+  <div class="search-wrap">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="place-search" type="text" placeholder="Buscar lugar, barrio o categoría..." oninput="onSearch(this)" autocomplete="off">
+      <button class="search-clear" id="search-clear" onclick="clearSearch()">×</button>
+      <span class="search-count" id="search-count"></span>
+    </div>
+  </div>
   <div class="filter-bar">
     <button class="f-btn on" onclick="fDay('all',this)">Todos los días</button>
     <button class="f-btn" onclick="fDay(1,this)">Sab 22</button>
@@ -556,9 +576,9 @@ const DAY_META={
      food:"Grand Central Oyster Bar (~$20) · Cena en Chinatown (~$10)"},
   4:{label:"Mar 25",name:"Empire State · MoMA · SUMMIT",color:"#c8392b",
      food:"Levain Bakery cookie (~$5) · Eataly almuerzo (~$25)"},
-  5:{label:"Mie 26",name:"Central Park · Met · Harlem",color:"#2e7d32",
-     food:"Bagel con lox Upper West Side (~$15) · Soul Food Sylvia's (~$22)"},
-  6:{label:"Jue 27",name:"High Line · Chelsea Market · AMNH · Globos",color:"#e65100",
+  5:{label:"Mie 26",name:"Central Park · Met · Upper East Side",color:"#2e7d32",
+     food:"Bagel con lox Upper West Side (~$15) · Cena en Sarabeth's o E.A.T. (~$22)"},
+  6:{label:"Jue 27",name:"High Line · Chelsea Market · Hudson Yards · AMNH · Globos",color:"#e65100",
      food:"Los Tacos No.1 Chelsea Market (~$10) · Ellen's Stardust Diner (~$35)"},
   7:{label:"Vie 28",name:"Thanksgiving Parade 100° Aniversario",color:"#b71c1c",
      food:"Hot dog en el desfile (~$4) · Cena Thanksgiving (~$45)"},
@@ -580,17 +600,29 @@ const PLACES=[
    desc:"Tu base para toda la semana. En el corazón de Chelsea, a 10 min del Empire State y a pasos del High Line.",
    why:"La ubicación es todo: el 80% de las actividades están a menos de 20 min a pie o en subte."},
   {id:"p02",day:1,cat:"icono",sky:null,extra:false,lat:40.7411,lng:-73.9897,
-   name:"Flatiron Building + Madison Sq Park",price:"GRATIS",addr:"175 5th Ave, NY 10010",
+   name:"Flatiron Building",price:"GRATIS",addr:"175 5th Ave, NY 10010",
    maps:"https://maps.google.com/?q=Flatiron+Building+New+York",
    img:"https://lh3.googleusercontent.com/grass-cs/ANxoTn3BRWul-vArfbVKRcyInVYe2r3k4siFv5Zx-lqhrY2_wGIUietmGUXgMGjwFqi5Flyg3_6N_bgF_HN4YbnvVhNVaSWrd7_7xXjesocnO4vjXGg9gC51TgS8mXsSDCr2jMT_6wsF=w270-h312-n-k-no",
-   desc:"El edificio triangular más famoso de NYC, a 2 cuadras del hotel. Construido en 1902.",
-   why:"El primer contacto real con NYC. Orienta en el barrio del hotel y es totalmente a pie."},
+   desc:"El edificio triangular más famoso de NYC, construido en 1902. Su forma de cuña en el cruce de Broadway y la 5th Ave lo hace único en el mundo.",
+   why:"Está a 2 cuadras del hotel. El primer ícono real que ven al salir."},
+  {id:"p02b",day:1,cat:"parque",sky:null,extra:false,lat:40.7420,lng:-73.9877,
+   name:"Madison Square Park",price:"GRATIS",addr:"Madison Ave y 23rd St, NY 10010",
+   maps:"https://maps.google.com/?q=Madison+Square+Park+New+York",
+   img:"https://images.unsplash.com/photo-1568452546925-f4bf9c26cc23?w=500&q=80",
+   desc:"El parque frente al Flatiron. Perfecta mezcla de naturaleza, arte público y neoyorquinos en su día a día. Tiene el Shake Shack original.",
+   why:"El Shake Shack de Madison Square Park es histórico — fue el primero de la cadena."},
   {id:"p03",day:1,cat:"bar",sky:null,extra:false,lat:40.7443,lng:-73.9883,
    name:"230 Fifth Rooftop Bar",price:"~$18-22 c/u",addr:"1150 Broadway, NY 10001",
    maps:"https://maps.google.com/?q=230+Fifth+Rooftop+Bar+New+York",
    img:"data:image/jpeg;base64,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",
    desc:"El rooftop más famoso de NYC, a 3 cuadras del hotel. Vista directa al Empire State iluminado.",
    why:"El brindis perfecto para el primer atardecer en Nueva York."},
+  {id:"p03b",day:1,cat:"gastronomia",sky:null,extra:false,lat:40.7580,lng:-73.9930,
+   name:"Carlos Bakery — Cake Boss",price:"~$8-15 c/u",addr:"625 8th Ave, NY 10018 (Hell's Kitchen)",
+   maps:"https://maps.google.com/?q=Carlos+Bakery+New+York+City",
+   img:"https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500&q=80",
+   desc:"La bakery del Cake Boss, la serie de TLC. Cannoli, lobster tails, babás al rum y los pasteles más decorados de NYC. Cola habitual pero vale la pena.",
+   why:"Obligatorio. La bakery más famosa de la TV americana, a 20 min del hotel en subte o 25 min a pie."},
   {id:"p04",day:1,cat:"icono",sky:null,extra:false,lat:40.7580,lng:-73.9855,
    name:"Times Square de noche",price:"GRATIS",addr:"Times Square, Manhattan",
    maps:"https://maps.google.com/?q=Times+Square+New+York",
@@ -669,12 +701,7 @@ const PLACES=[
    img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7FQIVl7nzS0pMyTXzeD83ZqIR2R7VSq73j0L2QK8FFQ&s=10",
    desc:"El Chinatown más grande y auténtico de NYC. Dumplings, hot pot y bubble tea locales.",
    why:"Los dumplings de Flushing son leyenda entre los neoyorquinos."},
-  {id:"p16a",day:3,cat:"historia",sky:"sin",extra:false,lat:40.7489,lng:-73.9680,
-   name:"Sede de las Naciones Unidas",price:"GRATIS exterior",addr:"405 E 45th St, NY 10017",
-   maps:"https://maps.google.com/?q=United+Nations+Headquarters+New+York",
-   img:"https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=500&q=80",
-   desc:"Las banderas de los 193 países sobre el East River. El edificio de Oscar Niemeyer.",
-   why:"Una imagen que no existe en ningún otro lugar del mundo."},
+
   {id:"p16b",day:3,cat:"historia",sky:"sin",extra:false,lat:40.7115,lng:-74.0131,
    name:"9/11 Memorial — Piletas de noche",price:"GRATIS exterior",addr:"180 Greenwich St, NY 10007",
    maps:"https://maps.google.com/?q=9/11+Memorial+New+York",
@@ -717,12 +744,7 @@ const PLACES=[
    img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVrGYYto7MWsM92pjvQGDuqWe2Zk0q7rZ4nUgCCq3XJg&s=10",
    desc:"El museo más grande de EEUU. Arte egipcio, impresionistas, armaduras medievales.",
    why:"Un día no alcanza. Elegir 3 o 4 salas y profundizar."},
-  {id:"p23",day:5,cat:"barrio",sky:null,extra:false,lat:40.8116,lng:-73.9465,
-   name:"Harlem — 125th Street",price:"GRATIS",addr:"125th St, NY 10027",
-   maps:"https://maps.google.com/?q=Harlem+125th+Street+New+York",
-   img:"https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=500&q=80",
-   desc:"El Apollo Theater, murales históricos y la mejor soul food de la ciudad.",
-   why:"Ver la NYC de los neoyorquinos reales, no la de los turistas."},
+
   {id:"p24",day:6,cat:"parque",sky:null,extra:false,lat:40.7480,lng:-74.0048,
    name:"The High Line",price:"GRATIS",addr:"Gansevoort St, NY 10014",
    maps:"https://maps.google.com/?q=The+High+Line+New+York",
@@ -735,12 +757,13 @@ const PLACES=[
    img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWBEr1fV1zqag-lW5LkRv3at85rVkh9QOzDjy8Heuyew&s=10",
    desc:"Mercado gourmet en la fábrica original de las galletas Oreo. Los mejores tacos de NYC.",
    why:"Los Tacos No.1 están rankeados como los mejores de toda la ciudad."},
-  {id:"p26",day:6,cat:"historia",sky:null,extra:false,lat:40.7489,lng:-73.9680,
-   name:"Sede ONU — Exterior y banderas",price:"GRATIS",addr:"405 E 45th St, NY 10017",
-   maps:"https://maps.google.com/?q=United+Nations+Headquarters+New+York",
-   img:"https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=500&q=80",
-   desc:"Las banderas de los 193 países sobre el East River. Diseño de Oscar Niemeyer.",
-   why:"Una imagen que no está en ningún otro lugar del mundo."},
+  {id:"p25b",day:6,cat:"icono",sky:null,extra:false,lat:40.7536,lng:-74.0019,
+   name:"Vessel — Hudson Yards",price:"GRATIS",addr:"20 Hudson Yards, NY 10001",
+   maps:"https://maps.google.com/?q=Vessel+Hudson+Yards+New+York",
+   img:"https://images.unsplash.com/photo-1590548784585-643d2b9f2925?w=500&q=80",
+   desc:"La escalera de cobre entrelazada de 16 pisos y 2500 peldaños de Thomas Heatherwick. Uno de los diseños más audaces de NYC moderno.",
+   why:"Cae perfecto de camino o al terminar el Free Tour High Line — están a 5 min caminando."},
+
   {id:"p27",day:6,cat:"museo",sky:null,extra:false,lat:40.7813,lng:-73.9740,
    name:"Amer. Museum Natural History",price:"~$35 c/u",addr:"200 Central Park W, NY 10024",
    maps:"https://maps.google.com/?q=American+Museum+Natural+History+New+York",
@@ -871,14 +894,14 @@ const ITINERARY_BASE=[
   {day:1,stops:[{t:"06:00",n:"Aterrizaje en JFK",p:"--",note:"Llegada de madrugada. Migración puede tardar 45-90 min."},{t:"08:00",n:"AirTrain + Subway al hotel",p:"~$15 c/u",note:"Tren A desde JFK hasta 23rd St. ~50 min."},{t:"09:30",n:"Check-in Holiday Inn Chelsea",p:"--",note:"125 W 26th St. Si la habitación no está lista, dejar valijas."},{t:"12:00",n:"Chelsea + Flatiron + Madison Sq Park",p:"GRATIS",note:"Orientarse en el barrio. El Flatiron está a 2 cuadras."},{t:"17:00",n:"230 Fifth Rooftop Bar",p:"~$18-22 c/u",note:"A 3 cuadras del hotel. Vista al Empire State iluminado."},{t:"20:00",n:"Times Square de noche",p:"GRATIS",note:"Primera impresión de noche. Luces y energía única."}]},
   {day:2,stops:[{t:"10:00",n:"SoHo — Spring y Prince St",p:"GRATIS",note:"Línea C/E desde 23rd St hasta Spring St."},{t:"11:30",n:"Little Italy — Mulberry St",p:"GRATIS",note:"5 min caminando. Cannoli obligatorio."},{t:"12:30",n:"Chinatown — Canal St y Mott St",p:"GRATIS",note:"Almuerzo baratísimo. Dumplings, pork buns."},{t:"14:30",n:"New York Public Library",p:"GRATIS",note:"Rose Main Reading Room espectacular."},{t:"15:30",n:"Grand Central Terminal",p:"GRATIS",note:"El techo celeste. Buscar el susurro en el arco."},{t:"16:30",n:"Edificio Chrysler (exterior + lobby)",p:"GRATIS",note:"2 cuadras de Grand Central. Lobby de mármol africano."},{t:"18:00",n:"Greenwich Village — Washington Square",p:"GRATIS",note:"Barrio bohemio, jazz en la calle, NYU."}]},
   {day:4,stops:[{t:"08:30",n:"Empire State Building",p:"~$48 c/u",note:"10 min del hotel. Llegar temprano para evitar filas."},{t:"10:30",n:"MoMA — Museum of Modern Art",p:"~$30 c/u",note:"Ir directo al Starry Night de Van Gogh al abrir."},{t:"13:00",n:"5th Avenue — vidrieras navideñas",p:"GRATIS",note:"Apple, Tiffany, Saks. Decoraciones navidenas completas."},{t:"16:30",n:"SUMMIT One Vanderbilt",p:"~$54 c/u",note:"El mirador más instagrameable. Arte y vistas al atardecer."},{t:"19:30",n:"230 Fifth Rooftop Bar",p:"~$18 c/u",note:"3 cuadras del hotel. Empire State iluminado."}]},
-  {day:5,stops:[{t:"09:00",n:"Subte al parque (línea C)",p:"~$3 c/u",note:"Desde 23rd St hasta 72nd St. 15 min."},{t:"09:15",n:"Alquiler de bicicletas",p:"~$20 c/u",note:"Citi Bike o alquiler en Columbus Circle."},{t:"09:30",n:"Paseo en bici — Central Park",p:"GRATIS",note:"~10 km: Strawberry Fields, Bethesda Fountain, Reservoir."},{t:"11:00",n:"Jardín Shakespeare + Puente Bow",p:"GRATIS",note:"El lugar más romántico y secreto del parque."},{t:"13:30",n:"The Metropolitan Museum of Art",p:"~$30 c/u",note:"Mínimo 2-3 horas. Elegir 3-4 salas."},{t:"17:00",n:"Harlem — 125th Street",p:"GRATIS",note:"Apollo Theater, soul food, historia afroamericana."},{t:"19:30",n:"Cena en Harlem",p:"--",note:"Sylvia's o Red Rooster. Soul food auténtica."}]},
-  {day:6,stops:[{t:"09:30",n:"High Line — entrada sur (Gansevoort St)",p:"GRATIS",note:"A 10 min del hotel A PIE. El día más cómodo."},{t:"11:30",n:"Chelsea Market",p:"GRATIS entrar",note:"Los Tacos No.1 adentro. El mercado gourmet más famoso."},{t:"13:00",n:"Vessel — Hudson Yards (exterior)",p:"GRATIS",note:"20 min caminando por el High Line."},{t:"14:30",n:"Sede ONU (exterior y banderas)",p:"GRATIS",note:"Banderas de los 193 países sobre el East River."},{t:"16:00",n:"American Museum Natural History",p:"~$35 c/u",note:"Ballena azul, dinosaurios, Rose Center. 2 horas mínimo."},{t:"18:30",n:"Ellen's Stardust Diner — cena",p:"~$30-40 c/u",note:"RESERVAR ONLINE YA para 3 personas."},{t:"22:00",n:"Inflado de Globos — Central Park West y 79th St",p:"GRATIS",note:"Los globos del Thanksgiving Parade tomando forma. Mágico."}]},
+  {day:5,stops:[{t:"09:00",n:"Subte al parque (línea C)",p:"~$3 c/u",note:"Desde 23rd St hasta 72nd St. 15 min."},{t:"09:15",n:"Alquiler de bicicletas",p:"~$20 c/u",note:"Citi Bike o alquiler en Columbus Circle."},{t:"09:30",n:"Paseo en bici — Central Park",p:"GRATIS",note:"~10 km: Strawberry Fields, Bethesda Fountain, Reservoir."},{t:"11:00",n:"Jardín Shakespeare + Puente Bow",p:"GRATIS",note:"El lugar más romántico y secreto del parque."},{t:"13:30",n:"The Metropolitan Museum of Art",p:"~$30 c/u",note:"Mínimo 2-3 horas. Elegir 3-4 salas."},{t:"17:30",n:"Cena en Upper East Side o Midtown",p:"--",note:"La zona del Met tiene buenas opciones a precios razonables. Sarabeth's, E.A.T., Serafina."}]},
+  {day:6,stops:[{t:"09:30",n:"High Line — entrada sur (Gansevoort St)",p:"GRATIS",note:"A 10 min del hotel A PIE. El día más cómodo."},{t:"11:30",n:"Chelsea Market",p:"GRATIS entrar",note:"Los Tacos No.1 adentro. El mercado gourmet más famoso."},{t:"13:00",n:"Vessel — Hudson Yards (exterior)",p:"GRATIS",note:"20 min caminando por el High Line."},{t:"14:30",n:"The Edge — Hudson Yards (exterior, fotos)",p:"GRATIS",note:"El voladizo de vidrio sobre Manhattan desde afuera es ya una postal. 25 min desde Chelsea Market."},{t:"16:00",n:"American Museum Natural History",p:"~$35 c/u",note:"Ballena azul, dinosaurios, Rose Center. 2 horas mínimo."},{t:"18:30",n:"Ellen's Stardust Diner — cena",p:"~$30-40 c/u",note:"RESERVAR ONLINE YA para 3 personas."},{t:"22:00",n:"Inflado de Globos — Central Park West y 79th St",p:"GRATIS",note:"Los globos del Thanksgiving Parade tomando forma. Mágico."}]},
   {day:7,stops:[{t:"05:30",n:"Salir al desfile — Subte C hasta 72nd St",p:"~$3 c/u",note:"Llegar antes de las 7 AM para buena posición."},{t:"07:00",n:"Posición en Central Park West (entre 60th y 70th)",p:"GRATIS",note:"Ropa de abrigo, bufanda, guantes, snacks. IMPRESCINDIBLE."},{t:"09:00",n:"Macy's Thanksgiving Day Parade — 100° Aniversario",p:"GRATIS",note:"3 horas. El desfile más grande de la historia del Parade."},{t:"12:00",n:"Almuerzo post-desfile en Chelsea",p:"--",note:"Alejarse de la zona del desfile."},{t:"15:00",n:"Bryant Park Winter Village",p:"GRATIS entrar",note:"200 vendedores artesanales. Souvenirs auténticos."},{t:"17:00",n:"5th Avenue — vidrieras navideñas de noche",p:"GRATIS",note:"Las vidrieras de Bergdorf Goodman y Saks son obras de arte."},{t:"19:00",n:"Cena de Thanksgiving",p:"~$35-50 c/u",note:"Pavo, puré de batatas, cranberry sauce, pumpkin pie."}]},
   {day:8,stops:[{t:"09:00",n:"Macy's Herald Square — Black Friday",p:"GRATIS entrar",note:"10 min del hotel. El Macy's más grande del mundo."},{t:"10:30",n:"5th Avenue — Black Friday",p:"GRATIS",note:"Descuentos en Apple, colas en Nike, vidrieras completas."},{t:"12:30",n:"Bryant Park Winter Village",p:"GRATIS",note:"Souvenirs artesanales únicos."},{t:"14:00",n:"SoHo — compras",p:"--",note:"Línea C/E hasta Spring St. Zara, Uniqlo, boutiques locales."},{t:"19:30",n:"Broadway — show en vivo",p:"~$70-120 c/u",note:"TKTS Times Square ese mismo día: hasta 50% OFF."}]},
   {day:9,stops:[{t:"09:00",n:"Brooklyn Heights Promenade",p:"GRATIS",note:"La mejor vista del skyline de Manhattan."},{t:"10:00",n:"DUMBO + Brooklyn Bridge Park",p:"GRATIS",note:"Washington St con el Manhattan Bridge. La foto de Brooklyn."},{t:"12:00",n:"Williamsburg — almuerzo y street art",p:"--",note:"Bedford Ave. Barrio trendy y auténtico."},{t:"14:30",n:"Regreso al hotel — check-out",p:"--",note:"Hacer las valijas. El hotel guarda el equipaje."},{t:"17:00",n:"Cena de despedida — Hell's Kitchen",p:"~$30 c/u",note:"El último plato en NYC."},{t:"19:30",n:"Traslado al aeropuerto JFK",p:"~$15 c/u",note:"Subte A desde 23rd St. ~50 min. Salir con 3 hs de anticipación."},{t:"22:00",n:"Vuelo JFK → EZE (American Airlines)",p:"--",note:"Llegan a Buenos Aires el lunes 30 a las 10:45 AM."}]}
 ];
 const DAY3_CON={day:3,stops:[{t:"09:00",n:"5th Avenue — vidrieras navideñas",p:"GRATIS",note:"Menos turistas de mañana."},{t:"10:00",n:"Catedral de San Patricio (exterior)",p:"GRATIS",note:"Fachada gótica entre rascacielos."},{t:"10:30",n:"Rockefeller Center — Plaza",p:"GRATIS",note:"El árbol puede estar montándose."},{t:"12:30",n:"Grand Central + Almuerzo Oyster Bar",p:"~$20 c/u",note:"Clam chowder en el subsuelo de Grand Central."},{t:"14:30",n:"Tren 7 a Flushing — Queens",p:"~$3 c/u",note:"35 min desde Grand Central. Directo a Flushing-Main St."},{t:"15:00",n:"Chinatown de Flushing — dumplings y bubble tea",p:"GRATIS",note:"Los dumplings más auténticos y baratos de toda NYC."},{t:"16:30",n:"The Shops at Skyview",p:"GRATIS entrar",note:"Nike, Marshall's, tiendas variadas. Abierto hasta las 10 PM."},{t:"20:00",n:"Regreso al hotel",p:"~$3 c/u",note:"Tren 7 a Times Square, luego C/E hasta 23rd St. ~50 min."}]};
-const DAY3_SIN={day:3,stops:[{t:"09:00",n:"5th Avenue — vidrieras navideñas",p:"GRATIS",note:"Menos turistas de mañana."},{t:"10:00",n:"Catedral de San Patricio (exterior)",p:"GRATIS",note:"Fachada gótica entre rascacielos."},{t:"10:30",n:"Rockefeller Center — Plaza",p:"GRATIS",note:"El árbol puede estar montándose."},{t:"12:30",n:"Grand Central + Almuerzo Oyster Bar",p:"~$20 c/u",note:"Clam chowder en el subsuelo de Grand Central."},{t:"14:30",n:"Edificio Chrysler (exterior)",p:"GRATIS",note:"2 cuadras por Lex Ave. Techo art déco único."},{t:"15:30",n:"Sede de las Naciones Unidas",p:"GRATIS",note:"Banderas de los 193 países sobre el East River."},{t:"17:00",n:"9/11 Memorial — piletas de noche",p:"GRATIS",note:"Las piletas iluminadas de noche son absolutamente impactantes."},{t:"18:30",n:"El Oculus — estación del WTC",p:"GRATIS",note:"Arquitectura increíble. Gratis para entrar y fotografiar."},{t:"20:00",n:"Cena en Chinatown de Manhattan",p:"--",note:"10 min caminando. Dumplings a precio local."}]};
+const DAY3_SIN={day:3,stops:[{t:"09:00",n:"5th Avenue — vidrieras navideñas",p:"GRATIS",note:"Menos turistas de mañana."},{t:"10:00",n:"Catedral de San Patricio (exterior)",p:"GRATIS",note:"Fachada gótica entre rascacielos."},{t:"10:30",n:"Rockefeller Center — Plaza",p:"GRATIS",note:"El árbol puede estar montándose."},{t:"12:30",n:"Grand Central + Almuerzo Oyster Bar",p:"~$20 c/u",note:"Clam chowder en el subsuelo de Grand Central."},{t:"14:30",n:"Edificio Chrysler (exterior)",p:"GRATIS",note:"2 cuadras por Lex Ave. Techo art déco único."},{t:"15:30",n:"Katz's Delicatessen (opcional)",p:"~$25 c/u",note:"El deli más famoso desde 1888 en Lower East Side. Pastrami legendario. A 10 min en subte."},{t:"17:00",n:"9/11 Memorial — piletas de noche",p:"GRATIS",note:"Las piletas iluminadas de noche son absolutamente impactantes."},{t:"18:30",n:"El Oculus — estación del WTC",p:"GRATIS",note:"Arquitectura increíble. Gratis para entrar y fotografiar."},{t:"20:00",n:"Cena en Chinatown de Manhattan",p:"--",note:"10 min caminando. Dumplings a precio local."}]};
 
 const COST_ROWS=[
   ["🚇","MetroCard 8 días (ilimitado)","~$34","~$102"],
@@ -944,6 +967,69 @@ const ALERTS=[
 ];
 
 
+const FREE_TOURS=[
+  {id:"ft1",
+   name:"Free Tour por Nueva York (Bajo Manhattan)",
+   desc:"Wall Street, Charging Bull, Battery Park, Memorial del 9/11. El tour más clásico para entender cómo nació esta ciudad. ~2.5 hs en español.",
+   url:"https://www.civitatis.com/ar/nueva-york/free-tour-nueva-york/?_gl=1*d2w3uc*_up*MQ..*_ga*MTkwNzk0NDc2Ny4xNzgyNTIxNjc3*_ga_QJQ54CTKPM*czE3ODI1MjE2NzYkbzEkZzEkdDE3ODI1MjE2ODQkajUyJGwwJGgxNjQ0MTg2MDUx",
+   hour:"10:00 AM (todos los días — domingos solo 10 AM)",
+   meeting:"Bowling Green, frente al Charging Bull (Distrito Financiero)",
+   duration:"~2.5 hs",
+   propina:"$10-15 c/u en efectivo"},
+  {id:"ft2",
+   name:"Free Tour Midtown Manhattan",
+   desc:"Bryant Park, Biblioteca Pública de NY, Grand Central Terminal, Edificio Chrysler, Rockefeller Center, Radio City Music Hall, Times Square. ~2-3 hs.",
+   url:"https://www.civitatis.com/ar/nueva-york/free-tour-midtown-manhattan/?_gl=1*d2w3uc*_up*MQ..*_ga*MTkwNzk0NDc2Ny4xNzgyNTIxNjc3*_ga_QJQ54CTKPM*czE3ODI1MjE2NzYkbzEkZzEkdDE3ODI1MjE2ODQkajUyJGwwJGgxNjQ0MTg2MDUx",
+   hour:"10:00 AM (2-3 días por semana — consultar calendario al reservar)",
+   meeting:"Bryant Park, detrás de la Biblioteca Pública de NY (42nd St y 6th Ave)",
+   duration:"~2-3 hs",
+   propina:"$10-15 c/u en efectivo"},
+  {id:"ft3",
+   name:"Free Tour Central Park",
+   desc:"Bethesda Fountain, Strawberry Fields (homenaje a John Lennon), Bow Bridge, Gapstow Bridge, The Pond, Wollman Rink. ~2 hs en español.",
+   url:"https://www.civitatis.com/ar/nueva-york/tour-central-park/?_gl=1*d2w3uc*_up*MQ..*_ga*MTkwNzk0NDc2Ny4xNzgyNTIxNjc3*_ga_QJQ54CTKPM*czE3ODI1MjE2NzYkbzEkZzEkdDE3ODI1MjE2ODQkajUyJGwwJGgxNjQ0MTg2MDUx",
+   hour:"10:00 AM (consultar disponibilidad en el calendario)",
+   meeting:"Columbus Circle, entrada sur del parque (59th St y 8th Ave)",
+   duration:"~2 hs",
+   propina:"$10-15 c/u en efectivo"},
+  {id:"ft4",
+   name:"Free Tour Mujeres del Village",
+   desc:"Greenwich Village, Christopher Park, Stonewall Inn, Washington Square Park, Jefferson Market Library. Historia del movimiento contracultural de NYC. ~2 hs.",
+   url:"https://www.civitatis.com/ar/nueva-york/free-tour-mujeres-village/?_gl=1*d2w3uc*_up*MQ..*_ga*MTkwNzk0NDc2Ny4xNzgyNTIxNjc3*_ga_QJQ54CTKPM*czE3ODI1MjE2NzYkbzEkZzEkdDE3ODI1MjE2ODQkajUyJGwwJGgxNjQ0MTg2MDUx",
+   hour:"Consultar horario al reservar",
+   meeting:"Washington Square Park (arco norte)",
+   duration:"~2 hs",
+   propina:"$10-15 c/u en efectivo"},
+  {id:"ft5",
+   name:"Free Tour High Line y Hudson Yards",
+   desc:"High Line completo de sur a norte, Chelsea Market, Hudson Yards, Vessel (exterior), Meatpacking District. El tour más largo y uno de los mejores. ~3.5-4 hs.",
+   url:"https://www.civitatis.com/ar/nueva-york/free-tour-high-line-hudson-yards/?_gl=1*d2w3uc*_up*MQ..*_ga*MTkwNzk0NDc2Ny4xNzgyNTIxNjc3*_ga_QJQ54CTKPM*czE3ODI1MjE2NzYkbzEkZzEkdDE3ODI1MjE2ODQkajUyJGwwJGgxNjQ0MTg2MDUx",
+   hour:"Consultar horario al reservar",
+   meeting:"Inicio del High Line — Gansevoort St y Washington St (Meatpacking District)",
+   duration:"~3.5-4 hs",
+   propina:"$10-15 c/u en efectivo"}
+];
+
+function ftBadge(ft){
+  const hasLink = ft.url && !ft.url.startsWith("LINK_");
+  const btn = hasLink
+    ? '<a href="'+ft.url+'" target="_blank" style="display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;color:#fff;background:var(--gold);padding:5px 13px;border-radius:20px;text-decoration:none;margin-top:2px">Reservar gratis en Civitatis ↗</a>'
+    : '<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--gold);background:rgba(201,146,42,.1);border:1px dashed rgba(201,146,42,.4);padding:5px 13px;border-radius:20px;margin-top:2px">🔗 Link pendiente</span>';
+  return '<div style="display:flex;align-items:flex-start;gap:10px;background:rgba(201,146,42,.06);border:1.5px solid rgba(201,146,42,.25);border-radius:10px;padding:10px 13px;margin-top:8px">'
+    +'<span style="font-size:18px;flex-shrink:0;margin-top:1px">&#127897;</span>'
+    +'<div style="flex:1;min-width:0">'
+    +'<div style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin-bottom:2px">Free Tour en Espa&ntilde;ol &mdash; Civitatis</div>'
+    +'<div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px">'+ft.name+'</div>'
+    +'<div style="font-size:11.5px;color:var(--ink3);margin-bottom:5px;line-height:1.5">'+ft.desc+'</div>'
+    +'<div style="font-size:11px;color:var(--ink3);display:flex;flex-wrap:wrap;gap:8px;margin-bottom:7px">'
+    +'<span>&#128336; <strong style="color:var(--ink)">'+ft.hour+'</strong></span>'
+    +'<span>&#128205; <strong style="color:var(--ink)">'+ft.meeting+'</strong></span>'
+    +'<span>&#9203; <strong style="color:var(--ink)">'+ft.duration+'</strong></span>'
+    +'<span>&#128181; <strong style="color:var(--ink)">'+ft.propina+'</strong></span></div>'
+    +btn
+    +'</div></div>';
+}
+
 function rFreeTours(){
   var c=document.getElementById("ft-cards-container");if(!c)return;
   var dayMap={ft1:"Dom 23 - manana",ft2:"Sab 22 - tarde (orientacion) o Dom 23",ft3:"Mie 26 - manana",ft4:"Dom 23 - tarde",ft5:"Jue 27 - manana"};
@@ -962,7 +1048,9 @@ function rFreeTours(){
       +'<div style="background:var(--paper2);border-radius:8px;padding:10px 13px"><div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px">Punto de encuentro</div><div style="font-size:12.5px;font-weight:600;color:var(--ink)">'+ft.meeting+'</div></div>'
       +'<div style="background:var(--paper2);border-radius:8px;padding:10px 13px"><div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px">Propina sugerida</div><div style="font-size:13px;font-weight:600;color:var(--ink)">'+ft.propina+'</div></div>'
       +'</div>'
-      +'<a href="'+ft.url+'" target="_blank" style="display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:#fff;background:var(--ink);padding:10px 20px;border-radius:24px;text-decoration:none">Reservar gratis en Civitatis</a>'
+      +(ft.url && !ft.url.startsWith('LINK_')
+        ? '<a href="'+ft.url+'" target="_blank" style="display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:#fff;background:var(--ink);padding:10px 20px;border-radius:24px;text-decoration:none">Reservar gratis en Civitatis ↗</a>'
+        : '<span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--gold);background:rgba(201,146,42,.08);border:1.5px dashed rgba(201,146,42,.35);padding:10px 20px;border-radius:24px">&#128279; Link pendiente &mdash; lo agregas vos</span>')
       +'</div></div>';
   }).join("");
 }
@@ -999,7 +1087,7 @@ function saveST(){
   catch(e){console.warn("Storage error",e);}
 }
 let ST=loadST();
-let fd="all",fs="ambas",mapDayFilter="all";
+let fd="all",fs="ambas",mapDayFilter="all",fq="";
 let leafMap=null,markers=[];
 let cu=ST.cu,wu=ST.wu;
 
@@ -1056,8 +1144,27 @@ function filt(){return PLACES.filter(p=>{
   if(fd!=="all"&&p.day!==fd)return false;
   if(p.sky==="con"&&fs==="sin")return false;
   if(p.sky==="sin"&&fs==="con")return false;
+  if(fq){
+    const q=fq.toLowerCase();
+    const haystack=(p.name+" "+p.desc+" "+p.why+" "+(CN[p.cat]||"")+" "+(DAY_META[p.day]?.name||"")).toLowerCase();
+    if(!haystack.includes(q))return false;
+  }
   return true;
 });}
+function onSearch(el){
+  fq=el.value.trim();
+  const cl=document.getElementById("search-clear");
+  if(cl)cl.classList.toggle("visible",fq.length>0);
+  rPlaces();
+}
+function clearSearch(){
+  fq="";
+  const el=document.getElementById("place-search");
+  if(el)el.value="";
+  const cl=document.getElementById("search-clear");
+  if(cl)cl.classList.remove("visible");
+  rPlaces();
+}
 
 // ── STARS ───────────────────────────────────────────────────────────────────
 function bStars(pid){
@@ -1105,7 +1212,21 @@ function pCard(p){
     </div>
   </div>`;
 }
-function rPlaces(){const f=filt();const c=document.getElementById("cards-container");if(!c)return;if(!f.length){c.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="big">🔍</div><p>No hay lugares con esos filtros.</p></div>`;return;}c.innerHTML=f.map(pCard).join("");}
+function rPlaces(){
+  const f=filt();
+  const cont=document.getElementById("cards-container");
+  if(!cont)return;
+  const cnt=document.getElementById("search-count");
+  if(cnt){
+    if(fq||fd!=="all"){cnt.textContent=f.length+" resultado"+(f.length!==1?"s":"");}
+    else{cnt.textContent="";}
+  }
+  if(!f.length){
+    cont.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="big">🔍</div><p>No hay lugares con esos filtros.<br><button onclick="clearSearch();fDay('all',document.querySelector('.f-btn'))" style="margin-top:10px;padding:8px 16px;border-radius:20px;background:var(--ink);color:#fff;border:none;font-size:13px;cursor:pointer">Limpiar filtros</button></p></div>`;
+    return;
+  }
+  cont.innerHTML=f.map(pCard).join("");
+}
 
 // ── MAP ──────────────────────────────────────────────────────────────────────
 function rMap(){
