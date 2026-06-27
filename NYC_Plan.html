@@ -8,6 +8,55 @@
 <link rel="manifest" href="data:application/json,{%22name%22:%22NYC+2026%22,%22short_name%22:%22NYC%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%230f0d0a%22,%22theme_color%22:%220f0d0a%22}">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, addDoc, deleteDoc, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyDxJSKCpRRTs5Q3H34DrTTZnoOQ9IxVkCs",
+  authDomain:        "nyc-2026-2ca56.firebaseapp.com",
+  projectId:         "nyc-2026-2ca56",
+  storageBucket:     "nyc-2026-2ca56.firebasestorage.app",
+  messagingSenderId: "330032845839",
+  appId:             "1:330032845839:web:50027b9ca7d90414dbbf7a",
+  measurementId:     "G-FT3NG1DLZS"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const db    = getFirestore(fbApp);
+
+window.fbCastVote = async (pid, user, vote) => {
+  const ref  = doc(db, "votes", pid);
+  const snap = await getDoc(ref);
+  const data = snap.exists() ? snap.data() : {};
+  data[user] = data[user] === vote ? null : vote;
+  await setDoc(ref, data);
+};
+window.fbListenVotes = (cb) => {
+  onSnapshot(collection(db, "votes"), snap => {
+    const v = {};
+    snap.forEach(d => { v[d.id] = d.data(); });
+    cb(v);
+  });
+};
+window.fbAddWish = async (item) => {
+  await addDoc(collection(db, "wishlist"), { ...item, ts: serverTimestamp() });
+};
+window.fbDelWish = async (id) => {
+  await deleteDoc(doc(db, "wishlist", id));
+};
+window.fbListenWish = (cb) => {
+  onSnapshot(collection(db, "wishlist"), snap => {
+    const items = [];
+    snap.forEach(d => items.push({ ...d.data(), fbId: d.id }));
+    items.sort((a,b) => (b.ts?.seconds||0) - (a.ts?.seconds||0));
+    cb(items);
+  });
+};
+window.fbReady = true;
+document.dispatchEvent(new Event("fbReady"));
+</script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -282,6 +331,45 @@ nav{background:var(--ink);position:sticky;top:0;z-index:100;border-bottom:1px so
 .tip-n{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:5px;line-height:1.3}
 .tip-d{font-size:12.5px;color:var(--ink2);line-height:1.6;margin-bottom:8px}
 .tip-pr{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:12px;background:rgba(201,146,42,.1);color:var(--gold)}
+
+/* SYNC BADGE */
+.sync-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:6px 12px;border-radius:12px;margin-bottom:16px}
+.sync-ok{background:rgba(26,122,110,.1);color:#1a7a6e}
+.sync-wait{background:rgba(201,146,42,.1);color:#c9922a}
+
+/* ESTADÍSTICAS */
+.stats-panel{background:#fff;border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:28px;box-shadow:var(--shadow)}
+.stats-tabs{display:flex;border-bottom:1px solid var(--border)}
+.stats-tab{padding:11px 20px;font-size:12.5px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--ink3);border-bottom:2px solid transparent;font-family:inherit;transition:all .15s}
+.stats-tab:hover{color:var(--ink)}
+.stats-tab.on{color:var(--ink);border-bottom-color:var(--red)}
+.stats-header{padding:18px 22px 14px;border-bottom:1px solid var(--border)}
+.stats-user-row{display:grid;grid-template-columns:1fr 1fr 1fr}
+.stats-user-col{padding:18px 20px;border-right:1px solid var(--border)}
+.stats-user-col:last-child{border-right:none}
+.stats-user-name{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.stats-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
+.stats-counts{display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.stats-count-item{text-align:center;min-width:44px}
+.stats-count-n{font-size:24px;font-weight:800;line-height:1;font-family:"Playfair Display",serif}
+.stats-count-l{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);margin-top:3px}
+.stats-bar-wrap{margin-bottom:7px}
+.stats-bar-label{display:flex;justify-content:space-between;font-size:10px;color:var(--ink3);margin-bottom:3px;font-weight:500}
+.stats-bar-track{height:5px;background:var(--paper2);border-radius:3px;overflow:hidden}
+.stats-bar-fill{height:100%;border-radius:3px;transition:width .5s ease}
+.stats-places-list{margin-top:10px}
+.stats-place-item{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;color:var(--ink2)}
+.stats-place-item:last-child{border-bottom:none}
+.stats-table-wrap{overflow-x:auto}
+.stats-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.stats-table th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);background:var(--paper2);border-bottom:1px solid var(--border);white-space:nowrap}
+.stats-table td{padding:9px 14px;border-bottom:1px solid var(--border);color:var(--ink2)}
+.stats-table tr:last-child td{border-bottom:none}
+.stats-table tr:hover td{background:var(--paper)}
+@media(max-width:640px){
+  .stats-user-row{grid-template-columns:1fr}
+  .stats-user-col{border-right:none;border-bottom:1px solid var(--border)}
+}
 
 /* VOTES */
 .user-selector{display:flex;gap:10px;margin-bottom:22px;flex-wrap:wrap}
@@ -561,7 +649,22 @@ nav{background:var(--ink);position:sticky;top:0;z-index:100;border-bottom:1px so
       <div class="user-avatar" style="background:#c9922a">N</div>Nico
     </button>
   </div>
+  <div id="sync-badge-votes" class="sync-badge sync-wait">⏳ Conectando con Firebase...</div>
   <div class="vote-notice" id="vote-notice"></div>
+
+  <div class="stats-panel">
+    <div class="stats-header">
+      <div style="font-size:17px;font-weight:700;color:var(--ink);font-family:'Playfair Display',serif;margin-bottom:3px">Estadísticas del grupo</div>
+      <div style="font-size:12px;color:var(--ink3)">Votos sincronizados en tiempo real entre los tres dispositivos</div>
+    </div>
+    <div class="stats-tabs">
+      <button class="stats-tab on" onclick="showStatTab('resumen',this)">Resumen por persona</button>
+      <button class="stats-tab" onclick="showStatTab('tabla',this)">Tabla completa</button>
+    </div>
+    <div id="stats-resumen"></div>
+    <div id="stats-tabla" style="display:none"></div>
+  </div>
+
   <div class="cards-grid" id="vote-cards"></div>
 </div>
 </div>
@@ -572,7 +675,8 @@ nav{background:var(--ink);position:sticky;top:0;z-index:100;border-bottom:1px so
   <div class="section-header" style="margin-top:48px">
     <div class="section-label">Lista colaborativa</div>
     <h2 class="section-title">Wishlist del grupo</h2>
-    <p class="section-sub">Agreguen lugares que quieren visitar — comida, compras, museos, lo que sea.</p>
+    <p class="section-sub">Agreguen lugares que quieren visitar — comida, compras, museos, lo que sea. Se sincroniza en tiempo real entre todos los dispositivos.</p>
+  <div id="sync-badge-wish" class="sync-badge sync-wait" style="margin-top:12px">⏳ Conectando con Firebase...</div>
   </div>
   <div class="wishlist-form">
     <h3>Agregar un lugar</h3>
@@ -1247,31 +1351,60 @@ function dismissAlert(i){
 }
 
 // ── STATE & STORAGE ─────────────────────────────────────────────────────────
-function loadST(){
-  try{const s=JSON.parse(localStorage.getItem("nyc2026_v2")||"{}");return{r:s.r||{},c:s.c||{},v:s.v||{},w:s.w||[],sv:s.sv||"con",cu:s.cu||null,wu:s.wu||null};}
-  catch{return{r:{},c:{},v:{},w:[],sv:"con",cu:null,wu:null};}
+function loadLocal(){
+  try{const s=JSON.parse(localStorage.getItem("nyc2026_v2")||"{}");
+    return{r:s.r||{},c:s.c||{},sv:s.sv||"con",cu:s.cu||null,wu:s.wu||null};}
+  catch{return{r:{},c:{},sv:"con",cu:null,wu:null};}
 }
-function saveST(){
-  try{localStorage.setItem("nyc2026_v2",JSON.stringify({r:ST.r,c:ST.c,v:ST.v,w:ST.w,sv:ST.sv,cu:ST.cu,wu:ST.wu}));}
-  catch(e){console.warn("Storage error",e);}
+function saveLocal(){
+  try{localStorage.setItem("nyc2026_v2",JSON.stringify({r:ST.r,c:ST.c,sv:ST.sv,cu:ST.cu,wu:ST.wu}));}
+  catch(e){}
 }
-let ST=loadST();
+function saveST(){saveLocal();}
+const _loc=loadLocal();
+let ST={r:_loc.r,c:_loc.c,v:{},w:[],sv:_loc.sv,cu:_loc.cu,wu:_loc.wu};
 let fd="all",fs="ambas",mapDayFilter="all",fq="";
 let leafMap=null,markers=[];
 let cu=ST.cu,wu=ST.wu;
 
 // Restore user selection
+function setSyncBadge(ok){
+  ["votes","wish"].forEach(k=>{
+    const el=document.getElementById("sync-badge-"+k);
+    if(!el)return;
+    if(ok){el.className="sync-badge sync-ok";el.innerHTML="✅ Sincronizado con Firebase — los cambios se ven en todos los dispositivos";}
+    else{el.className="sync-badge sync-wait";el.innerHTML="⏳ Conectando con Firebase...";}
+  });
+}
+function initListeners(){
+  setSyncBadge(false);
+  let vR=false,wR=false;
+  const chk=()=>{if(vR&&wR)setSyncBadge(true);};
+  if(window.fbListenVotes){
+    window.fbListenVotes(votes=>{
+      ST.v=votes; vR=true; chk();
+      if(document.getElementById("vote-cards"))rVotes();
+      if(document.getElementById("stats-resumen"))renderStats();
+    });
+  } else {vR=true;chk();}
+  if(window.fbListenWish){
+    window.fbListenWish(items=>{
+      ST.w=items; wR=true; chk();
+      if(document.getElementById("tab-wishlist")?.classList.contains("visible"))rWish();
+    });
+  } else {wR=true;chk();}
+}
 window.addEventListener("DOMContentLoaded",()=>{
   if(cu){const b=document.getElementById("ubtn-"+cu);if(b)b.classList.add("selected");}
   if(wu){const b=document.getElementById("wubtn-"+wu);if(b)b.classList.add("selected");}
-  // Restore skyview toggle
   switchSkyview(ST.sv,true);
-  // Check offline status
   updateOfflineBadge();
   checkAlerts();
   rPlaces();
   rCosts();
   rTips();
+  if(window.fbReady)initListeners();
+  else document.addEventListener("fbReady",initListeners);
 });
 
 window.addEventListener("online",updateOfflineBadge);
@@ -1299,7 +1432,7 @@ function showTab(id,btn){
   if(id==="itinerario")rItin();
   if(id==="itin-ft")rItinFT();
   if(id==="freetours")rFreeTours();
-  if(id==="votaciones")rVotes();
+  if(id==="votaciones"){rVotes();renderStats();}
   if(id==="wishlist")rWish();
 }
 
@@ -1548,9 +1681,15 @@ function selectUser(u,btn){
   const n=document.getElementById("vote-notice");
   n.textContent=`Votando y calificando como ${USERS[u].name}. Seleccioná tus preferencias abajo.`;
   n.style.display="block";
-  rVotes();rPlaces();
+  rVotes();renderStats();rPlaces();
 }
-function castVote(pid,v){if(!cu){alert("Primero elegí tu nombre.");return;}if(!ST.v[pid])ST.v[pid]={};ST.v[pid][cu]=v;saveST();rVotes();}
+function castVote(pid,v){
+  if(!cu){alert("Primero elegí tu nombre.");return;}
+  if(!ST.v[pid])ST.v[pid]={};
+  ST.v[pid][cu]=ST.v[pid][cu]===v?null:v;
+  if(window.fbReady)window.fbCastVote(pid,cu,v).catch(e=>console.warn(e));
+  rVotes();renderStats();
+}
 function vCard(p){
   const vs=ST.v[p.id]||{};
   const vH=Object.entries(vs).filter(([,v])=>v).map(([u,v])=>{const uu=USERS[u]||{name:u,color:"#888",letter:"?"};const e=v==="yes"?"✅":v==="no"?"❌":"🤔";return`<div style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--ink3);margin-right:8px;"><div style="display:inline-flex;width:18px;height:18px;border-radius:50%;background:${uu.color};color:#fff;font-size:9px;font-weight:800;align-items:center;justify-content:center;">${uu.letter}</div>${e}</div>`;}).join("");
@@ -1569,16 +1708,21 @@ function addWishItem(){
   const type=document.getElementById("w-type").value;
   const note=document.getElementById("w-note").value.trim();
   if(!name){alert("Ponele un nombre al lugar.");return;}
-  ST.w.push({id:"w"+Date.now(),u:wu,name,addr,type,note,date:new Date().toLocaleDateString("es-AR")});
-  saveST();
-  document.getElementById("w-name").value="";document.getElementById("w-addr").value="";document.getElementById("w-note").value="";
-  rWish();
+  const item={u:wu,name,addr,type,note,date:new Date().toLocaleDateString("es-AR")};
+  document.getElementById("w-name").value="";
+  document.getElementById("w-addr").value="";
+  document.getElementById("w-note").value="";
+  if(window.fbReady){window.fbAddWish(item).catch(e=>console.warn(e));}
+  else{ST.w.unshift({...item,id:"w"+Date.now()});rWish();}
 }
-function delWish(id){ST.w=ST.w.filter(w=>w.id!==id);saveST();rWish();}
+function delWish(id){
+  if(window.fbReady){window.fbDelWish(id).catch(e=>console.warn(e));}
+  else{ST.w=ST.w.filter(w=>w.id!==id);rWish();}
+}
 function rWish(){
   const c=document.getElementById("wishlist-container");if(!c)return;
   if(!ST.w.length){c.innerHTML=`<div class="empty-state"><div class="big">📋</div><p>Aún no hay lugares en el wishlist.<br>Sean los primeros en agregar algo.</p></div>`;return;}
-  c.innerHTML=`<div class="wishlist-items">${ST.w.map(w=>{const uu=USERS[w.u]||{name:w.u,color:"#888",letter:"?"};const t=TC[w.type]||TC.other;const mu=`https://maps.google.com/?q=${encodeURIComponent(w.name+" "+w.addr)}`;return`<div class="wish-card"><div class="wish-card-top"><div class="wish-name">${w.name}</div><button class="wish-delete" onclick="delWish('${w.id}')">✕</button></div><span class="wish-type ${t.c}">${t.l}</span>${w.addr?`<div class="wish-addr">📍 ${w.addr}</div>`:""}${w.note?`<div class="wish-note">"${w.note}"</div>`:""}<div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;"><div class="wish-who"><div class="wish-avatar" style="background:${uu.color}">${uu.letter}</div><span style="font-size:11px;color:var(--ink3);">${uu.name} · ${w.date}</span></div><a href="${mu}" target="_blank" style="font-size:11px;color:var(--teal2);text-decoration:none;">Ver en Maps ↗</a></div></div>`;}).join("")}</div>`;
+  c.innerHTML=`<div class="wishlist-items">${ST.w.map(w=>{const uu=USERS[w.u]||{name:w.u,color:"#888",letter:"?"};const t=TC[w.type]||TC.other;const mu=`https://maps.google.com/?q=${encodeURIComponent(w.name+" "+w.addr)}`;const delId=w.fbId||w.id;return`<div class="wish-card"><div class="wish-card-top"><div class="wish-name">${w.name}</div><button class="wish-delete" onclick="delWish('${delId}')">✕</button></div><span class="wish-type ${t.c}">${t.l}</span>${w.addr?`<div class="wish-addr">📍 ${w.addr}</div>`:""}${w.note?`<div class="wish-note">"${w.note}"</div>`:""}<div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;"><div class="wish-who"><div class="wish-avatar" style="background:${uu.color}">${uu.letter}</div><span style="font-size:11px;color:var(--ink3);">${uu.name} · ${w.date}</span></div><a href="${mu}" target="_blank" style="font-size:11px;color:var(--teal2);text-decoration:none;">Ver en Maps ↗</a></div></div>`;}).join("")}</div>`;
 }
 
 // ── ITINERARIO CON FREE TOURS ────────────────────────────────────────────────
@@ -1662,6 +1806,75 @@ function rItinFT(){
       </div>
     </div>`;
   }).join("");
+}
+
+// ── ESTADÍSTICAS ─────────────────────────────────────────────────────────────
+let _stTab="resumen";
+function showStatTab(tab,btn){
+  _stTab=tab;
+  document.querySelectorAll(".stats-tab").forEach(b=>b.classList.remove("on"));
+  btn.classList.add("on");
+  const sr=document.getElementById("stats-resumen");
+  const st=document.getElementById("stats-tabla");
+  if(sr)sr.style.display=tab==="resumen"?"block":"none";
+  if(st)st.style.display=tab==="tabla"?"block":"none";
+  renderStats();
+}
+function renderStats(){
+  const votes=ST.v;
+  const places=PLACES.filter(p=>p.day>0);
+  const users=["reni","mateo","nico"];
+  const vIcon=v=>v==="yes"?"✅":v==="no"?"❌":v==="maybe"?"🤔":"—";
+
+  // ── RESUMEN ────────────────────────────────────────────────────────────────
+  const rEl=document.getElementById("stats-resumen");
+  if(rEl&&(_stTab==="resumen"||!_stTab)){
+    const cols=users.map(u=>{
+      const uu=USERS[u];
+      const uv=places.map(p=>({p,v:(votes[p.id]||{})[u]||null}));
+      const yes=uv.filter(x=>x.v==="yes").length;
+      const no=uv.filter(x=>x.v==="no").length;
+      const maybe=uv.filter(x=>x.v==="maybe").length;
+      const total=places.length;
+      const pct=n=>total?Math.round(n/total*100):0;
+      const yesList=uv.filter(x=>x.v==="yes").slice(0,6)
+        .map(x=>`<div class="stats-place-item"><span style="font-size:13px">✅</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.p.name}</span></div>`).join("");
+      const more=yes>6?`<div style="font-size:11px;color:var(--ink3);padding:4px 0">+${yes-6} más...</div>`:"";
+      return`<div class="stats-user-col">
+        <div class="stats-user-name"><div class="stats-av" style="background:${uu.color}">${uu.letter}</div>${uu.name}</div>
+        <div class="stats-counts">
+          <div class="stats-count-item"><div class="stats-count-n" style="color:var(--teal)">${yes}</div><div class="stats-count-l">Voy</div></div>
+          <div class="stats-count-item"><div class="stats-count-n" style="color:var(--red)">${no}</div><div class="stats-count-l">No voy</div></div>
+          <div class="stats-count-item"><div class="stats-count-n" style="color:var(--gold)">${maybe}</div><div class="stats-count-l">Tal vez</div></div>
+          <div class="stats-count-item"><div class="stats-count-n" style="color:var(--ink3)">${total-yes-no-maybe}</div><div class="stats-count-l">Sin votar</div></div>
+        </div>
+        <div class="stats-bar-wrap"><div class="stats-bar-label"><span>Quiero ir</span><span>${pct(yes)}%</span></div><div class="stats-bar-track"><div class="stats-bar-fill" style="width:${pct(yes)}%;background:var(--teal)"></div></div></div>
+        <div class="stats-bar-wrap"><div class="stats-bar-label"><span>No voy</span><span>${pct(no)}%</span></div><div class="stats-bar-track"><div class="stats-bar-fill" style="width:${pct(no)}%;background:var(--red)"></div></div></div>
+        <div class="stats-bar-wrap"><div class="stats-bar-label"><span>Tal vez</span><span>${pct(maybe)}%</span></div><div class="stats-bar-track"><div class="stats-bar-fill" style="width:${pct(maybe)}%;background:var(--gold)"></div></div></div>
+        <div style="font-size:9px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin:10px 0 4px">Quiere ir a:</div>
+        <div class="stats-places-list">${yesList||`<div style="font-size:12px;color:var(--ink3);padding:4px 0">Sin votos todavía</div>`}${more}</div>
+      </div>`;
+    }).join("");
+    rEl.innerHTML=`<div class="stats-user-row">${cols}</div>`;
+  }
+
+  // ── TABLA COMPLETA ─────────────────────────────────────────────────────────
+  const tEl=document.getElementById("stats-tabla");
+  if(tEl&&_stTab==="tabla"){
+    const days=[...new Set(places.map(p=>p.day))].sort((a,b)=>a-b);
+    const rows=days.map(d=>{
+      const dm=DAY_META[d];
+      const dp=places.filter(p=>p.day===d);
+      const dh=`<tr><td colspan="4" style="padding:8px 14px 5px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:${dm?.color||"#888"};background:var(--paper2)">${dm?.label||"Día "+d} — ${dm?.name||""}</td></tr>`;
+      const pr=dp.map(p=>{
+        const pv=votes[p.id]||{};
+        return`<tr><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px">${p.name}</td><td style="text-align:center;font-size:16px">${vIcon(pv.reni)}</td><td style="text-align:center;font-size:16px">${vIcon(pv.mateo)}</td><td style="text-align:center;font-size:16px">${vIcon(pv.nico)}</td></tr>`;
+      }).join("");
+      return dh+pr;
+    }).join("");
+    const mkH=(u)=>{const uu=USERS[u];return`<th style="text-align:center"><div style="display:flex;align-items:center;justify-content:center;gap:5px"><div style="width:18px;height:18px;border-radius:50%;background:${uu.color};color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center">${uu.letter}</div>${uu.name}</div></th>`;};
+    tEl.innerHTML=`<div class="stats-table-wrap"><table class="stats-table"><thead><tr><th>Lugar</th>${mkH("reni")}${mkH("mateo")}${mkH("nico")}</tr></thead><tbody>${rows}</tbody></table></div>`;
+  }
 }
 
 // ── PWA / OFFLINE ────────────────────────────────────────────────────────────
