@@ -888,104 +888,104 @@ const FREE_TOURS=[
 const DAYS=[
   // ── DÍA 1: SÁBADO 21 ──────────────────────────────────────────────────────
   {day:1,stops:[
-    {t:"09:30",n:"Aterrizaje JFK",p:"--",note:"Migración puede demorar 45-90 min. Paciencia."},
-    {t:"10:30",n:"AirTrain + Subway A hasta Times Square",p:"~$15 c/u",note:"Directo desde JFK hasta 42nd St. ~50 min."},
-    {t:"13:00",n:"Llegada al hotel · dejar valijas",p:"--",note:"Fairfield Marriott · 330 W 40th St · Check-in oficial a las 16hs."},
-    {t:"13:30",n:"Almuerzo",p:"--",opts:"Westway Diner (W 44th St) · Joe's Pizza · $1.50 Fresh Pizza"},
-    {t:"15:00",n:"Target · Five Below · Hell's Kitchen",p:"Variable",note:"Target en W 42nd St (3 pisos). Orientarse en el barrio del hotel."},
-    {t:"16:00",n:"Check-in oficial",p:"--",note:"Subir al cuarto, ducharse, descansar."},
-    {t:"17:00",n:"Times Square · M&M's World · Hershey's · Grand Slam",p:"GRATIS",note:"Primer recorrido. M&M's World: 1600 Broadway. Grand Slam diner icónico."},
-    {t:"18:30",n:"Merienda",p:"--",opts:"I'm Donut? (W 45th St) · Carlos Bakery · Krispy Kreme"},
-    {t:"19:00",n:"Broadway Show",p:"~$70-150 c/u",note:"⚠️ Reservar con anticipación. 19:30 suele ser el curtain usual.",ticket:true,ticketId:"broadway_d1"},
-    {t:"21:30",n:"Cena",p:"--",opts:"Carmine's · Ellen's Stardust Diner · Pasta de Pasta · Joe's Pizza · $1.50 Fresh Pizza"}
+    {t:"09:30",n:"Aterrizaje JFK",p:"--",addr:"John F. Kennedy International Airport, Queens"},
+    {t:"10:30",n:"AirTrain + Subway A hasta Times Square",p:"~$15 c/u",addr:"AirTrain → Jamaica Station → Subway A → 42nd St-Port Authority",note:"~50 min en total."},
+    {t:"13:00",n:"Llegada al hotel · dejar valijas",p:"--",addr:"330 W 40th St, Hell's Kitchen (entre 8th y 9th Ave)",note:"Check-in oficial a las 16hs. Guardan las valijas sin cargo."},
+    {t:"13:30",n:"Almuerzo",p:"--",opts:"Westway Diner (614 9th Ave) · Joe's Pizza (1435 Broadway) · $1.50 Fresh Pizza (varios en Midtown)"},
+    {t:"15:00",n:"Target · Five Below · caminata Hell's Kitchen",p:"Variable",addr:"Target: 11 W 42nd St · Five Below: buscar en maps la más cercana"},
+    {t:"16:00",n:"Check-in oficial",p:"--",addr:"Fairfield Marriott · 330 W 40th St"},
+    {t:"17:00",n:"Times Square · M&M's World · Hershey's · Grand Slam",p:"GRATIS",addr:"Times Square: Broadway & 7th Ave · M&M's: 1600 Broadway · Hershey's: 1593 Broadway"},
+    {t:"18:30",n:"Merienda",p:"--",opts:"I'm Donut? (W 45th St, Times Square) · Carlos Bakery (625 8th Ave) · Krispy Kreme (1601 Broadway)"},
+    {t:"19:00",n:"Broadway Show",p:"~$70-150 c/u",addr:"Theater District: W 41st–54th St entre 6th y 9th Ave",note:"⚠️ Reservar con anticipación o ir a TKTS (47th & Broadway) ese día.",ticket:true,ticketId:"broadway_d1"},
+    {t:"21:30",n:"Cena",p:"--",opts:"Carmine's (200 W 44th St) · Ellen's Stardust Diner (1650 Broadway) · Pasta de Pasta (673 9th Ave) · Joe's Pizza (1435 Broadway)"}
   ]},
   // ── DÍA 2: DOMINGO 22 ─────────────────────────────────────────────────────
   {day:2,stops:[
-    {t:"08:00",n:"Salida hacia Central Park",p:"--",note:"A pie o subte C desde 42nd St hasta 59th St."},
-    {t:"09:00",n:"Umpire Rock · Gapstow Bridge",p:"GRATIS",note:"Los dos puntos fotogénicos del sur antes de los turistas."},
-    {t:"10:00",n:"🎙️ Free Tour — Central Park",p:"GRATIS + propina",ft:"ft1",note:"Encuentro: West 59th St · Fin: 72nd St · ~2 hs 45 min"},
-    {t:"12:30",n:"Bicicleta en Central Park · Bethesda Fountain · Belvedere Castle · Alice in Wonderland · Jacqueline Kennedy Reservoir",p:"~$20 c/u bici",note:"Alquilar cerca del Loeb Boathouse o Citi Bike. También puede ir al Met."},
-    {t:"14:30",n:"Almuerzo — Lexington Candy Shop ⭐",p:"~$15 c/u",note:"1226 Lex Ave. Diner de 1925. Must."},
-    {t:"16:15",n:"AMNH — última hora gratis",p:"GRATIS (si llegan ~16:30)",note:"American Museum of Natural History. Puntual a las 16:15-16:30. 200 Central Park W.",ticket:true,ticketId:"amnh_d2"},
-    {t:"17:30",n:"Merienda",p:"--",opts:"Levain Bakery (W 74th St) · Magnolia Bakery"},
-    {t:"18:30",n:"Regreso a pie · Lincoln Center · Catedral de San Patricio · 5th Ave",p:"GRATIS",note:"Louis Vuitton · Lego Store · Apple Store."},
-    {t:"21:30",n:"Cena",p:"--",opts:"Carmine's · Ellen's Stardust Diner · Pasta de Pasta · Westway Diner · Joe's Pizza · $1.50 Fresh Pizza"}
+    {t:"08:00",n:"Salida hacia Central Park",p:"--",addr:"Entrada sur: Columbus Circle (59th St & 8th Ave)",note:"A pie desde el hotel ~25 min, o subte C hasta 59th St."},
+    {t:"09:00",n:"Umpire Rock · Gapstow Bridge",p:"GRATIS",addr:"Umpire Rock: Central Park South, cerca de 62nd St · Gapstow Bridge: The Pond, 59th St"},
+    {t:"10:00",n:"🎙️ Free Tour — Central Park",p:"GRATIS + propina",ft:"ft1",addr:"Encuentro: West 59th St (Columbus Circle) · Fin: 72nd St"},
+    {t:"12:30",n:"Bicicleta · Bethesda Fountain · Belvedere Castle · Alice in Wonderland · Jacqueline Kennedy Reservoir",p:"~$20 c/u bici",addr:"Loeb Boathouse (alquiler bici): E 74th St, dentro del parque · Bethesda: 72nd St Transverse · Belvedere: 79th St"},
+    {t:"14:30",n:"Almuerzo — Lexington Candy Shop ⭐",p:"~$15 c/u",addr:"1226 Lexington Ave (esquina E 83rd St)",note:"Diner de 1925. Must absoluto."},
+    {t:"16:15",n:"AMNH — última hora gratis",p:"GRATIS (~16:30)",addr:"200 Central Park W (esquina W 79th St)",note:"Llegar puntual. Ballena azul, dinosaurios, Planetario.",ticket:true,ticketId:"amnh_d2"},
+    {t:"17:30",n:"Merienda",p:"--",opts:"Levain Bakery (167 W 74th St) · Magnolia Bakery (401 Bleecker St o Rockefeller Center)"},
+    {t:"18:30",n:"Regreso a pie · Lincoln Center · Catedral de San Patricio · 5th Ave",p:"GRATIS",addr:"Lincoln Center: Columbus Ave & 64th St · St. Patrick's: 5th Ave & 50th St · Louis Vuitton: 1 E 57th St · Lego: 636 5th Ave"},
+    {t:"21:30",n:"Cena",p:"--",opts:"Carmine's (200 W 44th St) · Westway Diner (614 9th Ave) · Joe's Pizza (varios) · $1.50 Fresh Pizza"}
   ]},
   // ── DÍA 3: LUNES 23 ───────────────────────────────────────────────────────
   {day:3,stops:[
-    {t:"08:00",n:"Flatiron · Union Square Park · Strand Book Store · Madison Square Park · Parque Sara D. Roosevelt",p:"GRATIS",note:"Todo a pie desde el hotel. Strand: 828 Broadway."},
-    {t:"11:00",n:"Brooklyn Bridge — caminata desde Manhattan",p:"GRATIS",note:"~30 min. El carril de madera. Fotos del skyline desde arriba."},
-    {t:"12:00",n:"Almuerzo en Brooklyn",p:"--",opts:"Opciones en la zona de DUMBO / Brooklyn Bridge Park"},
-    {t:"14:00",n:"DUMBO · Jane's Carousel · Pebble Beach · Empire Fulton Ferry · Brooklyn Heights Promenade · Squibb Park Bridge · Brooklyn Bridge Park",p:"GRATIS",note:"La foto de Washington St con el Manhattan Bridge: pararse en el centro mirando al puente."},
-    {t:"18:00",n:"Vuelta en subte a Manhattan",p:"~$3 c/u",note:"Línea A o F desde High St."},
-    {t:"19:00",n:"Friends Experience · Central Perk",p:"~$70 c/u",note:"⚠️ Reservar en friendstheexperience.com. ~1 hora. 130 E 23rd St.",ticket:true,ticketId:"friends_d3"},
-    {t:"21:00",n:"Cena",p:"--",opts:"Chick-fil-A · Pasta Rullo / Papi Pasta (673 9th Ave) · Shake Shack"}
+    {t:"08:00",n:"Flatiron · Union Square Park · Strand Book Store · Madison Square Park · Parque Sara D. Roosevelt",p:"GRATIS",addr:"Flatiron: 175 5th Ave · Union Square: 14th St & Broadway · Strand: 828 Broadway · Sara D. Roosevelt: Chrystie St & Houston St"},
+    {t:"11:00",n:"Brooklyn Bridge — caminata desde Manhattan",p:"GRATIS",addr:"Acceso peatonal: Centre St & Chambers St (lado Manhattan)",note:"~30 min caminando. El carril de madera. Fotos del skyline desde arriba."},
+    {t:"12:00",n:"Almuerzo en Brooklyn",p:"--",opts:"Bubby's (1 Main St, DUMBO) · Brooklyn Bridge Park Pier 6 food trucks"},
+    {t:"14:00",n:"DUMBO · Jane's Carousel · Pebble Beach · Empire Fulton Ferry · Brooklyn Heights Promenade · Squibb Park Bridge · Brooklyn Bridge Park",p:"GRATIS",addr:"DUMBO: Washington St & Water St · Jane's Carousel: Pier 2, Brooklyn Bridge Park · Pebble Beach: Pier 6 · Brooklyn Heights Promenade: Columbia Heights",note:"La foto: pararse en el centro de Washington St mirando al Manhattan Bridge."},
+    {t:"18:00",n:"Vuelta en subte a Manhattan",p:"~$3 c/u",addr:"Subte A/C desde High St-Brooklyn Bridge hasta 23rd St",note:"~15 min."},
+    {t:"19:00",n:"Friends Experience · Central Perk",p:"~$70 c/u",addr:"130 E 23rd St (entre Lexington y Park Ave S)",note:"⚠️ Reservar en friendstheexperience.com.",ticket:true,ticketId:"friends_d3"},
+    {t:"21:00",n:"Cena",p:"--",opts:"Pasta Rullo / Papi Pasta (673 9th Ave) · Shake Shack (Madison Square Park) · Chick-fil-A (varios)"}
   ]},
   // ── DÍA 4: MARTES 24 ──────────────────────────────────────────────────────
   {day:4,stops:[
-    {t:"09:00",n:"Stavros Niarchos Foundation Library (SNFL) — mirador",p:"GRATIS",note:"455 5th Ave (esquina 40th). Vista espectacular desde arriba, gratis."},
-    {t:"09:30",n:"🎙️ Free Tour — Midtown / Times Square / Broadway",p:"GRATIS + propina",ft:"ft2",note:"Encuentro: Bryant Park (42nd & 6th, Wafels & Dinges) · Fin: Times Square · ~2 hs 30 min"},
-    {t:"12:00",n:"MoMA — Museum of Modern Art",p:"~$30 c/u",note:"⚠️ Reservar en moma.org. ~2 horas. Ir directo al Starry Night de Van Gogh. 11 W 53rd St.",ticket:true,ticketId:"moma_d4"},
-    {t:"14:00",n:"Almuerzo",p:"--",opts:"Nathan's Famous (Times Square) · Halal Guys (53rd & 6th)"},
-    {t:"15:30",n:"Greenacre Park · SUMMIT One Vanderbilt",p:"SUMMIT ~$55 c/u",note:"Greenacre Park: E 51st St (pocket park secreto con cascada). SUMMIT: ⚠️ reservar en summitov.com. Piso 93.",ticket:true,ticketId:"summit_d4"},
-    {t:"17:00",n:"Chrysler · Grand Central · SNFL · Public Library · Tudor City Bridge",p:"GRATIS",note:"Todo a pie. Grand Central: buscar el susurro en el arco."},
-    {t:"19:30",n:"Merienda",p:"--",opts:"Wafels and Dinges (varios en Midtown)"},
-    {t:"20:30",n:"Cena",p:"--",opts:"Emily Burger (con reserva) · Hamburger America (W 35th St)"},
-    {t:"21:30",n:"Comedy Cellar",p:"~$15 cover + 2 consumiciones",note:"⚠️ Reservar en comedycellar.com. Hasta las 3am. 117 MacDougal St.",ticket:true,ticketId:"comedy_d4"}
+    {t:"09:00",n:"Stavros Niarchos Foundation Library (SNFL) — mirador",p:"GRATIS",addr:"455 5th Ave (esquina W 40th St)",note:"Vista espectacular de Midtown desde la terraza. Gratis."},
+    {t:"09:30",n:"🎙️ Free Tour — Midtown / Times Square / Broadway",p:"GRATIS + propina",ft:"ft2",addr:"Encuentro: Bryant Park (42nd St & 6th Ave, frente a Wafels & Dinges) · Fin: Times Square"},
+    {t:"12:00",n:"MoMA — Museum of Modern Art",p:"~$30 c/u",addr:"11 W 53rd St (entre 5th y 6th Ave)",note:"⚠️ Reservar en moma.org. Ir directo al Van Gogh al entrar. ~2 horas.",ticket:true,ticketId:"moma_d4"},
+    {t:"14:00",n:"Almuerzo",p:"--",opts:"Nathan's Famous (1482 Broadway) · Halal Guys (53rd St & 6th Ave)"},
+    {t:"15:30",n:"Greenacre Park · SUMMIT One Vanderbilt",p:"SUMMIT ~$55 c/u",addr:"Greenacre Park: 217 E 51st St · SUMMIT: 45 E 42nd St (One Vanderbilt, piso 93)",note:"⚠️ Reservar SUMMIT en summitov.com. Ir al atardecer.",ticket:true,ticketId:"summit_d4"},
+    {t:"17:00",n:"Chrysler · Grand Central · Public Library · Tudor City Bridge",p:"GRATIS",addr:"Chrysler: 405 Lexington Ave · Grand Central: 89 E 42nd St · NYPL: 476 5th Ave · Tudor City: E 42nd St & 1st Ave"},
+    {t:"19:30",n:"Merienda",p:"--",opts:"Wafels and Dinges (varios, buscar en maps el más cercano)"},
+    {t:"20:30",n:"Cena",p:"--",opts:"Emily Burger (177 W 10th St, West Village — reservar) · Hamburger America (32 W 35th St)"},
+    {t:"21:30",n:"Comedy Cellar",p:"~$15 cover + 2 consumiciones",addr:"117 MacDougal St, Greenwich Village",note:"⚠️ Reservar en comedycellar.com. Hasta las 3am.",ticket:true,ticketId:"comedy_d4"}
   ]},
   // ── DÍA 5: MIÉRCOLES 25 ───────────────────────────────────────────────────
   {day:5,stops:[
-    {t:"09:00",n:"Departamento de Friends (foto) · Photo Booth · Souvenir",p:"~$15-30",note:"90 Bedford St, West Village. El frente del departamento de la serie."},
-    {t:"11:00",n:"🎙️ Free Tour — Greenwich Village",p:"GRATIS + propina",ft:"ft_village",note:"Encuentro: Washington Square Arch · Fin: Jefferson Market Library · ~2 hs"},
-    {t:"13:00",n:"Almuerzo",p:"--",opts:"Emily · Hamburger America · Leon's Bagels · Algo en Chinatown"},
-    {t:"15:00",n:"🎙️ Free Tour — Chinatown + Little Italy + SoHo",p:"GRATIS + propina",ft:"ft3",note:"Encuentro: Foley Square · Fin: Gunther Building, SoHo · ~2 hs"},
-    {t:"18:00",n:"Merienda — Lafayette ⭐",p:"~$8-15 c/u",note:"380 Lafayette St, Nolita. El café más bonito de downtown."},
-    {t:"20:30",n:"Patinaje sobre hielo",p:"~$30-80 c/u",note:"Bryant Park (gratis entrar, se pagan patines ~$20) o Rockefeller Center (~$30-35)."},
-    {t:"22:00",n:"Cena",p:"--",opts:"Katz's · S'MAC (mac & cheese)"}
+    {t:"09:00",n:"Departamento de Friends (foto exterior) · Photo Booth · Souvenir",p:"~$15-30",addr:"90 Bedford St (esquina Grove St), West Village",note:"El frente del departamento de la serie. Solo exterior, no se puede entrar."},
+    {t:"11:00",n:"🎙️ Free Tour — Greenwich Village",p:"GRATIS + propina",ft:"ft_village",addr:"Encuentro: Washington Square Park (arco norte) · Fin: Jefferson Market Library (6th Ave & W 10th St)"},
+    {t:"13:00",n:"Almuerzo",p:"--",opts:"Emily (177 W 10th St) · Hamburger America (32 W 35th St) · Leon's Bagels · Chinatown: Vanessa's Dumplings (220 E 14th St)"},
+    {t:"15:00",n:"🎙️ Free Tour — Chinatown + Little Italy + SoHo",p:"GRATIS + propina",ft:"ft3",addr:"Encuentro: Foley Square (Centre St & Worth St) · Fin: Gunther Building, SoHo (469-475 Broome St)"},
+    {t:"18:00",n:"Merienda — Lafayette ⭐",p:"~$8-15 c/u",addr:"380 Lafayette St, Nolita (entre Great Jones St y E 4th St)",note:"El café más bonito de downtown. Croissants y café."},
+    {t:"20:30",n:"Patinaje sobre hielo",p:"~$20-35 c/u patines",addr:"Bryant Park: 6th Ave & 42nd St (gratis entrar, patines ~$20) · Rockefeller Center: 45 Rockefeller Plaza (~$30-35)"},
+    {t:"22:00",n:"Cena",p:"--",opts:"Katz's Delicatessen (205 E Houston St) · S'MAC (345 E 12th St)"}
   ]},
   // ── DÍA 6: JUEVES 26 — THANKSGIVING ──────────────────────────────────────
   {day:6,stops:[
-    {t:"06:00",n:"Conseguir lugar en Central Park West",p:"--",note:"Salir muy temprano. Las calles cierran progresivamente."},
-    {t:"08:30",n:"🎉 Macy's Thanksgiving Parade — 100° Aniversario",p:"GRATIS",note:"Posición ideal: Central Park West entre 60th y 72nd. Abrigo total, snacks, hidratación."},
-    {t:"12:00",n:"Almuerzo de Thanksgiving",p:"~$35-50 c/u",note:"⚠️ Reservar restaurante con menú especial con anticipación."},
-    {t:"14:30",n:"Descanso",p:"--",note:"Vuelta al hotel. Van a necesitarlo."},
-    {t:"15:30",n:"High Line · Vessel · Top of the Rock / The New Yorker / Madison Square Garden",p:"GRATIS",note:"High Line: 15 min a pie del hotel. Vessel se ve desde afuera gratis."},
-    {t:"16:30",n:"Little Island · Chelsea Market",p:"GRATIS",note:"Little Island: Pier 55 (W 13th St). Al atardecer. Chelsea Market: 75 9th Ave."},
-    {t:"17:00",n:"Merienda",p:"--",opts:"I'm Donut? · Carlos Bakery · Krispy Kreme · Magnolia Bakery"},
-    {t:"18:00",n:"🎙️ Free Tour — High Line + Hudson Yards + Chelsea",p:"GRATIS + propina",ft:"ft4",note:"Encuentro: Estación línea 7 Hudson Yards · Fin: Pier 57 · ~2 hs 30 min"},
-    {t:"20:30",n:"Rooftop Pier 57",p:"Variable",note:"Al terminar el tour están ahí. Cenar arriba o Tacos/Shake Shack y subir al rooftop."}
+    {t:"06:00",n:"Conseguir lugar en Central Park West",p:"--",addr:"Central Park West entre W 60th y W 72nd St",note:"Salir muy temprano. Las calles cierran desde las 7am."},
+    {t:"08:30",n:"🎉 Macy's Thanksgiving Parade — 100° Aniversario",p:"GRATIS",addr:"Sale de 77th St & Central Park West · Baja por CW · Gira en 6th Ave · Termina en Herald Square (34th St & Broadway)",note:"Abrigo total, snacks, hidratación. Puede haber -5°C."},
+    {t:"12:00",n:"Almuerzo de Thanksgiving",p:"~$35-50 c/u",addr:"⚠️ Reservar restaurante con menú especial. Muchos cierran ese día."},
+    {t:"14:30",n:"Descanso",p:"--",addr:"Hotel: 330 W 40th St"},
+    {t:"15:30",n:"High Line · Vessel · The New Yorker · Madison Square Garden",p:"GRATIS",addr:"High Line entrada sur: Gansevoort St & Washington St · Vessel: 20 Hudson Yards · The New Yorker: 481 8th Ave · MSG: 4 Pennsylvania Plaza"},
+    {t:"16:30",n:"Little Island · Chelsea Market",p:"GRATIS",addr:"Little Island: Pier 55, Hudson River Park (W 13th St) · Chelsea Market: 75 9th Ave (entre 15th y 16th St)"},
+    {t:"17:00",n:"Merienda",p:"--",opts:"I'm Donut? (W 45th St) · Carlos Bakery (625 8th Ave) · Krispy Kreme (1601 Broadway) · Magnolia Bakery (401 Bleecker St)"},
+    {t:"18:00",n:"🎙️ Free Tour — High Line + Hudson Yards + Chelsea",p:"GRATIS + propina",ft:"ft4",addr:"Encuentro: Estación 7 Hudson Yards (34th St & 11th Ave) · Fin: Pier 57 (W 15th St & Hudson River)"},
+    {t:"20:30",n:"Rooftop Pier 57",p:"Variable",addr:"Pier 57, W 15th St & West Side Highway",note:"Al terminar el tour están ahí. Cenar arriba o Tacos/Shake Shack y subir al rooftop."}
   ]},
   // ── DÍA 7: VIERNES 27 ─────────────────────────────────────────────────────
   {day:7,stops:[
-    {t:"09:00",n:"Charging Bull · National Museum of the American Indian",p:"GRATIS",note:"Bowling Green / Whitehall St. El toro instalado ilegalmente en 1989."},
-    {t:"09:15",n:"🎙️ Free Tour — Downtown / Wall Street / 9-11",p:"GRATIS + propina",ft:"ft5",note:"Encuentro: escaleras del National Museum of the American Indian · Fin: 9/11 Memorial · ~2 hs 30 min"},
-    {t:"12:00",n:"Oculus · One World Observatory · Jenga Tower Bar",p:"OWO ~$44 c/u",note:"⚠️ Reservar OWO en oneworldobservatory.com. ~1 hora. Vista piso 100.",ticket:true,ticketId:"owo_d7"},
-    {t:"13:30",n:"Almuerzo",p:"--",opts:"Shake Shack Battery Park · Tacos No.1 · Pasta Papi (cerca de Hudson Yards)"},
-    {t:"15:00",n:"Rockefeller (ver si subimos) · Empire State · Morgan Library",p:"Empire ~$48 c/u",note:"Empire: ⚠️ reservar en esbnyc.com. ~2 horas. Morgan Library si llegan antes de las 17hs.",ticket:true,ticketId:"empire_d7"},
-    {t:"19:30",n:"Saks Fifth Avenue Light Show",p:"GRATIS",note:"⚠️ Confirmar inicio en noviembre 2026. Cada 30 min desde las 18hs aprox."},
-    {t:"22:30",n:"Cena",p:"--",opts:"Carmine's · Ellen's Stardust Diner · Pasta de Pasta · Halal Cart 53rd & 6th"}
+    {t:"09:00",n:"Charging Bull · National Museum of the American Indian",p:"GRATIS",addr:"Charging Bull: Broadway & Morris St, Bowling Green · Museo: 1 Bowling Green (Edificio Federal de Aduanas)"},
+    {t:"09:15",n:"🎙️ Free Tour — Downtown / Wall Street / 9-11",p:"GRATIS + propina",ft:"ft5",addr:"Encuentro: escaleras del Museo Nacional del Indio Americano (1 Bowling Green) · Fin: 9/11 Memorial (180 Greenwich St)"},
+    {t:"12:00",n:"Oculus · One World Observatory · Jenga Tower Bar",p:"OWO ~$44 c/u",addr:"Oculus: 185 Greenwich St · One World Trade Center: 285 Fulton St · Jenga Bar: en el área WTC",note:"⚠️ Reservar OWO en oneworldobservatory.com.",ticket:true,ticketId:"owo_d7"},
+    {t:"13:30",n:"Almuerzo",p:"--",opts:"Shake Shack Battery Park (2 Fulton St) · Tacos No.1 (229 W 43rd St o 136 E 46th St) · Pasta Papi (673 9th Ave)"},
+    {t:"15:00",n:"Rockefeller Center · Empire State · Morgan Library",p:"Empire ~$48 c/u",addr:"Rockefeller: 30 Rockefeller Plaza · Empire State: 20 W 34th St · Morgan Library: 225 Madison Ave (hasta 17hs)",note:"⚠️ Reservar Empire State en esbnyc.com.",ticket:true,ticketId:"empire_d7"},
+    {t:"19:30",n:"Saks Fifth Avenue Light Show",p:"GRATIS",addr:"611 5th Ave (entre 49th y 50th St, frente a St. Patrick's Cathedral)",note:"⚠️ Confirmar fechas de inicio en noviembre 2026. Cada 30 min."},
+    {t:"22:30",n:"Cena",p:"--",opts:"Carmine's (200 W 44th St) · Ellen's Stardust (1650 Broadway) · Halal Cart (53rd St & 6th Ave)"}
   ]},
   // ── DÍA 8: SÁBADO 28 ──────────────────────────────────────────────────────
   {day:8,stops:[
-    {t:"08:00",n:"Subte a Battery Park",p:"~$3 c/u",note:"Línea 1 desde Times Square hasta South Ferry. ~15 min."},
-    {t:"09:00",n:"Ferry + Estatua de la Libertad + Ellis Island",p:"~$40 c/u",note:"⚠️ Reservar en statuecruises.com. ~4 horas. Ellis Island tiene el museo de inmigración.",ticket:true,ticketId:"liberty_d8"},
-    {t:"12:30",n:"Almuerzo",p:"--",opts:"Shake Shack Battery Park · Ver dónde están"},
-    {t:"13:30",n:"Vuelta al hotel en subte",p:"~$3 c/u",note:"Línea 1 desde South Ferry hasta Times Square."},
-    {t:"15:00",n:"Estar en el helipuerto",p:"--",note:"FlyNYON: W 30th St & 12th Ave. ~15 min a pie del hotel."},
-    {t:"16:00",n:"🚁 Helicóptero por NYC — FlyNYON",p:"~$150-250 c/u",note:"⚠️ Reservar en flynyon.com. ~15-20 min de vuelo. Vista aérea de Manhattan y la Estatua.",ticket:true,ticketId:"heli_d8"},
-    {t:"18:00",n:"Vuelta al hotel · descanso",p:"--",note:"El día fue largo."},
-    {t:"22:00",n:"230 Fifth Rooftop",p:"~$20-30 c/u (consumición mínima)",note:"W 30th St & 5th Ave. Empire State iluminado. Sin reserva. Mantas de polar incluidas."}
+    {t:"08:00",n:"Subte a Battery Park",p:"~$3 c/u",addr:"Subte 1 desde Times Square-42nd St hasta South Ferry",note:"~15 min."},
+    {t:"09:00",n:"Ferry + Estatua de la Libertad + Ellis Island",p:"~$40 c/u",addr:"Terminal: Battery Park, 1 Audrey Zapp Dr (cerca de State St)",note:"⚠️ Reservar en statuecruises.com. ~4 horas.",ticket:true,ticketId:"liberty_d8"},
+    {t:"12:30",n:"Almuerzo",p:"--",opts:"Shake Shack Battery Park (2 Fulton St) · Ver qué hay cerca"},
+    {t:"13:30",n:"Vuelta al hotel en subte",p:"~$3 c/u",addr:"Subte 1 desde South Ferry hasta Times Square-42nd St"},
+    {t:"15:00",n:"Estar en el helipuerto",p:"--",addr:"FlyNYON Helipad: W 30th St & 12th Ave (Hudson River)",note:"~15 min a pie del hotel hacia el oeste."},
+    {t:"16:00",n:"🚁 Helicóptero por NYC — FlyNYON",p:"~$150-250 c/u",addr:"Salida: W 30th St & 12th Ave, Manhattan Heliport",note:"⚠️ Reservar en flynyon.com. ~15-20 min de vuelo.",ticket:true,ticketId:"heli_d8"},
+    {t:"18:00",n:"Vuelta al hotel · descanso",p:"--",addr:"330 W 40th St"},
+    {t:"22:00",n:"230 Fifth Rooftop",p:"~$20-30 c/u",addr:"230 Fifth Ave (entre 26th y 27th St)",note:"Sin reserva. Empire State iluminado de fondo. Mantas de polar incluidas."}
   ]},
   // ── DÍA 9: DOMINGO 29 ─────────────────────────────────────────────────────
   {day:9,stops:[
-    {t:"08:30",n:"Check-out · dejar valijas en consigna del hotel",p:"--",note:"El hotel guarda valijas hasta las 22hs sin problema."},
-    {t:"10:00",n:"Roosevelt Island Tramway · Roosevelt Island",p:"~$3 c/u",note:"59th St & 2nd Ave. El teleférico más icónico de NYC."},
-    {t:"11:00",n:"Queensbridge Park · Hunters Point South Park (Queens)",p:"GRATIS",note:"Vista del skyline de Manhattan desde Queens. Completamente diferente."},
+    {t:"08:30",n:"Check-out · dejar valijas en consigna del hotel",p:"--",addr:"Fairfield Marriott · 330 W 40th St",note:"El hotel guarda valijas hasta las 22hs sin cargo."},
+    {t:"10:00",n:"Roosevelt Island Tramway · Roosevelt Island",p:"~$3 c/u",addr:"Tramway: 59th St & 2nd Ave (esquina, entrada en 2nd Ave) · Roosevelt Island: acceso por el tramway",note:"El teleférico urbano más icónico de NYC. Vista única del Queensboro Bridge."},
+    {t:"11:00",n:"Queensbridge Park · Hunters Point South Park",p:"GRATIS",addr:"Queensbridge Park: 21st St & 41st Ave, Queens · Hunters Point South: 54th Ave & Center Blvd, Long Island City",note:"Vista del skyline de Manhattan desde Queens. Completamente diferente."},
     {t:"13:30",n:"Almuerzo",p:"--",note:"Ver dónde están en Queens o vuelta a Manhattan."},
-    {t:"17:00",n:"Volver al hotel · retirar valijas",p:"--",note:""},
-    {t:"17:30",n:"Salir hacia JFK",p:"~$15 c/u",note:"Subte A desde 42nd St. ~50 min. Salir con 3.5 horas mínimo."},
-    {t:"18:15",n:"Llegada aeropuerto JFK",p:"--",note:"Check-in, migraciones, security. Todo lleva tiempo."},
-    {t:"22:00",n:"✈️ Vuelo JFK → EZE",p:"--",note:"American Airlines. ~10 hs 45 min. Llegan el lunes 30 a las 10:45am."}
+    {t:"17:00",n:"Volver al hotel · retirar valijas",p:"--",addr:"330 W 40th St"},
+    {t:"17:30",n:"Salir hacia JFK",p:"~$15 c/u",addr:"Subte A desde 42nd St-Port Authority hasta Howard Beach → AirTrain a JFK",note:"~50 min. Salir con 3.5 horas mínimo antes del vuelo."},
+    {t:"18:15",n:"Llegada aeropuerto JFK",p:"--",addr:"John F. Kennedy International Airport, Queens",note:"Check-in, migraciones, security. Todo lleva tiempo."},
+    {t:"22:00",n:"✈️ Vuelo JFK → EZE",p:"--",addr:"Terminal 8, JFK (American Airlines)",note:"~10 hs 45 min. Llegan el lunes 30 a las 10:45am a Buenos Aires."}
   ]}
 ];
 
@@ -1136,13 +1136,13 @@ const FOOD=[
 const COSTS=[
   ["🚇","MetroCard / OMNY 9 días","~$34","~$136",""],
   ["✈️","AirTrain + Subway JFK x2","~$30","~$120",""],
-  ["🎭","Broadway — 1 show (TKTS)","~$120","~$360",""],
+  ["🎭","Broadway — 1 show (TKTS)","~$90","~$360",""],
   ["🏙️","Empire State Building","~$48","~$192",""],
   ["🎨","MoMA","~$30","~$120",""],
   ["🔮","SUMMIT One Vanderbilt","~$55","~$220",""],
   ["🗽","Estatua de la Libertad + Ellis","~$40","~$160",""],
   ["🌍","One World Observatory","~$44","~$176",""],
-  ["🎬","Friends Experience","~$85","~$140",""],
+  ["🎬","Friends Experience","~$35","~$140",""],
   ["🏛️","Met Museum (sugerido)","~$30","~$120",""],
   ["🏠","Comedy Cellar (cover + 2 consumiciones)","~$35","~$140",""],
   ["🚲","Bicicletas Central Park","~$20","~$80",""],
@@ -1150,7 +1150,7 @@ const COSTS=[
   ["🎙️","Free Tours x5 (propinas)","~$60","~$240",""],
   ["—","Subtotal entradas y actividades","~$751","~$3.004",""],
   ["🍕","Comida (9 días × ~$45)","~$405","~$1.620",""],
-  ["🛍️","Compras (estimado)","~$650","~",""],
+  ["🛍️","Compras (estimado)","~$150","~$600",""],
   ["🔀","Imprevistos (10%)","~$130","~$520",""],
   ["💰","TOTAL","~$1.436","~$5.744",""]
 ];
@@ -1355,6 +1355,7 @@ function renderDay(dayData){
       <div class="stop-time">${s.t}</div>
       <div class="stop-body">
         <div class="stop-name">${s.n}</div>
+        ${s.addr?`<div style="font-size:11px;color:var(--ink3);margin-top:1px;margin-bottom:2px">📍 ${s.addr}</div>`:''}
         ${s.note?`<div class="stop-note">${s.note}</div>`:''}
         ${ftHtml}${optsHtml}${ticketHtml}
       </div>
@@ -1846,36 +1847,36 @@ function renderScores(){
     grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="big">🔍</div><p>No hay resultados para "<strong>${scoreSearchQ}</strong>"</p></div>`;
     return;
   }
-  // Photo mapping for score cards
+ // Photo mapping for score cards
   const PLACE_PHOTOS={
-    "Times Square":"https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=400&q=75",
-    "Central Park":"https://images.unsplash.com/photo-1534430480872-3498386e7856?w=400&q=75",
-    "Brooklyn Bridge":"https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=400&q=75",
-    "MoMA":"https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&q=75",
-    "Empire State Building":"https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?w=400&q=75",
-    "SUMMIT One Vanderbilt":"https://images.unsplash.com/photo-1602940659805-770d1b3b9911?w=400&q=75",
-    "Estatua de la Libertad":"https://images.unsplash.com/photo-1538430859929-7e9d0fe5ffe3?w=400&q=75",
-    "The Metropolitan Museum of Art":"https://images.unsplash.com/photo-1543946602-a0fce8117697?w=400&q=75",
-    "AMNH":"https://images.unsplash.com/photo-1567446537708-ac4aa75c9c28?w=400&q=75",
-    "High Line":"https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=400&q=75",
-    "Chelsea Market":"https://images.unsplash.com/photo-1517732306149-e8f829eb588a?w=400&q=75",
-    "9/11 Memorial":"https://images.unsplash.com/photo-1560969184-10fe8719e047?w=400&q=75",
-    "One World Observatory":"https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?w=400&q=75",
-    "Rockefeller Center":"https://images.unsplash.com/photo-1576485375217-d6a95e34d043?w=400&q=75",
-    "Grand Central Terminal":"https://images.unsplash.com/photo-1568393691622-c7ba131d63b4?w=400&q=75",
-    "Flatiron Building":"https://images.unsplash.com/photo-1490644658840-3f2e3f8c5625?w=400&q=75",
-    "DUMBO":"https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=400&q=75",
-    "Brooklyn Heights Promenade":"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=75",
-    "Vessel (Hudson Yards)":"https://images.unsplash.com/photo-1602940659805-770d1b3b9911?w=400&q=75",
-    "Pier 57 Rooftop":"https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=400&q=75",
-    "Roosevelt Island Tramway":"https://images.unsplash.com/photo-1522083165195-3424ed129620?w=400&q=75",
-    "Morgan Library":"https://images.unsplash.com/photo-1543946602-a0fce8117697?w=400&q=75",
-    "Catedral de San Patricio":"https://images.unsplash.com/photo-1569263979104-865ab7cd8d13?w=400&q=75",
-    "230 Fifth Rooftop":"https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?w=400&q=75",
-    "Hunters Point South Park":"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=75",
-    "Friends Experience":"https://images.unsplash.com/photo-1590736969955-71cc94901144?w=400&q=75",
-    "Madison Square Park":"https://images.unsplash.com/photo-1490644658840-3f2e3f8c5625?w=400&q=75",
-    "Charging Bull":"https://images.unsplash.com/photo-1560969184-10fe8719e047?w=400&q=75",
+    "Times Square":"https://es.123rf.com/photo_11542520_nueva-york-13-de-noviembre-times-square-es-un-cruce-muy-tur%C3%ADstica-de-arte-de-ne%C3%B3n-y-el-comercio-y.html",
+    "Central Park":"https://www.google.com/imgres?q=central%20park%20en%20noviembre&imgurl=https%3A%2F%2Fwww.newyorkwelcome.net%2Fkimg%2F1200%2F600%2Fcentral-park-autunno.jpg&imgrefurl=https%3A%2F%2Fwww.newyorkwelcome.net%2Fes%2Fexplora%2Fbueno-saber%2Fotono-en-nueva-york.htm&docid=5nJ4VCz_hos1UM&tbnid=py8s9f-7i0z-LM&vet=12ahUKEwjVrIbU7e6WAxV2s5UCHYP3EZ4QnPAOegQISxAA..i&w=1200&h=600&hcb=2&ved=2ahUKEwjVrIbU7e6WAxV2s5UCHYP3EZ4QnPAOegQISxAA",
+    "Brooklyn Bridge":"https://f.civitatis.com/estados-unidos/nueva-york/galeria/cruzando-puente-brooklyn-atardecer.jpg",
+    "MoMA":"https://static.anuevayork.com/wp-content/uploads/2020/09/29143629/Visitar-el-museo-Moma-de-Nueva-York-Los-nenufares-de-Monet-1500.jpg",
+    "Empire State Building":"https://www.google.com/imgres?q=empire%20state%20building&imgurl=https%3A%2F%2Fthumb.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F1%2F10%2FEmpire_State_Building_%2528aerial_view%2529.jpg%2F330px-Empire_State_Building_%2528aerial_view%2529.jpg%3Futm_source%3Des.wikipedia.org%26utm_campaign%3Dparser%26utm_content%3Dthumbnail&imgrefurl=https%3A%2F%2Fes.wikipedia.org%2Fwiki%2FEmpire_State_Building&docid=VZs35T02epMk2M&tbnid=kJpbCI8-mxfeuM&vet=12ahUKEwjzjd387e6WAxUsqpUCHT6eEdYQnPAOegQISBAA..i&w=330&h=495&hcb=2&ved=2ahUKEwjzjd387e6WAxUsqpUCHT6eEdYQnPAOegQISBAA",
+    "SUMMIT One Vanderbilt":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSc6wmiu9WQYdOn_TC20OULd01EeKPivQHpQ_n1qWAD3Q&s=10",
+    "Estatua de la Libertad":"https://www.google.com/imgres?q=estatua%20de%20la%20libertad&imgurl=https%3A%2F%2Fcontent-historia.nationalgeographic.com.es%2Fmedio%2F2023%2F10%2F10%2Fcaptura-de-pantalla-2023-10-10-a-las-17-32-30_5cfff97a_231010173416_1280x1515.jpg&imgrefurl=https%3A%2F%2Fhistoria.nationalgeographic.com.es%2Fa%2Festatua-libertad-encarnacion-sueno-americano_20308&docid=UGPLB_zFSyYthM&tbnid=gCSwXAnpPfIFYM&vet=12ahUKEwig-s6L7u6WAxW9vJUCHUrFAWcQnPAOegQIPBAA..i&w=1280&h=1515&hcb=2&ved=2ahUKEwig-s6L7u6WAxW9vJUCHUrFAWcQnPAOegQIPBAA",
+    "The Metropolitan Museum of Art":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjFH3vOYpmLzgwHYBFdvKFpp8YY_mVp8O8aB1QxWvrng&s=10",
+    "AMNH":"https://newyorkpass.com/es/things-to-do/a-complete-guide-to-the-american-museum-of-natural-history",
+    "High Line":"https://res.cloudinary.com/dtljonz0f/image/upload/c_auto,ar_4:3,w_3840,g_auto/f_auto/q_auto/v1/gc-v1/new-york-pass/NewYorkPass_High_Line_ss_non-editorial_juyuqa?_a=BAVT+OE80",
+    "Chelsea Market":"https://static.anuevayork.com/wp-content/uploads/2023/04/13043145/Visitar-el-mercado-de-Chelsea-en-Nueva-York-Tiendas-y-restaurantes.jpg",
+    "9/11 Memorial":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNEgNuYiMNdP-ik1BVUtY8pHbUeDwrj7bd9aSYZdiYYw&s=10",
+    "One World Observatory":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQa65DzDAAheomgOcj7VOvS_0-mgV3-Py8NfYMN0ePdGg&s=10",
+    "Rockefeller Center":"https://dynamic-media-cdn.tripadvisor.com/media/photo-o/34/31/11/57/caption.jpg?w=1100&h=1100&s=1",
+    "Grand Central Terminal":"https://static.anuevayork.com/wp-content/uploads/2016/09/21112922/Guia-de-Grand-Central-Terminal-Nueva-York-1.jpg",
+    "Flatiron Building":"https://estudioarquitectos.cl/2025/11/19/primer-vistazo-a-los-interiores-residenciales-del-renovado-edificio-flatiron-de-la-ciudad-de-nueva-york/",
+    "DUMBO":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTEJ5GuqCLKTB396Uy071zGmmKJJwLp3DYLlStKjjOXw&s=10",
+    "Brooklyn Heights Promenade":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRy7tYJOIFKghY7A35693vBA2QnKcpdPOqH3Bq6qrecaQ&s=10",
+    "Vessel (Hudson Yards)":"https://image.nuevayork.es/wp-content/uploads/2018/01/Hudson-Yards-Vessel-in-New-York.jpg.webp",
+    "Pier 57 Rooftop":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmYnb22N-JqioVpHS59sVHmTnOHlutGQvNng1VLmyxL1hIBSCfSHeX3hw&s=10",
+    "Roosevelt Island Tramway":"https://nyc.eu/wp-content/uploads/2024/12/Roosevelt-Island-Tramway-vue-ile-roosevelt-island.jpg",
+    "Morgan Library":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSB2DUeReja0MQNl5a0aWMw6ZOxKQw4DQafa8CmiCWTgvi3n-05DRKF3x8&s=10",
+    "Catedral de San Patricio":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5af1rSAv-zWetLWxKj66nk4uhevkdG2q6A8vq339-rm5T1TTi-oaplQs&s=10",
+    "230 Fifth Rooftop":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4tJqS4c9FtE6PgQmmsZNZ8in661yIcaW-zHBAIADYbiMCrAGeMm8zwKI&s=10",
+    "Hunters Point South Park":"https://swacdn.s3.amazonaws.com/wp-content/uploads/2019/02/16211004/Hunters-Point-South-Phase-II-David-Lloyd-1038_002.jpg",
+    "Friends Experience":"https://static.anuevayork.com/wp-content/uploads/2021/05/05112301/The-Friends-Experience-la-exposicion-de-Friends-en-Nueva-York-Apartamento-de-Monica.jpg",
+    "Madison Square Park":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaZKx05gqhSCJRZiAgV3i6Q_rrV9blZd8Sosm8ti35YA&s=10",
+    "Charging Bull":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmzumNn1enCLkR4mZdR8gZZp6MagRVYUSsmXtnrTZDAQ&s=10",
   };
   const DEFAULT_PHOTO="https://images.unsplash.com/photo-1522083165195-3424ed129620?w=400&q=75";
   const DAY_LABEL_MAP={1:'Sáb 21',2:'Dom 22',3:'Lun 23',4:'Mar 24',5:'Mie 25',6:'Jue 26',7:'Vie 27',8:'Sáb 28',9:'Dom 29'};
