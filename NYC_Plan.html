@@ -342,7 +342,7 @@ nav{background:var(--ink);position:sticky;top:0;z-index:100;border-bottom:1px so
 .ticket-check.done .ticket-check-label{color:var(--teal)}
 
 /* COUNTDOWN */
-.countdown-wrap{display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(8px);border-radius:24px;padding:10px 20px}
+.countdown-wrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
 .cd-num{font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:var(--gold2);line-height:1}
 .cd-label{font-size:11px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.1em}
 .cd-sep{width:1px;height:36px;background:rgba(255,255,255,.15)}
@@ -400,6 +400,13 @@ nav{background:var(--ink);position:sticky;top:0;z-index:100;border-bottom:1px so
 <body>
 
 <!-- HERO -->
+<!-- COUNTDOWN TOP BAR -->
+<div id="countdown-top" style="background:var(--ink);border-bottom:2px solid var(--gold);padding:0;overflow:hidden">
+  <div style="max-width:1100px;margin:0 auto;padding:0 24px">
+    <div id="countdown-badge" style="padding:18px 0"></div>
+  </div>
+</div>
+
 <div class="hero">
   <div class="hero-bg"></div>
   <div class="hero-overlay"></div>
@@ -412,7 +419,6 @@ nav{background:var(--ink);position:sticky;top:0;z-index:100;border-bottom:1px so
       <div class="hero-pill"><strong>Hotel:</strong> Fairfield Marriott Times Square · 330 W 40th St</div>
       <div class="hero-pill">🎉 Macy's Parade <strong>100° Aniversario</strong></div>
     </div>
-    <div id="countdown-badge" style="margin-bottom:18px"></div>
     <div class="hero-travelers">
       <div class="trav-av" style="background:#c8392b">R</div>
       <div class="trav-av" style="background:#1a7a6e">M</div>
@@ -438,6 +444,7 @@ nav{background:var(--ink);position:sticky;top:0;z-index:100;border-bottom:1px so
     <button class="nav-btn" onclick="showTab('linknyc',this)">LinkNYC</button>
     <button class="nav-btn" onclick="showTab('clima',this)">Clima</button>
     <button class="nav-btn" onclick="showTab('conversor',this)">Conversor</button>
+    <button class="nav-btn" onclick="showTab('mimapa',this)">Mi Mapa</button>
   </div>
 </nav>
 
@@ -677,6 +684,40 @@ nav{background:var(--ink);position:sticky;top:0;z-index:100;border-bottom:1px so
 </div>
 </div>
 
+<!-- TAB MI MAPA -->
+<div id="tab-mimapa" class="page-section">
+<div class="container">
+  <div class="section-header" style="margin-top:48px">
+    <div class="section-label">Google Maps guardado</div>
+    <h2 class="section-title">Mi Mapa de NYC</h2>
+    <p class="section-sub">Todos los lugares guardados en Google Maps. Tocá cualquier pin para ver el nombre y la dirección.</p>
+  </div>
+  <div style="background:var(--paper2);border:1px solid var(--border);border-radius:var(--rl);padding:24px;text-align:center;margin-bottom:20px">
+    <div style="font-size:36px;margin-bottom:12px">🗺️</div>
+    <div style="font-size:16px;font-weight:700;color:var(--ink);margin-bottom:8px">Mapa guardado de Google Maps</div>
+    <div style="font-size:13px;color:var(--ink3);margin-bottom:20px;max-width:400px;margin-left:auto;margin-right:auto;line-height:1.6">
+      Los mapas personales de Google Maps no se pueden embeber directamente. Abrilo en Google Maps para ver todos los lugares guardados.
+    </div>
+    <a href="https://maps.app.goo.gl/pRfYGPCDRD5dTBcq7" target="_blank"
+      style="display:inline-flex;align-items:center;gap:10px;font-size:14px;font-weight:700;color:#fff;background:var(--teal);padding:14px 24px;border-radius:var(--rl);text-decoration:none;transition:opacity .15s"
+      onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+      📍 Abrir Mi Mapa en Google Maps ↗
+    </a>
+    <div style="margin-top:20px;font-size:12px;color:var(--ink3)">
+      Tip: en el celular se abre directo en la app de Google Maps con todos los pines guardados.
+    </div>
+  </div>
+  <!-- Intento de embed — funciona si el mapa es público -->
+  <div style="border-radius:var(--rl);overflow:hidden;border:1px solid var(--border);margin-bottom:16px">
+    <iframe
+      src="https://maps.google.com/maps?q=Nueva+York&output=embed&z=13"
+      width="100%" height="400" frameborder="0" style="display:block" loading="lazy">
+    </iframe>
+  </div>
+
+</div>
+</div>
+
 <!-- TAB CONVERSOR -->
 <div id="tab-conversor" class="page-section">
 <div class="container">
@@ -726,6 +767,7 @@ function loadST(){
       foodChecked:s.foodChecked||{},
       tickets:s.tickets||{},
       ftReserved:s.ftReserved||{},
+      paidTransfers:s.paidTransfers||{},
       pagador:s.pagador||null,
       dividir:s.dividir||["reni","mateo","nico","benja"]
     };}
@@ -1094,21 +1136,21 @@ const FOOD=[
 const COSTS=[
   ["🚇","MetroCard / OMNY 9 días","~$34","~$136",""],
   ["✈️","AirTrain + Subway JFK x2","~$30","~$120",""],
-  ["🎭","Broadway — 1 show (TKTS)","~$90","~$360",""],
+  ["🎭","Broadway — 1 show (TKTS)","~$120","~$360",""],
   ["🏙️","Empire State Building","~$48","~$192",""],
   ["🎨","MoMA","~$30","~$120",""],
   ["🔮","SUMMIT One Vanderbilt","~$55","~$220",""],
   ["🗽","Estatua de la Libertad + Ellis","~$40","~$160",""],
   ["🌍","One World Observatory","~$44","~$176",""],
-  ["🎬","Friends Experience","~$35","~$140",""],
+  ["🎬","Friends Experience","~$85","~$140",""],
   ["🏛️","Met Museum (sugerido)","~$30","~$120",""],
   ["🏠","Comedy Cellar (cover + 2 consumiciones)","~$35","~$140",""],
   ["🚲","Bicicletas Central Park","~$20","~$80",""],
-  ["🚁","Helicóptero FlyNYON x2 días","~$200","~$800",""],
+  ["🦖","AMNH","~$40","~$160",""],
   ["🎙️","Free Tours x5 (propinas)","~$60","~$240",""],
   ["—","Subtotal entradas y actividades","~$751","~$3.004",""],
   ["🍕","Comida (9 días × ~$45)","~$405","~$1.620",""],
-  ["🛍️","Compras (estimado)","~$150","~$600",""],
+  ["🛍️","Compras (estimado)","~$650","~",""],
   ["🔀","Imprevistos (10%)","~$130","~$520",""],
   ["💰","TOTAL","~$1.436","~$5.744",""]
 ];
@@ -1173,21 +1215,24 @@ const PLACES=[
 
 // ── BAÑOS PÚBLICOS ─────────────────────────────────────────────────────────────
 const BANOS=[
-  {name:"Bryant Park — Baño público",lat:40.7536,lng:-73.9832,note:"Gratuito, muy limpio, bien mantenido"},
-  {name:"Central Park — Baño 79th St",lat:40.7814,lng:-73.9732,note:"Dentro del parque, gratuito"},
-  {name:"Central Park — Baño Columbus Circle",lat:40.7681,lng:-73.9819,note:"Entrada sur del parque"},
-  {name:"Battery Park — Baño público",lat:40.7034,lng:-74.0170,note:"Near the ferry terminal"},
-  {name:"Washington Square Park — Baño",lat:40.7308,lng:-73.9981,note:"Gratuito, en el parque"},
-  {name:"Penn Station — Baños",lat:40.7506,lng:-73.9971,note:"Bajo la calle, acceso con metro"},
-  {name:"Grand Central — Baños",lat:40.7527,lng:-73.9772,note:"Nivel inferior de la terminal, gratuito"},
-  {name:"High Line — Baño en 14th St",lat:40.7410,lng:-74.0054,note:"En la entrada sur del High Line"},
-  {name:"High Line — Baño en 30th St",lat:40.7520,lng:-74.0020,note:"Mitad del recorrido"},
-  {name:"AMNH — Baño público (horario museos)",lat:40.7813,lng:-73.9740,note:"Dentro del museo, acceso con entrada"},
-  {name:"Brookfield Place — Baños",lat:40.7127,lng:-74.0153,note:"Centro comercial en WTC area, gratuito"},
-  {name:"Brooklyn Bridge Park — Baños",lat:40.7020,lng:-73.9969,note:"Pier 1 y Pier 6"},
-  {name:"Times Square — Baño público",lat:40.7589,lng:-73.9851,note:"Debajo de la estación, señalizado"},
-  {name:"Chelsea Market — Baños",lat:40.7423,lng:-74.0067,note:"Dentro del mercado, gratuito"},
-  {name:"Starbucks Reserve (Midtown)",lat:40.7545,lng:-73.9781,note:"Muchos Starbucks tienen baño público"}
+  {name:"Bryant Park — Baño público",addr:"6th Ave & 42nd St, Midtown",lat:40.7536,lng:-73.9832,note:"Gratuito, muy limpio, climatizado. Dentro del parque, detrás de la fuente."},
+  {name:"Central Park — Baño 79th St",addr:"Mid-Park at 79th St, Central Park",lat:40.7814,lng:-73.9732,note:"Dentro del parque, gratuito. Cerca del Museo de Historia Natural."},
+  {name:"Central Park — Baño Columbus Circle",addr:"Central Park South & 8th Ave",lat:40.7681,lng:-73.9819,note:"Entrada sur del parque, fácil acceso."},
+  {name:"Central Park — Baño Bethesda Terrace",addr:"72nd St Transverse, Central Park",lat:40.7736,lng:-73.9706,note:"Subterráneo bajo la terraza. Gratuito."},
+  {name:"Battery Park — Baño público",addr:"State St & Battery Pl, Lower Manhattan",lat:40.7034,lng:-74.0170,note:"Cerca de la terminal del ferry a la Estatua de la Libertad."},
+  {name:"Washington Square Park — Baño",addr:"Washington Square S, West Village",lat:40.7308,lng:-73.9981,note:"Al sur del parque, cerca de la fuente. Gratuito."},
+  {name:"Penn Station — Baños",addr:"8th Ave & W 31st St (nivel subterráneo)",lat:40.7506,lng:-73.9971,note:"Seguir señales dentro de la estación."},
+  {name:"Grand Central — Baños",addr:"89 E 42nd St, nivel inferior (Lower Level)",lat:40.7527,lng:-73.9772,note:"Señalizados en el nivel inferior, al lado del Oyster Bar. Gratuito."},
+  {name:"High Line — Baño en Gansevoort St",addr:"Gansevoort St & Washington St (entrada sur)",lat:40.7408,lng:-74.0058,note:"Al entrar por la entrada sur del High Line."},
+  {name:"High Line — Baño en 30th St",addr:"W 30th St & 10th Ave",lat:40.7520,lng:-74.0020,note:"A mitad del recorrido del High Line."},
+  {name:"Chelsea Market — Baños",addr:"75 9th Ave, Chelsea (nivel planta baja)",lat:40.7423,lng:-74.0067,note:"Dentro del mercado, seguir señales. Gratuito."},
+  {name:"Brookfield Place — Baños",addr:"230 Vesey St, Lower Manhattan",lat:40.7127,lng:-74.0153,note:"Centro comercial junto al WTC. Gratuito, muy limpio."},
+  {name:"Brooklyn Bridge Park — Baño Pier 1",addr:"334 Furman St, Brooklyn (Pier 1)",lat:40.6996,lng:-73.9996,note:"En el parque, al bajar del puente Brooklyn."},
+  {name:"Brooklyn Bridge Park — Baño Pier 6",addr:"Pier 6, Brooklyn Bridge Park",lat:40.6938,lng:-73.9988,note:"Punta sur del parque, cerca de Atlantic Ave."},
+  {name:"Times Square — Baño (42nd St Station)",addr:"42nd St & 7th Ave (subte, señalizado)",lat:40.7556,lng:-73.9877,note:"Dentro de la estación 42nd St-Times Square. Señalizado en la plataforma."},
+  {name:"AMNH — Baño (horario museo)",addr:"200 Central Park W & W 79th St",lat:40.7813,lng:-73.9740,note:"Dentro del museo. Gratuito con entrada, o entrar gratis al baño después de las 16:30."},
+  {name:"New York Public Library — Baño",addr:"476 5th Ave (42nd St & 5th Ave)",lat:40.7532,lng:-73.9822,note:"Dentro de la biblioteca, planta baja. Gratis, muy limpio."},
+  {name:"The Oculus / Westfield — Baños",addr:"185 Greenwich St, Lower Manhattan",lat:40.7114,lng:-74.0133,note:"Dentro del Oculus, bien señalizados. Impecables."},
 ];
 
 // ── LINKNYC (muestra de kioscos — son miles en Manhattan) ─────────────────────
@@ -1711,7 +1756,7 @@ function renderGastos(){
           <div class="gi-meta">Pagó <strong>${u?.name||g.pagador}</strong> · Divide: ${divNames}</div>
         </div>
         <div class="gi-amount">$${g.monto.toFixed(2)}</div>
-        <button class="gi-del" onclick="delGasto('${g.id}')">×</button>
+        <button class="gi-del" onclick="delGasto('${g.fbId||g.id}')">×</button>
       </div>`;
     }).join('');
   }
@@ -1753,11 +1798,12 @@ function renderGastos(){
   const tcont=document.getElementById('transfers-content');
   if(transfers.length>0){
     tcont.innerHTML='<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;margin:16px 0 10px">Transferencias mínimas</div>'+
-      transfers.map(t=>`<div class="transfer-row">
+      transfers.map(t=>`<div class="transfer-row" id="tr-${t.from}-${t.to}" style="${ST.paidTransfers&&ST.paidTransfers[t.from+'_'+t.to]?'opacity:.4;text-decoration:line-through':''}" onclick="toggleTransferPaid('${t.from}_${t.to}')">
         <span class="transfer-from">${USERS[t.from]?.name||t.from}</span>
         <span style="color:rgba(255,255,255,.4)">→</span>
         <span class="transfer-to">${USERS[t.to]?.name||t.to}</span>
         <span class="transfer-amount">$${t.amt.toFixed(2)}</span>
+        <span style="font-size:11px;color:rgba(255,255,255,.35);margin-left:4px">${ST.paidTransfers&&ST.paidTransfers[t.from+'_'+t.to]?'✅ Pagada':'Tocar para marcar como pagada'}</span>
       </div>`).join('');
   } else {
     tcont.innerHTML='';
@@ -1883,7 +1929,9 @@ function initBanosMap(){
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
   BANOS.forEach(b=>{
     const icon=L.divIcon({className:'',html:'<div style="font-size:20px;text-shadow:0 1px 3px rgba(0,0,0,.3)">🚻</div>',iconSize:[24,24],iconAnchor:[12,12]});
-    L.marker([b.lat,b.lng],{icon}).addTo(map).bindPopup(`<strong>${b.name}</strong>${b.note?`<br><small>${b.note}</small>`:''}`);
+    L.marker([b.lat,b.lng],{icon}).addTo(map).bindPopup(
+      `<strong>${b.name}</strong>${b.addr?`<br><span style="font-size:11px;color:#666">📍 ${b.addr}</span>`:''}${b.note?`<br><small style="color:#888">${b.note}</small>`:''}<br><a href="https://maps.google.com/?q=${encodeURIComponent(b.name+' '+b.addr)}" target="_blank" style="font-size:11px;color:#1a7a6e">Ver en Maps ↗</a>`
+    );
   });
 }
 
@@ -1895,6 +1943,14 @@ function initLinkNYCMap(){
     const icon=L.divIcon({className:'',html:'<div style="font-size:20px;text-shadow:0 1px 3px rgba(0,0,0,.3)">📡</div>',iconSize:[24,24],iconAnchor:[12,12]});
     L.marker([k.lat,k.lng],{icon}).addTo(map).bindPopup(`<strong>${k.name}</strong><br><small>WiFi gratis · Carga USB · Llamadas gratuitas</small>`);
   });
+}
+
+// ── TRANSFER PAID TOGGLE ─────────────────────────────────────────────────────
+function toggleTransferPaid(key){
+  if(!ST.paidTransfers)ST.paidTransfers={};
+  ST.paidTransfers[key]=!ST.paidTransfers[key];
+  saveST();
+  renderGastos();
 }
 
 // ── FREE TOUR RESERVATION TOGGLE ────────────────────────────────────────────
@@ -1928,22 +1984,21 @@ function initCountdown(){
     if(now>=TRIP_START&&now<=TRIP_END){
       // We're in NYC!
       const dayNum=Math.floor((now-TRIP_START)/(1000*60*60*24))+1;
-      el.innerHTML=`<div class="countdown-wrap"><div><div class="cd-num">🗽</div></div><div class="cd-sep"></div><div class="cd-msg"><div class="cd-live">¡Estamos en Nueva York!</div><div style="font-size:11px;color:rgba(255,255,255,.55);margin-top:2px">Día ${Math.min(dayNum,9)} de 9 del viaje</div></div></div>`;
+      el.innerHTML=`<div class="countdown-wrap"><span style="font-size:36px">🗽</span><div style="color:var(--gold2);font-size:22px;font-weight:800;font-family:'Playfair Display',serif">¡Estamos en Nueva York!</div><div style="color:rgba(255,255,255,.5);font-size:13px">Día ${Math.min(dayNum,9)} de 9 del viaje</div></div>`;
     } else if(now>TRIP_END){
-      el.innerHTML=`<div class="countdown-wrap"><div><div class="cd-num">📸</div></div><div class="cd-sep"></div><div class="cd-msg"><div class="cd-live">El viaje terminó</div><div style="font-size:11px;color:rgba(255,255,255,.55);margin-top:2px">¡Fue increíble!</div></div></div>`;
+      el.innerHTML=`<div class="countdown-wrap"><span style="font-size:36px">📸</span><div style="color:var(--gold2);font-size:22px;font-weight:800;font-family:'Playfair Display',serif">El viaje terminó. ¡Fue increíble!</div></div>`;
     } else {
       const diff=TRIP_START-now;
       const days=Math.floor(diff/(1000*60*60*24));
       const hrs=Math.floor((diff%(1000*60*60*24))/(1000*60*60));
       const mins=Math.floor((diff%(1000*60*60))/(1000*60));
       el.innerHTML=`<div class="countdown-wrap">
-        <div style="text-align:center"><div class="cd-num">${days}</div><div class="cd-label">días</div></div>
-        <div class="cd-sep"></div>
-        <div style="text-align:center"><div class="cd-num">${String(hrs).padStart(2,'0')}</div><div class="cd-label">horas</div></div>
-        <div class="cd-sep"></div>
-        <div style="text-align:center"><div class="cd-num">${String(mins).padStart(2,'0')}</div><div class="cd-label">min</div></div>
-        <div class="cd-sep"></div>
-        <div class="cd-msg">para aterrizar<br>en Nueva York ✈️</div>
+        <div style="display:flex;align-items:baseline;gap:6px">
+          <span style="font-family:'Playfair Display',serif;font-size:42px;font-weight:900;color:var(--gold2);line-height:1">${days}</span>
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.45)">días</span>
+          <span style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:rgba(255,255,255,.6);margin-left:8px">${String(hrs).padStart(2,'0')}h ${String(mins).padStart(2,'0')}m</span>
+        </div>
+        <div style="color:rgba(255,255,255,.5);font-size:13px">para aterrizar en Nueva York ✈️</div>
       </div>`;
     }
   }
