@@ -231,9 +231,9 @@ nav{background:var(--ink);position:sticky;top:0;z-index:100;border-bottom:1px so
 .cost-hero-card{background:var(--ink);border-radius:var(--rl);padding:26px 30px;margin-bottom:20px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 .cost-n{font-family:'Playfair Display',serif;font-size:48px;font-weight:900;color:#fff;letter-spacing:-2px;line-height:1}
 .cost-pp-n{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--gold2);line-height:1}
-.ct-header{display:grid;grid-template-columns:1fr 110px 90px 110px;padding:10px 18px;background:var(--paper2);font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--border);border-radius:var(--rl) var(--rl) 0 0}
+.ct-header{display:grid;grid-template-columns:1fr 110px 110px;padding:10px 18px;background:var(--paper2);font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--border);border-radius:var(--rl) var(--rl) 0 0}
 .cost-table{background:#fff;border:1px solid var(--border);border-radius:0 0 var(--rl) var(--rl);overflow:hidden;margin-bottom:18px}
-.ct-row{display:grid;grid-template-columns:1fr 110px 90px 110px;padding:11px 18px;border-top:1px solid var(--border);align-items:center;gap:8px;transition:background .12s}
+.ct-row{display:grid;grid-template-columns:1fr 110px 110px;padding:11px 18px;border-top:1px solid var(--border);align-items:center;gap:8px;transition:background .12s}
 .ct-row:hover{background:var(--paper)}
 .ct-ico{font-size:15px;margin-right:6px}
 .ct-name{font-size:13px;color:var(--ink)}
@@ -542,21 +542,15 @@ nav{background:var(--ink);position:sticky;top:0;z-index:100;border-bottom:1px so
   </div>
   <div class="cost-hero-card">
     <div>
-      <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:4px">Estimado total x4</div>
-      <div class="cost-n">~$4.600</div>
-      <div style="font-size:12px;color:rgba(255,255,255,.35);margin-top:6px">Sin vuelos ni hotel · entradas, comida, transporte</div>
-    </div>
-    <div style="text-align:right">
-      <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:4px">Por persona</div>
-      <div class="cost-pp-n">~$1.150</div>
-      <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:4px">9 días completos</div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:4px">Estimado por persona</div>
+      <div class="cost-n">~$1.150</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.35);margin-top:6px">Sin vuelos ni hotel · entradas, comida, transporte · 9 días</div>
     </div>
   </div>
   <div class="ct-header">
     <span>Rubro</span>
-    <span style="text-align:right">Estimado c/u</span>
-    <span style="text-align:right">x4</span>
-    <span style="text-align:right">Real c/u ✏️</span>
+    <span style="text-align:right">Estimado</span>
+    <span style="text-align:right">Real ✏️</span>
   </div>
   <div class="cost-table" id="cost-table-body"></div>
   <div class="savings">
@@ -765,11 +759,10 @@ function loadST(){
       reviews:s.reviews||{},
       gastos:s.gastos||[],
       foodChecked:s.foodChecked||{},
-      tickets:s.tickets||{},
       ftReserved:s.ftReserved||{},
       paidTransfers:s.paidTransfers||{},
-      pagador:s.pagador||null,
-      dividir:s.dividir||["reni","mateo","nico","benja"]
+      costsReal:s.costsReal||{},
+      pagador:s.pagador||null
     };}
   catch{return{heliV:"B",scoreUser:null,scores:{},reviews:{},gastos:[],foodChecked:{},pagador:null,dividir:["reni","mateo","nico","benja"]};}
 }
@@ -1146,7 +1139,7 @@ const COSTS=[
   ["🏛️","Met Museum (sugerido)","~$30","~$120",""],
   ["🏠","Comedy Cellar (cover + 2 consumiciones)","~$35","~$140",""],
   ["🚲","Bicicletas Central Park","~$20","~$80",""],
-  ["🦖","AMNH","~$40","~$160",""],
+  ["🚁","Helicóptero FlyNYON x2 días","~$200","~$800",""],
   ["🎙️","Free Tours x5 (propinas)","~$60","~$240",""],
   ["—","Subtotal entradas y actividades","~$751","~$3.004",""],
   ["🍕","Comida (9 días × ~$45)","~$405","~$1.620",""],
@@ -1472,7 +1465,7 @@ let _mainMap=null, _mainMarkers=[];
 
 function initMainMap(){
   _mainMap=L.map('mapa-map').setView([40.7500,-73.9800],13);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(_mainMap);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © CartoDB',subdomains:'abcd',maxZoom:19}).addTo(_mainMap);
 
   // Add day filter buttons
   const filterWrap=document.getElementById('mapa-day-filter');
@@ -1541,7 +1534,7 @@ function filterFood(type,btn){
 }
 function initFoodMap(){
   const map=L.map('food-map').setView([40.7500,-73.9800],13);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © CartoDB',subdomains:'abcd',maxZoom:19}).addTo(map);
   window._foodMap=map;
   window._foodMarkers=[];
   updateFoodMapMarkers();
@@ -1657,7 +1650,6 @@ function renderCosts(){
     return `<div class="${cls}">
       <span class="ct-name"><span class="ct-ico">${r[0]}</span>${r[1]}</span>
       <span class="ct-pp">${r[2]}</span>
-      <span class="ct-x4">${r[3]}</span>
       <span class="ct-real"><input type="text" placeholder="—" value="${realVal}" oninput="saveReal(${i},this.value)" style="width:100px;border:1.5px solid var(--border);border-radius:8px;padding:5px 8px;font-size:12px;font-family:inherit;color:var(--ink);background:var(--paper);text-align:right;transition:border-color .15s" onfocus="this.style.borderColor='var(--border2)'" onblur="this.style.borderColor='var(--border)'"></span>
     </div>`;
   }).join('');
@@ -1680,9 +1672,8 @@ function renderCostTotal(){
   totDiv.id='cost-total-row';
   totDiv.className='ct-row ct-tot';
   totDiv.innerHTML=`
-    <span class="ct-name">💰 TOTAL</span>
+    <span class="ct-name">💰 TOTAL POR PERSONA</span>
     <span class="ct-pp">~$1.436</span>
-    <span class="ct-x4">~$5.744</span>
     <span class="ct-real" style="display:flex;align-items:center;justify-content:flex-end">
       ${allEmpty
         ? '<span style="font-size:12px;color:rgba(255,255,255,.3)">—</span>'
@@ -1699,7 +1690,7 @@ function saveReal(i,val){
 }
 
 // ── GASTOS (SPLITWISE) ────────────────────────────────────────────────────────
-let dividir2=[...dividir];
+let dividir2=["reni","mateo","nico","benja"]; // siempre arranca con todos
 let pagador2=pagador;
 
 function selPagador(u,btn){
@@ -1712,7 +1703,6 @@ function toggleDivide(u,btn){
   const idx=dividir2.indexOf(u);
   if(idx>-1)dividir2.splice(idx,1);
   else dividir2.push(u);
-  ST.dividir=[...dividir2];saveST();
   btn.classList.toggle('on');
 }
 function addGasto(){
@@ -1769,12 +1759,65 @@ function renderGastos(){
     balance[g.pagador]=(balance[g.pagador]||0)+g.monto;
     g.divide.forEach(d=>{balance[d]=(balance[d]||0)-share;});
   });
+  // ── Resumen total pagado por persona ──────────────────────────────
+  const paidSummaryEl=document.getElementById('paid-summary');
+  if(paidSummaryEl){
+    const totPaid={reni:0,mateo:0,nico:0,benja:0};
+    ST.gastos.forEach(g=>{if(g.pagador&&totPaid[g.pagador]!==undefined)totPaid[g.pagador]+=g.monto;});
+    const grandTotal=Object.values(totPaid).reduce((a,b)=>a+b,0);
+    paidSummaryEl.innerHTML=`
+      <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px">Total pagado por persona</div>
+      ${Object.entries(totPaid).map(([u,amt])=>{
+        const uu=USERS[u];
+        const pct=grandTotal>0?Math.round(amt/grandTotal*100):0;
+        return`<div style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:22px;height:22px;border-radius:50%;background:${uu.color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff">${uu.letter}</div>
+              <span style="font-size:13px;color:rgba(255,255,255,.8)">${uu.name}</span>
+            </div>
+            <span style="font-size:15px;font-weight:700;color:${amt>0?'var(--gold2)':'rgba(255,255,255,.3)'}">${amt>0?'$'+amt.toFixed(2):'$0'}</span>
+          </div>
+          <div style="height:5px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden">
+            <div style="height:100%;width:${pct}%;background:${uu.color};border-radius:3px;transition:width .4s ease"></div>
+          </div>
+        </div>`;
+      }).join('')}
+      <div style="border-top:1px solid rgba(255,255,255,.1);margin-top:10px;padding-top:10px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:11px;color:rgba(255,255,255,.4)">Total del grupo</span>
+        <span style="font-size:17px;font-weight:900;color:var(--gold2)">$${grandTotal.toFixed(2)}</span>
+      </div>`;
+  }
+  // ── Balance ──────────────────────────────────────────────────────
+  // Primero calcular transferencias mínimas sin pagos
+  const pos0=users.filter(u=>(balance[u]||0)>0.01).map(u=>({u,b:balance[u]})).sort((a,b)=>b.b-a.b);
+  const neg0=users.filter(u=>(balance[u]||0)<-0.01).map(u=>({u,b:-balance[u]})).sort((a,b)=>b.b-a.b);
+  const allTransfers=[];
+  let pi0=0,ni0=0;
+  const pb0=[...pos0],nb0=[...neg0];
+  while(pi0<pb0.length&&ni0<nb0.length){
+    const amt=Math.min(pb0[pi0].b,nb0[ni0].b);
+    if(amt>0.01)allTransfers.push({from:nb0[ni0].u,to:pb0[pi0].u,amt,key:nb0[ni0].u+'_'+pb0[pi0].u});
+    pb0[pi0].b-=amt;nb0[ni0].b-=amt;
+    if(pb0[pi0].b<0.01)pi0++;
+    if(nb0[ni0].b<0.01)ni0++;
+  }
+  // Restar las pagadas del balance para mostrar deuda pendiente real
+  const adjustedBalance={...balance};
+  allTransfers.forEach(t=>{
+    if(ST.paidTransfers&&ST.paidTransfers[t.key]){
+      // El que debía (from) ya pagó → reducir su deuda
+      adjustedBalance[t.from]=(adjustedBalance[t.from]||0)+t.amt;
+      // El que recibía (to) ya cobró → reducir lo que le deben
+      adjustedBalance[t.to]=(adjustedBalance[t.to]||0)-t.amt;
+    }
+  });
   const bcont=document.getElementById('balance-content');
   bcont.innerHTML=users.map(u=>{
-    const b=balance[u]||0;
+    const b=adjustedBalance[u]||0;
     const uu=USERS[u];
     const cls=b>0.01?'br-pos':b<-0.01?'br-neg':'br-zero';
-    const label=b>0.01?`le deben $${b.toFixed(2)}`:b<-0.01?`debe $${Math.abs(b).toFixed(2)}`:'está al día';
+    const label=b>0.01?`le deben $${b.toFixed(2)}`:b<-0.01?`debe $${Math.abs(b).toFixed(2)}`:'✅ al día';
     return `<div class="balance-row">
       <div class="br-name" style="display:flex;align-items:center;gap:8px">
         <span style="width:22px;height:22px;border-radius:50%;background:${uu.color};display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff">${uu.letter}</span>
@@ -1783,31 +1826,36 @@ function renderGastos(){
       <div class="br-amount ${cls}">${label}</div>
     </div>`;
   }).join('');
-  // Calcular transferencias mínimas
-  const pos=users.filter(u=>(balance[u]||0)>0.01).map(u=>({u,b:balance[u]})).sort((a,b)=>b.b-a.b);
-  const neg=users.filter(u=>(balance[u]||0)<-0.01).map(u=>({u,b:-balance[u]})).sort((a,b)=>b.b-a.b);
-  const transfers=[];
-  let pi=0,ni=0;
-  const pb=[...pos],nb=[...neg];
-  while(pi<pb.length&&ni<nb.length){
-    const amt=Math.min(pb[pi].b,nb[ni].b);
-    if(amt>0.01)transfers.push({from:nb[ni].u,to:pb[pi].u,amt});
-    pb[pi].b-=amt;nb[ni].b-=amt;
-    if(pb[pi].b<0.01)pi++;
-    if(nb[ni].b<0.01)ni++;
-  }
+  // Mostrar transferencias — las pagadas tachadas, las pendientes destacadas
   const tcont=document.getElementById('transfers-content');
-  if(transfers.length>0){
-    tcont.innerHTML='<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;margin:16px 0 10px">Transferencias mínimas</div>'+
-      transfers.map(t=>`<div class="transfer-row" id="tr-${t.from}-${t.to}" style="${ST.paidTransfers&&ST.paidTransfers[t.from+'_'+t.to]?'opacity:.4;text-decoration:line-through':''}" onclick="toggleTransferPaid('${t.from}_${t.to}')">
+  if(allTransfers.length>0){
+    const pendientes=allTransfers.filter(t=>!ST.paidTransfers||!ST.paidTransfers[t.key]);
+    const pagadas=allTransfers.filter(t=>ST.paidTransfers&&ST.paidTransfers[t.key]);
+    let html='<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;margin:16px 0 10px">Transferencias pendientes</div>';
+    if(pendientes.length===0){
+      html+='<div style="font-size:13px;color:rgba(255,255,255,.4);padding:8px 0">🎉 ¡Todo saldado!</div>';
+    } else {
+      html+=pendientes.map(t=>`<div class="transfer-row" onclick="toggleTransferPaid('${t.key}')">
         <span class="transfer-from">${USERS[t.from]?.name||t.from}</span>
         <span style="color:rgba(255,255,255,.4)">→</span>
         <span class="transfer-to">${USERS[t.to]?.name||t.to}</span>
         <span class="transfer-amount">$${t.amt.toFixed(2)}</span>
-        <span style="font-size:11px;color:rgba(255,255,255,.35);margin-left:4px">${ST.paidTransfers&&ST.paidTransfers[t.from+'_'+t.to]?'✅ Pagada':'Tocar para marcar como pagada'}</span>
+        <span style="font-size:11px;color:rgba(255,255,255,.35);margin-left:4px">Tocar para marcar como pagada</span>
       </div>`).join('');
+    }
+    if(pagadas.length>0){
+      html+='<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:.1em;margin:14px 0 8px">Ya pagadas</div>';
+      html+=pagadas.map(t=>`<div class="transfer-row" style="opacity:.35;text-decoration:line-through" onclick="toggleTransferPaid('${t.key}')">
+        <span class="transfer-from">${USERS[t.from]?.name||t.from}</span>
+        <span style="color:rgba(255,255,255,.4)">→</span>
+        <span class="transfer-to">${USERS[t.to]?.name||t.to}</span>
+        <span class="transfer-amount">$${t.amt.toFixed(2)}</span>
+        <span style="font-size:11px;color:rgba(255,255,255,.35);margin-left:4px">✅ Pagada · tocar para deshacer</span>
+      </div>`).join('');
+    }
+    tcont.innerHTML=html;
   } else {
-    tcont.innerHTML='';
+    tcont.innerHTML='<div style="font-size:13px;color:rgba(255,255,255,.3);padding:8px 0">Sin deudas — ¡están al día!</div>';
   }
 }
 
@@ -1847,36 +1895,36 @@ function renderScores(){
     grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="big">🔍</div><p>No hay resultados para "<strong>${scoreSearchQ}</strong>"</p></div>`;
     return;
   }
- // Photo mapping for score cards
+  // Photo mapping for score cards
   const PLACE_PHOTOS={
-    "Times Square":"https://es.123rf.com/photo_11542520_nueva-york-13-de-noviembre-times-square-es-un-cruce-muy-tur%C3%ADstica-de-arte-de-ne%C3%B3n-y-el-comercio-y.html",
-    "Central Park":"https://www.google.com/imgres?q=central%20park%20en%20noviembre&imgurl=https%3A%2F%2Fwww.newyorkwelcome.net%2Fkimg%2F1200%2F600%2Fcentral-park-autunno.jpg&imgrefurl=https%3A%2F%2Fwww.newyorkwelcome.net%2Fes%2Fexplora%2Fbueno-saber%2Fotono-en-nueva-york.htm&docid=5nJ4VCz_hos1UM&tbnid=py8s9f-7i0z-LM&vet=12ahUKEwjVrIbU7e6WAxV2s5UCHYP3EZ4QnPAOegQISxAA..i&w=1200&h=600&hcb=2&ved=2ahUKEwjVrIbU7e6WAxV2s5UCHYP3EZ4QnPAOegQISxAA",
-    "Brooklyn Bridge":"https://f.civitatis.com/estados-unidos/nueva-york/galeria/cruzando-puente-brooklyn-atardecer.jpg",
-    "MoMA":"https://static.anuevayork.com/wp-content/uploads/2020/09/29143629/Visitar-el-museo-Moma-de-Nueva-York-Los-nenufares-de-Monet-1500.jpg",
-    "Empire State Building":"https://www.google.com/imgres?q=empire%20state%20building&imgurl=https%3A%2F%2Fthumb.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F1%2F10%2FEmpire_State_Building_%2528aerial_view%2529.jpg%2F330px-Empire_State_Building_%2528aerial_view%2529.jpg%3Futm_source%3Des.wikipedia.org%26utm_campaign%3Dparser%26utm_content%3Dthumbnail&imgrefurl=https%3A%2F%2Fes.wikipedia.org%2Fwiki%2FEmpire_State_Building&docid=VZs35T02epMk2M&tbnid=kJpbCI8-mxfeuM&vet=12ahUKEwjzjd387e6WAxUsqpUCHT6eEdYQnPAOegQISBAA..i&w=330&h=495&hcb=2&ved=2ahUKEwjzjd387e6WAxUsqpUCHT6eEdYQnPAOegQISBAA",
-    "SUMMIT One Vanderbilt":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSc6wmiu9WQYdOn_TC20OULd01EeKPivQHpQ_n1qWAD3Q&s=10",
-    "Estatua de la Libertad":"https://www.google.com/imgres?q=estatua%20de%20la%20libertad&imgurl=https%3A%2F%2Fcontent-historia.nationalgeographic.com.es%2Fmedio%2F2023%2F10%2F10%2Fcaptura-de-pantalla-2023-10-10-a-las-17-32-30_5cfff97a_231010173416_1280x1515.jpg&imgrefurl=https%3A%2F%2Fhistoria.nationalgeographic.com.es%2Fa%2Festatua-libertad-encarnacion-sueno-americano_20308&docid=UGPLB_zFSyYthM&tbnid=gCSwXAnpPfIFYM&vet=12ahUKEwig-s6L7u6WAxW9vJUCHUrFAWcQnPAOegQIPBAA..i&w=1280&h=1515&hcb=2&ved=2ahUKEwig-s6L7u6WAxW9vJUCHUrFAWcQnPAOegQIPBAA",
-    "The Metropolitan Museum of Art":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjFH3vOYpmLzgwHYBFdvKFpp8YY_mVp8O8aB1QxWvrng&s=10",
-    "AMNH":"https://newyorkpass.com/es/things-to-do/a-complete-guide-to-the-american-museum-of-natural-history",
-    "High Line":"https://res.cloudinary.com/dtljonz0f/image/upload/c_auto,ar_4:3,w_3840,g_auto/f_auto/q_auto/v1/gc-v1/new-york-pass/NewYorkPass_High_Line_ss_non-editorial_juyuqa?_a=BAVT+OE80",
-    "Chelsea Market":"https://static.anuevayork.com/wp-content/uploads/2023/04/13043145/Visitar-el-mercado-de-Chelsea-en-Nueva-York-Tiendas-y-restaurantes.jpg",
-    "9/11 Memorial":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNEgNuYiMNdP-ik1BVUtY8pHbUeDwrj7bd9aSYZdiYYw&s=10",
-    "One World Observatory":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQa65DzDAAheomgOcj7VOvS_0-mgV3-Py8NfYMN0ePdGg&s=10",
-    "Rockefeller Center":"https://dynamic-media-cdn.tripadvisor.com/media/photo-o/34/31/11/57/caption.jpg?w=1100&h=1100&s=1",
-    "Grand Central Terminal":"https://static.anuevayork.com/wp-content/uploads/2016/09/21112922/Guia-de-Grand-Central-Terminal-Nueva-York-1.jpg",
-    "Flatiron Building":"https://estudioarquitectos.cl/2025/11/19/primer-vistazo-a-los-interiores-residenciales-del-renovado-edificio-flatiron-de-la-ciudad-de-nueva-york/",
-    "DUMBO":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTEJ5GuqCLKTB396Uy071zGmmKJJwLp3DYLlStKjjOXw&s=10",
-    "Brooklyn Heights Promenade":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRy7tYJOIFKghY7A35693vBA2QnKcpdPOqH3Bq6qrecaQ&s=10",
-    "Vessel (Hudson Yards)":"https://image.nuevayork.es/wp-content/uploads/2018/01/Hudson-Yards-Vessel-in-New-York.jpg.webp",
-    "Pier 57 Rooftop":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmYnb22N-JqioVpHS59sVHmTnOHlutGQvNng1VLmyxL1hIBSCfSHeX3hw&s=10",
-    "Roosevelt Island Tramway":"https://nyc.eu/wp-content/uploads/2024/12/Roosevelt-Island-Tramway-vue-ile-roosevelt-island.jpg",
-    "Morgan Library":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSB2DUeReja0MQNl5a0aWMw6ZOxKQw4DQafa8CmiCWTgvi3n-05DRKF3x8&s=10",
-    "Catedral de San Patricio":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5af1rSAv-zWetLWxKj66nk4uhevkdG2q6A8vq339-rm5T1TTi-oaplQs&s=10",
-    "230 Fifth Rooftop":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4tJqS4c9FtE6PgQmmsZNZ8in661yIcaW-zHBAIADYbiMCrAGeMm8zwKI&s=10",
-    "Hunters Point South Park":"https://swacdn.s3.amazonaws.com/wp-content/uploads/2019/02/16211004/Hunters-Point-South-Phase-II-David-Lloyd-1038_002.jpg",
-    "Friends Experience":"https://static.anuevayork.com/wp-content/uploads/2021/05/05112301/The-Friends-Experience-la-exposicion-de-Friends-en-Nueva-York-Apartamento-de-Monica.jpg",
-    "Madison Square Park":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaZKx05gqhSCJRZiAgV3i6Q_rrV9blZd8Sosm8ti35YA&s=10",
-    "Charging Bull":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmzumNn1enCLkR4mZdR8gZZp6MagRVYUSsmXtnrTZDAQ&s=10",
+    "Times Square":"https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=400&q=75",
+    "Central Park":"https://images.unsplash.com/photo-1534430480872-3498386e7856?w=400&q=75",
+    "Brooklyn Bridge":"https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=400&q=75",
+    "MoMA":"https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&q=75",
+    "Empire State Building":"https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?w=400&q=75",
+    "SUMMIT One Vanderbilt":"https://images.unsplash.com/photo-1602940659805-770d1b3b9911?w=400&q=75",
+    "Estatua de la Libertad":"https://images.unsplash.com/photo-1538430859929-7e9d0fe5ffe3?w=400&q=75",
+    "The Metropolitan Museum of Art":"https://images.unsplash.com/photo-1543946602-a0fce8117697?w=400&q=75",
+    "AMNH":"https://images.unsplash.com/photo-1567446537708-ac4aa75c9c28?w=400&q=75",
+    "High Line":"https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=400&q=75",
+    "Chelsea Market":"https://images.unsplash.com/photo-1517732306149-e8f829eb588a?w=400&q=75",
+    "9/11 Memorial":"https://images.unsplash.com/photo-1560969184-10fe8719e047?w=400&q=75",
+    "One World Observatory":"https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?w=400&q=75",
+    "Rockefeller Center":"https://images.unsplash.com/photo-1576485375217-d6a95e34d043?w=400&q=75",
+    "Grand Central Terminal":"https://images.unsplash.com/photo-1568393691622-c7ba131d63b4?w=400&q=75",
+    "Flatiron Building":"https://images.unsplash.com/photo-1490644658840-3f2e3f8c5625?w=400&q=75",
+    "DUMBO":"https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=400&q=75",
+    "Brooklyn Heights Promenade":"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=75",
+    "Vessel (Hudson Yards)":"https://images.unsplash.com/photo-1602940659805-770d1b3b9911?w=400&q=75",
+    "Pier 57 Rooftop":"https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=400&q=75",
+    "Roosevelt Island Tramway":"https://images.unsplash.com/photo-1522083165195-3424ed129620?w=400&q=75",
+    "Morgan Library":"https://images.unsplash.com/photo-1543946602-a0fce8117697?w=400&q=75",
+    "Catedral de San Patricio":"https://images.unsplash.com/photo-1569263979104-865ab7cd8d13?w=400&q=75",
+    "230 Fifth Rooftop":"https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?w=400&q=75",
+    "Hunters Point South Park":"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=75",
+    "Friends Experience":"https://images.unsplash.com/photo-1590736969955-71cc94901144?w=400&q=75",
+    "Madison Square Park":"https://images.unsplash.com/photo-1490644658840-3f2e3f8c5625?w=400&q=75",
+    "Charging Bull":"https://images.unsplash.com/photo-1560969184-10fe8719e047?w=400&q=75",
   };
   const DEFAULT_PHOTO="https://images.unsplash.com/photo-1522083165195-3424ed129620?w=400&q=75";
   const DAY_LABEL_MAP={1:'Sáb 21',2:'Dom 22',3:'Lun 23',4:'Mar 24',5:'Mie 25',6:'Jue 26',7:'Vie 27',8:'Sáb 28',9:'Dom 29'};
@@ -1927,7 +1975,7 @@ function resetStar(pid){
 // ── BAÑOS MAP ─────────────────────────────────────────────────────────────────
 function initBanosMap(){
   const map=L.map('banos-map').setView([40.7500,-73.9800],13);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © CartoDB',subdomains:'abcd',maxZoom:19}).addTo(map);
   BANOS.forEach(b=>{
     const icon=L.divIcon({className:'',html:'<div style="font-size:20px;text-shadow:0 1px 3px rgba(0,0,0,.3)">🚻</div>',iconSize:[24,24],iconAnchor:[12,12]});
     L.marker([b.lat,b.lng],{icon}).addTo(map).bindPopup(
@@ -1939,7 +1987,7 @@ function initBanosMap(){
 // ── LINKNYC MAP ───────────────────────────────────────────────────────────────
 function initLinkNYCMap(){
   const map=L.map('linknyc-map').setView([40.7550,-73.9900],13);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © CartoDB',subdomains:'abcd',maxZoom:19}).addTo(map);
   LINKNYC.forEach(k=>{
     const icon=L.divIcon({className:'',html:'<div style="font-size:20px;text-shadow:0 1px 3px rgba(0,0,0,.3)">📡</div>',iconSize:[24,24],iconAnchor:[12,12]});
     L.marker([k.lat,k.lng],{icon}).addTo(map).bindPopup(`<strong>${k.name}</strong><br><small>WiFi gratis · Carga USB · Llamadas gratuitas</small>`);
