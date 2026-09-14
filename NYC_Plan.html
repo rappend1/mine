@@ -238,14 +238,12 @@ nav{background:var(--ink);position:sticky;top:0;z-index:100;border-bottom:1px so
 .ct-ico{font-size:15px;margin-right:6px}
 .ct-name{font-size:13px;color:var(--ink)}
 .ct-pp{font-size:12px;color:var(--ink3);text-align:right}
-.ct-x4{font-size:13px;font-weight:700;color:var(--ink);text-align:right}
 .ct-real input{width:90px;border:1.5px solid var(--border);border-radius:8px;padding:5px 8px;font-size:12px;font-family:inherit;color:var(--ink);background:var(--paper);text-align:right;transition:border-color .15s}
 .ct-real input:focus{outline:none;border-color:var(--border2)}
 .ct-sub{background:var(--paper2);font-weight:700}
 .ct-tot{background:var(--ink)}
 .ct-tot .ct-name{color:#fff;font-weight:800}
 .ct-tot .ct-pp{color:rgba(255,255,255,.45)}
-.ct-tot .ct-x4{color:var(--gold2);font-size:15px;font-weight:900}
 .ct-tot .ct-real input{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);color:#fff}
 .savings{background:rgba(26,122,110,.05);border:1px solid rgba(26,122,110,.18);border-radius:var(--rl);padding:20px 22px;margin-top:16px}
 .savings-title{font-size:14px;font-weight:700;color:var(--teal);margin-bottom:12px}
@@ -391,7 +389,7 @@ nav{background:var(--ink);position:sticky;top:0;z-index:100;border-bottom:1px so
 @media(max-width:700px){
   .hero-content{padding:36px 24px}
   .gf-row,.ct-header,.ct-row{grid-template-columns:1fr 1fr}
-  .ct-x4,.ct-real{display:none}
+  .ct-real{display:none}
   .ft-meta-grid{grid-template-columns:1fr}
   .score-grid,.food-checklist,.tips-grid{grid-template-columns:1fr}
 }
@@ -607,6 +605,7 @@ nav{background:var(--ink);position:sticky;top:0;z-index:100;border-bottom:1px so
   </div>
   <div class="gastos-list" id="gastos-list"></div>
   <div class="balance-panel" id="balance-panel">
+    <div id="paid-summary" style="margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)"></div>
     <div class="balance-title">Balance del grupo</div>
     <div id="balance-content"><div style="color:rgba(255,255,255,.3);font-size:13px">Agreguen gastos para ver el balance</div></div>
     <div id="transfers-content"></div>
@@ -752,7 +751,6 @@ const USERS={
 function loadST(){
   try{const s=JSON.parse(localStorage.getItem("nyc2026_v3")||"{}");
     return{
-      
       tickets:s.tickets||{},
       scoreUser:s.scoreUser||null,
       scores:s.scores||{},
@@ -764,7 +762,7 @@ function loadST(){
       costsReal:s.costsReal||{},
       pagador:s.pagador||null
     };}
-  catch{return{heliV:"B",scoreUser:null,scores:{},reviews:{},gastos:[],foodChecked:{},pagador:null,dividir:["reni","mateo","nico","benja"]};}
+  catch{return{tickets:{},scoreUser:null,scores:{},reviews:{},gastos:[],foodChecked:{},ftReserved:{},paidTransfers:{},costsReal:{},pagador:null};}
 }
 function saveST(){
   try{localStorage.setItem("nyc2026_v3",JSON.stringify(ST));}
