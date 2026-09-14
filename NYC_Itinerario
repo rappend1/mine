@@ -1,0 +1,2236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NYC Nov 2026 — Reni, Mateo, Nico & Benja</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,doc,setDoc,getDoc,onSnapshot,collection,addDoc,deleteDoc,serverTimestamp}
+  from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ══════════════════════════════════════════════
+// PEGAR AQUÍ EL firebaseConfig DEL PROYECTO NYC-2026
+// ══════════════════════════════════════════════
+const firebaseConfig={
+  apiKey:"AIzaSyDxJSKCpRRTs5Q3H34DrTTZnoOQ9IxVkCs",
+  authDomain:"nyc-2026-2ca56.firebaseapp.com",
+  projectId:"nyc-2026-2ca56",
+  storageBucket:"nyc-2026-2ca56.firebasestorage.app",
+  messagingSenderId:"330032845839",
+  appId:"1:330032845839:web:50027b9ca7d90414dbbf7a",
+  measurementId:"G-FT3NG1DLZS"
+};
+// ══════════════════════════════════════════════
+
+const fbApp=initializeApp(firebaseConfig);
+const db=getFirestore(fbApp);
+
+// ── GASTOS ────────────────────────────────────
+window.fbAddGasto=async(item)=>{await addDoc(collection(db,"gastos"),{...item,ts:serverTimestamp()});};
+window.fbDelGasto=async(id)=>{await deleteDoc(doc(db,"gastos",id));};
+window.fbListenGastos=(cb)=>{
+  onSnapshot(collection(db,"gastos"),snap=>{
+    const items=[];
+    snap.forEach(d=>items.push({...d.data(),fbId:d.id}));
+    items.sort((a,b)=>(b.ts?.seconds||0)-(a.ts?.seconds||0));
+    cb(items);
+  });
+};
+
+// ── SCORES ────────────────────────────────────
+window.fbSetScore=async(placeId,user,score)=>{
+  await setDoc(doc(db,"scores",placeId),{[user+"_score"]:score},{merge:true});
+};
+window.fbSetReview=async(placeId,review)=>{
+  await addDoc(collection(db,"reviews_"+placeId),{...review,ts:serverTimestamp()});
+};
+window.fbListenScores=(cb)=>{
+  onSnapshot(collection(db,"scores"),snap=>{
+    const scores={};
+    snap.forEach(d=>{scores[d.id]=d.data();});
+    cb(scores);
+  });
+};
+window.fbListenReviews=(placeId,cb)=>{
+  onSnapshot(collection(db,"reviews_"+placeId),snap=>{
+    const revs=[];
+    snap.forEach(d=>revs.push({...d.data(),fbId:d.id}));
+    revs.sort((a,b)=>(b.ts?.seconds||0)-(a.ts?.seconds||0));
+    cb(revs);
+  });
+};
+
+// ── TICKETS (entradas sacadas) ────────────────
+window.fbSetTicket=async(ticketId,done)=>{
+  await setDoc(doc(db,"tickets","all"),{[ticketId]:done},{merge:true});
+};
+window.fbListenTickets=(cb)=>{
+  onSnapshot(doc(db,"tickets","all"),snap=>{
+    cb(snap.exists()?snap.data():{});
+  });
+};
+
+// ── FOOD CHECKED ──────────────────────────────
+window.fbSetFoodCheck=async(foodId,done)=>{
+  await setDoc(doc(db,"food","checked"),{[foodId]:done},{merge:true});
+};
+window.fbListenFood=(cb)=>{
+  onSnapshot(doc(db,"food","checked"),snap=>{
+    cb(snap.exists()?snap.data():{});
+  });
+};
+
+// ── FREE TOUR RESERVATIONS ─────────────────────────────────────────────────
+window.fbSetFtReserved=async(ftId,done)=>{
+  await setDoc(doc(db,"ft_reserved","all"),{[ftId]:done},{merge:true});
+};
+window.fbListenFtReserved=(cb)=>{
+  onSnapshot(doc(db,"ft_reserved","all"),snap=>{
+    cb(snap.exists()?snap.data():{});
+  });
+};
+
+// ── READY ─────────────────────────────────────
+window.fbReady=true;
+document.dispatchEvent(new Event("fbReady"));
+</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --ink:#0f0d0a;--ink2:#3a3630;--ink3:#7a7268;
+  --paper:#faf8f4;--paper2:#f2ede5;--paper3:#e8e0d2;
+  --red:#c8392b;--red2:#e85444;
+  --gold:#c9922a;--gold2:#f5b942;
+  --teal:#1a7a6e;--teal2:#22a693;
+  --blue:#1a5cb8;--purple:#6b35a8;
+  --border:#d8cfc0;--border2:#c4b89e;
+  --r:10px;--rl:16px;
+  --shadow:0 2px 12px rgba(0,0,0,.07);
+  --shadow2:0 8px 32px rgba(0,0,0,.12);
+}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;font-size:15px;line-height:1.6}
+a,button,[onclick]{cursor:pointer}
+input,textarea,select{cursor:text}
+h1,h2,h3,h4{font-family:'Playfair Display',serif}
+
+/* HERO */
+.hero{position:relative;height:100vh;min-height:580px;max-height:820px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end}
+.hero-bg{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1522083165195-3424ed129620?w=1600&q=85') center/cover no-repeat}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,8,6,.95) 0%,rgba(10,8,6,.55) 50%,rgba(10,8,6,.08) 100%)}
+.hero-content{position:relative;z-index:2;padding:48px 44px}
+.hero-eyebrow{font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold2);margin-bottom:12px}
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(48px,8vw,84px);font-weight:900;color:#fff;line-height:.92;margin-bottom:22px;letter-spacing:-2px}
+.hero-title em{font-style:italic;color:var(--gold2);display:block}
+.hero-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.hero-pill{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(8px);border-radius:24px;padding:7px 14px;font-size:12px;color:rgba(255,255,255,.8);font-weight:500;white-space:nowrap}
+.hero-travelers{display:flex;gap:6px;align-items:center}
+.trav-av{width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;margin-right:-6px}
+.trav-label{font-size:12px;color:rgba(255,255,255,.5);margin-left:14px;letter-spacing:.04em}
+
+/* NAV */
+nav{background:var(--ink);position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(255,255,255,.07)}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;padding:0 20px;overflow-x:auto;scrollbar-width:none}
+.nav-inner::-webkit-scrollbar{display:none}
+.nav-btn{padding:15px 16px;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.38);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;font-family:inherit}
+.nav-btn:hover{color:rgba(255,255,255,.65)}
+.nav-btn.active{color:#fff;border-bottom-color:var(--gold2)}
+
+/* SECTIONS */
+.page-section{display:none;padding:48px 0 90px}
+.page-section.visible{display:block}
+.container{max-width:1100px;margin:0 auto;padding:0 24px}
+.section-header{margin-bottom:36px}
+.section-label{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.section-title{font-size:clamp(24px,4vw,36px);font-weight:700;color:var(--ink);line-height:1.1}
+.section-sub{font-size:14px;color:var(--ink3);margin-top:10px;max-width:560px;line-height:1.6}
+
+/* ITINERARY */
+
+.day-block{border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:14px;background:#fff;transition:box-shadow .2s}
+.day-block:hover{box-shadow:var(--shadow)}
+.day-block-header{display:flex;align-items:center;gap:14px;padding:16px 20px;cursor:pointer;user-select:none;transition:background .15s}
+.day-block-header:hover{background:rgba(0,0,0,.015)}
+.day-color-bar{width:5px;height:44px;border-radius:3px;flex-shrink:0}
+.day-block-info{flex:1;min-width:0}
+.day-block-name{font-size:13px;font-weight:700;color:var(--ink)}
+.day-block-sub{font-size:11.5px;color:var(--ink3);margin-top:2px}
+.day-block-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:12px;white-space:nowrap;flex-shrink:0}
+.day-block-toggle{font-size:18px;color:var(--ink3);transition:transform .25s;flex-shrink:0}
+.day-block.open .day-block-toggle{transform:rotate(180deg)}
+.day-stops{display:none;border-top:1px solid var(--border)}
+.day-block.open .day-stops{display:block}
+.stop-row{display:flex;gap:14px;padding:11px 20px;border-bottom:1px solid rgba(0,0,0,.04);align-items:flex-start;transition:background .12s}
+.stop-row:hover{background:var(--paper)}
+.stop-row:last-child{border-bottom:none}
+.stop-time{font-size:11px;font-weight:600;color:var(--ink3);min-width:68px;padding-top:2px;flex-shrink:0}
+.stop-body{flex:1;min-width:0}
+.stop-name{font-size:13.5px;font-weight:600;color:var(--ink);line-height:1.3}
+.stop-note{font-size:12px;color:var(--ink3);margin-top:2px;line-height:1.5}
+.stop-ft{margin-top:8px;background:rgba(201,146,42,.06);border:1.5px solid rgba(201,146,42,.25);border-radius:9px;padding:10px 13px}
+.stop-ft-name{font-size:12px;font-weight:700;color:var(--gold);margin-bottom:5px}
+.stop-ft-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:11px;color:var(--ink3);margin-bottom:7px}
+.stop-ft-btn{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#fff;background:var(--gold);padding:5px 12px;border-radius:20px;text-decoration:none}
+.stop-ft-maps{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--teal2);text-decoration:none;margin-left:8px;padding:5px 10px;border:1px solid rgba(26,122,110,.25);border-radius:20px}
+.stop-price{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:12px;white-space:nowrap;flex-shrink:0;margin-top:2px}
+.sp-free{background:rgba(26,122,110,.1);color:var(--teal)}
+.sp-paid{background:rgba(201,146,42,.1);color:var(--gold)}
+.sp-other{background:rgba(120,112,100,.09);color:var(--ink3)}
+.stop-options{background:rgba(200,57,43,.05);border-left:3px solid var(--red2);padding:8px 12px;margin-top:6px;border-radius:0 6px 6px 0;font-size:12px;color:var(--ink2);line-height:1.5}
+.stop-options strong{font-size:9px;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:2px;color:var(--red);opacity:.8}
+.day-geo{background:rgba(26,92,184,.05);border-top:1px solid rgba(26,92,184,.1);padding:10px 20px;font-size:11.5px;color:var(--blue)}
+.heli-version-block{padding:12px 20px;background:rgba(107,53,168,.05);border-left:3px solid var(--purple);margin:8px 0}
+.heli-version-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--purple);margin-bottom:4px}
+
+/* FREE TOURS TAB */
+.ft-card{background:#fff;border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:18px;box-shadow:var(--shadow)}
+.ft-card-header{background:var(--ink);padding:18px 22px;display:flex;align-items:flex-start;gap:14px}
+.ft-card-num{width:32px;height:32px;border-radius:50%;background:var(--gold);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+.ft-card-title{color:#fff;font-size:16px;font-weight:700;line-height:1.3;margin-bottom:3px}
+.ft-card-day{font-size:11px;color:var(--gold2);font-weight:600}
+.ft-card-body{padding:18px 22px}
+.ft-card-desc{font-size:13px;color:var(--ink2);line-height:1.65;margin-bottom:14px}
+.ft-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.ft-meta-item{background:var(--paper2);border-radius:var(--r);padding:10px 12px}
+.ft-meta-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink3);margin-bottom:3px}
+.ft-meta-val{font-size:13px;font-weight:600;color:var(--ink)}
+.ft-meta-val a{color:var(--teal2);text-decoration:none}
+.ft-meta-val a:hover{text-decoration:underline}
+.ft-btn-row{display:flex;gap:8px;flex-wrap:wrap}
+.ft-reserve-btn{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;color:#fff;background:var(--gold);padding:9px 18px;border-radius:var(--r);text-decoration:none;transition:opacity .15s}
+.ft-reserve-btn:hover{opacity:.85}
+.ft-maps-btn{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;color:var(--teal2);padding:9px 15px;border-radius:var(--r);border:1.5px solid rgba(26,122,110,.25);text-decoration:none;transition:all .15s}
+.ft-maps-btn:hover{background:rgba(26,122,110,.06)}
+
+/* FOOD MAP */
+.food-filter-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
+.food-map-wrap{height:420px;border-radius:var(--rl);overflow:hidden;border:1px solid var(--border);margin-bottom:20px;position:relative}
+.food-legend{position:absolute;bottom:12px;left:12px;z-index:500;background:rgba(255,255,255,.96);border-radius:var(--r);padding:10px 14px;font-size:11px;color:var(--ink2);box-shadow:var(--shadow);border:1px solid var(--border)}
+.food-legend-title{font-weight:700;margin-bottom:6px;color:var(--ink);font-size:12px}
+.food-leg-row{display:flex;align-items:center;gap:7px;margin-bottom:3px}
+.food-checklist{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-top:24px}
+.food-check-item{display:flex;align-items:flex-start;gap:10px;background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:12px 14px;transition:all .15s;cursor:pointer}
+.food-check-item.checked{background:rgba(26,122,110,.05);border-color:rgba(26,122,110,.3)}
+.food-check-item.checked .fci-name{text-decoration:line-through;color:var(--ink3)}
+.fci-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all .15s}
+.food-check-item.checked .fci-check{background:var(--teal);border-color:var(--teal);color:#fff}
+.fci-body{flex:1;min-width:0}
+.fci-name{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.fci-meta{font-size:11px;color:var(--ink3);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.fci-type{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap}
+.fci-meal{background:rgba(200,57,43,.1);color:var(--red)}
+.fci-merienda{background:rgba(201,146,42,.1);color:var(--gold)}
+.fci-maps-link{font-size:11px;color:var(--teal2);text-decoration:none;margin-top:3px;display:inline-flex;align-items:center;gap:3px}
+.fci-maps-link:hover{text-decoration:underline}
+
+/* COSTOS */
+.cost-hero-card{background:var(--ink);border-radius:var(--rl);padding:26px 30px;margin-bottom:20px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.cost-n{font-family:'Playfair Display',serif;font-size:48px;font-weight:900;color:#fff;letter-spacing:-2px;line-height:1}
+.cost-pp-n{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--gold2);line-height:1}
+.ct-header{display:grid;grid-template-columns:1fr 110px 110px;padding:10px 18px;background:var(--paper2);font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--border);border-radius:var(--rl) var(--rl) 0 0}
+.cost-table{background:#fff;border:1px solid var(--border);border-radius:0 0 var(--rl) var(--rl);overflow:hidden;margin-bottom:18px}
+.ct-row{display:grid;grid-template-columns:1fr 110px 110px;padding:11px 18px;border-top:1px solid var(--border);align-items:center;gap:8px;transition:background .12s}
+.ct-row:hover{background:var(--paper)}
+.ct-ico{font-size:15px;margin-right:6px}
+.ct-name{font-size:13px;color:var(--ink)}
+.ct-pp{font-size:12px;color:var(--ink3);text-align:right}
+.ct-x4{font-size:13px;font-weight:700;color:var(--ink);text-align:right}
+.ct-real input{width:90px;border:1.5px solid var(--border);border-radius:8px;padding:5px 8px;font-size:12px;font-family:inherit;color:var(--ink);background:var(--paper);text-align:right;transition:border-color .15s}
+.ct-real input:focus{outline:none;border-color:var(--border2)}
+.ct-sub{background:var(--paper2);font-weight:700}
+.ct-tot{background:var(--ink)}
+.ct-tot .ct-name{color:#fff;font-weight:800}
+.ct-tot .ct-pp{color:rgba(255,255,255,.45)}
+.ct-tot .ct-x4{color:var(--gold2);font-size:15px;font-weight:900}
+.ct-tot .ct-real input{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);color:#fff}
+.savings{background:rgba(26,122,110,.05);border:1px solid rgba(26,122,110,.18);border-radius:var(--rl);padding:20px 22px;margin-top:16px}
+.savings-title{font-size:14px;font-weight:700;color:var(--teal);margin-bottom:12px}
+.sav-item{display:flex;gap:9px;margin-bottom:8px;font-size:13px;color:var(--ink2);line-height:1.5;align-items:flex-start}
+
+/* GASTOS (SPLITWISE) */
+.gasto-form{background:#fff;border:1px solid var(--border);border-radius:var(--rl);padding:22px;margin-bottom:22px;box-shadow:var(--shadow)}
+.gasto-form h3{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:16px}
+.gf-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.gf-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);margin-bottom:4px;display:block}
+.gf-input{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;font-family:inherit;color:var(--ink);background:var(--paper);transition:border-color .15s}
+.gf-input:focus{outline:none;border-color:var(--border2)}
+.gf-who{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}
+.gf-who-btn{display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:20px;border:2px solid var(--border);background:transparent;cursor:pointer;font-size:12px;font-weight:600;color:var(--ink3);transition:all .15s;font-family:inherit}
+.gf-who-btn.on{border-color:var(--ink);background:var(--ink);color:#fff}
+.gf-add-btn{padding:9px 20px;border-radius:20px;background:var(--ink);border:none;color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s;font-family:inherit;margin-top:6px}
+.gf-add-btn:hover{opacity:.8}
+.gastos-list{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.gasto-item{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:12px 15px;display:flex;align-items:center;gap:12px}
+.gi-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0}
+.gi-body{flex:1;min-width:0}
+.gi-desc{font-size:13px;font-weight:600;color:var(--ink)}
+.gi-meta{font-size:11px;color:var(--ink3);margin-top:2px}
+.gi-amount{font-size:16px;font-weight:700;color:var(--ink);white-space:nowrap}
+.gi-del{background:none;border:none;color:var(--ink3);font-size:18px;cursor:pointer;padding:0 4px;transition:color .12s;line-height:1}
+.gi-del:hover{color:var(--red)}
+.balance-panel{background:var(--ink);border-radius:var(--rl);padding:22px 26px}
+.balance-title{font-size:14px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px}
+.balance-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.balance-row:last-child{border-bottom:none}
+.br-name{font-size:13px;color:rgba(255,255,255,.7)}
+.br-amount{font-size:15px;font-weight:700}
+.br-pos{color:var(--gold2)}
+.br-neg{color:#ef9a9a}
+.br-zero{color:rgba(255,255,255,.3)}
+.transfer-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(255,255,255,.05);border-radius:var(--r);margin-top:8px;font-size:12.5px;color:rgba(255,255,255,.8)}
+.transfer-from{color:var(--gold2);font-weight:600}
+.transfer-to{color:var(--teal2);font-weight:600}
+.transfer-amount{font-weight:700;color:#fff;margin-left:auto}
+
+/* TIPS */
+.tips-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:28px}
+.tip-card{background:#fff;border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s}
+.tip-card:hover{transform:translateY(-2px);box-shadow:var(--shadow2)}
+.tip-bar{height:4px}
+.tip-body{padding:15px 17px}
+.tip-eye{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px}
+.tip-n{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:5px;line-height:1.3}
+.tip-d{font-size:12.5px;color:var(--ink2);line-height:1.6;margin-bottom:8px}
+.tip-link{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--teal2);text-decoration:none;padding:5px 11px;border:1.5px solid rgba(26,122,110,.25);border-radius:20px;margin-top:2px;transition:all .15s}
+.tip-link:hover{background:rgba(26,122,110,.08)}
+
+/* PUNTUACIONES */
+.score-user-sel{display:flex;gap:10px;margin-bottom:22px;flex-wrap:wrap}
+.score-user-btn{display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:24px;border:2px solid var(--border);background:transparent;cursor:pointer;font-size:13px;font-weight:600;color:var(--ink3);transition:all .2s;font-family:inherit}
+.score-user-btn.active{background:var(--ink);border-color:var(--ink);color:#fff}
+.score-user-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0}
+.score-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.score-card{background:#fff;border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;box-shadow:var(--shadow);transition:transform .2s}
+.score-card:hover{transform:translateY(-2px)}
+.score-card-img{height:160px;overflow:hidden;background:var(--paper2)}
+.score-card-img img{width:100%;height:100%;object-fit:cover;display:block}
+.score-card-body{padding:14px 16px}
+.score-card-name{font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.score-card-day{font-size:10px;color:var(--ink3);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.stars-row{display:flex;gap:3px;margin-bottom:8px}
+.star{font-size:22px;cursor:pointer;color:var(--border2);transition:color .1s,transform .1s;user-select:none;line-height:1}
+.star:hover{transform:scale(1.2)}
+.star.lit{color:var(--gold2)}
+.avg-display{font-size:11px;color:var(--ink3);margin-bottom:8px}
+.comment-field{width:100%;border:1.5px solid var(--border);border-radius:var(--r);padding:8px 10px;font-size:12px;font-family:inherit;color:var(--ink);background:var(--paper);resize:none;min-height:50px;margin-bottom:6px;transition:border-color .15s}
+.comment-field:focus{outline:none;border-color:var(--border2)}
+.save-btn{padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:none;background:var(--ink);color:#fff;transition:opacity .15s;font-family:inherit}
+.save-btn:hover{opacity:.8}
+.reviews-list{margin-top:8px;display:flex;flex-direction:column;gap:5px}
+.review-item{background:var(--paper2);border-radius:8px;padding:8px 10px}
+.review-header{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.review-av{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+.review-name{font-size:11px;font-weight:600;color:var(--ink)}
+.review-stars{font-size:11px;color:var(--gold2);margin-left:auto}
+.review-text{font-size:11.5px;color:var(--ink2);line-height:1.5}
+
+/* MAPA BAÑOS / LINKNYC */
+.map-info-bar{background:var(--paper2);border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--ink2);line-height:1.55}
+.leaflet-map{height:460px;border-radius:var(--rl);overflow:hidden;border:1px solid var(--border);margin-bottom:16px}
+
+/* TICKETS */
+.ticket-check{display:flex;align-items:center;gap:8px;margin-top:8px;padding:7px 10px;background:rgba(26,92,184,.05);border:1.5px solid rgba(26,92,184,.15);border-radius:8px;cursor:pointer;transition:all .15s;user-select:none}
+.ticket-check:hover{background:rgba(26,92,184,.09)}
+.ticket-check.done{background:rgba(26,122,110,.06);border-color:rgba(26,122,110,.25)}
+.ticket-check-box{width:18px;height:18px;border-radius:4px;border:2px solid rgba(26,92,184,.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;transition:all .15s}
+.ticket-check.done .ticket-check-box{background:var(--teal);border-color:var(--teal);color:#fff}
+.ticket-check-label{font-size:11.5px;font-weight:600;color:var(--blue)}
+.ticket-check.done .ticket-check-label{color:var(--teal)}
+
+/* COUNTDOWN */
+.countdown-wrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.cd-num{font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:var(--gold2);line-height:1}
+.cd-label{font-size:11px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.1em}
+.cd-sep{width:1px;height:36px;background:rgba(255,255,255,.15)}
+.cd-msg{font-size:13px;color:rgba(255,255,255,.7);line-height:1.4;max-width:200px}
+.cd-live{color:var(--gold2);font-weight:700;font-size:14px}
+
+/* CLIMA */
+.clima-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-bottom:24px}
+.clima-card{background:#fff;border:1px solid var(--border);border-radius:var(--rl);padding:14px 12px;text-align:center;box-shadow:var(--shadow)}
+.clima-date{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);margin-bottom:6px}
+.clima-icon{font-size:28px;line-height:1;margin-bottom:6px}
+.clima-temps{font-size:13px;font-weight:700;color:var(--ink)}
+.clima-min{font-size:11px;color:var(--ink3)}
+.clima-desc{font-size:10px;color:var(--ink3);margin-top:4px;line-height:1.3}
+.clima-loading{text-align:center;padding:40px;color:var(--ink3);font-size:13px}
+
+/* CONVERSOR */
+.conv-card{background:#fff;border:1px solid var(--border);border-radius:var(--rl);padding:24px;max-width:460px;box-shadow:var(--shadow)}
+.conv-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.conv-input{flex:1;min-width:120px;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--r);font-size:18px;font-weight:700;font-family:inherit;color:var(--ink);background:var(--paper);transition:border-color .15s;outline:none}
+.conv-input:focus{border-color:var(--border2)}
+.conv-currency{font-size:13px;font-weight:700;color:var(--ink3);min-width:40px}
+.conv-rate{font-size:12px;color:var(--ink3);margin-top:6px}
+.conv-result-box{background:var(--paper2);border-radius:var(--r);padding:16px 18px;margin-top:12px;text-align:center}
+.conv-result-n{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:var(--teal);line-height:1}
+.conv-result-label{font-size:12px;color:var(--ink3);margin-top:4px}
+.conv-swap{padding:10px 14px;border-radius:var(--r);border:1.5px solid var(--border);background:transparent;cursor:pointer;font-size:18px;transition:all .15s;font-family:inherit}
+.conv-swap:hover{background:var(--paper2)}
+
+/* SEARCH BARS */
+.search-bar-wrap{position:relative;margin-bottom:20px}
+.search-bar{width:100%;padding:11px 16px 11px 40px;border:1.5px solid var(--border);border-radius:24px;font-size:14px;font-family:inherit;color:var(--ink);background:#fff;transition:border-color .15s,box-shadow .15s;outline:none}
+.search-bar:focus{border-color:var(--border2);box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.search-bar-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--ink3);font-size:16px;pointer-events:none}
+.search-bar-clear{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--ink3);font-size:20px;line-height:1;cursor:pointer;display:none;padding:0 4px;transition:color .12s}
+.search-bar-clear.visible{display:block}
+.search-bar-clear:hover{color:var(--red)}
+.search-count-pill{display:inline-flex;align-items:center;font-size:11px;font-weight:600;color:var(--ink3);background:var(--paper2);padding:3px 10px;border-radius:12px;margin-left:8px}
+
+/* SHARED */
+.empty-state{text-align:center;padding:60px 20px;color:var(--ink3)}
+.empty-state .big{font-size:48px;margin-bottom:12px}
+.f-btn{padding:7px 14px;border-radius:24px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:transparent;color:var(--ink3);transition:all .15s;white-space:nowrap;font-family:inherit}
+.f-btn:hover{border-color:var(--ink2);color:var(--ink)}
+.f-btn.on{background:var(--ink);border-color:var(--ink);color:#fff}
+@media(max-width:700px){
+  .hero-content{padding:36px 24px}
+  .gf-row,.ct-header,.ct-row{grid-template-columns:1fr 1fr}
+  .ct-x4,.ct-real{display:none}
+  .ft-meta-grid{grid-template-columns:1fr}
+  .score-grid,.food-checklist,.tips-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<!-- COUNTDOWN TOP BAR -->
+<div id="countdown-top" style="background:var(--ink);border-bottom:2px solid var(--gold);padding:0;overflow:hidden">
+  <div style="max-width:1100px;margin:0 auto;padding:0 24px">
+    <div id="countdown-badge" style="padding:18px 0"></div>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Noviembre 2026 · American Airlines · EZE ↔ JFK</div>
+    <h1 class="hero-title">Nueva<em>York.</em></h1>
+    <div class="hero-pills">
+      <div class="hero-pill"><strong>Sáb 21 nov</strong> — llegada 9:30am JFK</div>
+      <div class="hero-pill"><strong>Dom 29 nov</strong> — vuelo 22:00hs</div>
+      <div class="hero-pill"><strong>Hotel:</strong> Fairfield Marriott Times Square · 330 W 40th St</div>
+      <div class="hero-pill">🎉 Macy's Parade <strong>100° Aniversario</strong></div>
+    </div>
+    <div class="hero-travelers">
+      <div class="trav-av" style="background:#c8392b">R</div>
+      <div class="trav-av" style="background:#1a7a6e">M</div>
+      <div class="trav-av" style="background:#c9922a">N</div>
+      <div class="trav-av" style="background:#3d5a80">B</div>
+      <div class="trav-label">Reni · Mateo · Nico · Benja</div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <button class="nav-btn active" onclick="showTab('itinerario',this)">Itinerario</button>
+    <button class="nav-btn" onclick="showTab('freetours',this)">Free Tours</button>
+    <button class="nav-btn" onclick="showTab('mapa',this)">Mapa</button>
+    <button class="nav-btn" onclick="showTab('comida',this)">Comida</button>
+    <button class="nav-btn" onclick="showTab('tips',this)">Tips</button>
+    <button class="nav-btn" onclick="showTab('costos',this)">Costos</button>
+    <button class="nav-btn" onclick="showTab('gastos',this)">Gastos</button>
+    <button class="nav-btn" onclick="showTab('puntuaciones',this)">Puntuaciones</button>
+    <button class="nav-btn" onclick="showTab('banos',this)">Baños</button>
+    <button class="nav-btn" onclick="showTab('linknyc',this)">LinkNYC</button>
+    <button class="nav-btn" onclick="showTab('clima',this)">Clima</button>
+    <button class="nav-btn" onclick="showTab('conversor',this)">Conversor</button>
+    <button class="nav-btn" onclick="showTab('mimapa',this)">Mi Mapa</button>
+  </div>
+</nav>
+
+<!-- TAB ITINERARIO -->
+<div id="tab-itinerario" class="page-section visible">
+<div class="container">
+  <div class="section-header" style="margin-top:48px">
+    <div class="section-label">El plan</div>
+    <h2 class="section-title">Itinerario día a día</h2>
+    <p class="section-sub">9 días con los 5 free tours integrados. Hacé clic en cada día para ver el detalle.</p>
+  </div>
+
+    <div id="itinerario-container"></div>
+</div>
+</div>
+
+<!-- TAB FREE TOURS -->
+<div id="tab-freetours" class="page-section">
+<div class="container">
+  <div class="section-header" style="margin-top:48px">
+    <div class="section-label">Gratis + propina</div>
+    <h2 class="section-title">Los 5 Free Tours</h2>
+    <p class="section-sub">Todos en español vía Civitatis y GuruWalk. Reservar con anticipación aunque sean gratuitos.</p>
+  </div>
+  <div id="freetours-container"></div>
+</div>
+</div>
+
+<!-- TAB MAPA -->
+<div id="tab-mapa" class="page-section">
+<div class="container">
+  <div class="section-header" style="margin-top:48px">
+    <div class="section-label">Ubicaciones</div>
+    <h2 class="section-title">Mapa de lugares</h2>
+    <p class="section-sub">Todos los lugares del viaje. Filtrá por día para ver qué hay en la zona y planificar el recorrido.</p>
+  <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px" id="mapa-day-filter"></div>
+  </div>
+  <div id="mapa-map" class="leaflet-map"></div>
+</div>
+</div>
+
+<!-- TAB COMIDA -->
+<div id="tab-comida" class="page-section">
+<div class="container">
+  <div class="section-header" style="margin-top:48px">
+    <div class="section-label">Dónde comer</div>
+    <h2 class="section-title">Mapa de comida</h2>
+    <p class="section-sub">Todos los lugares de comida con su tipo, precio y dirección. Tildá los que ya probaste para no repetir.</p>
+  </div>
+  <div class="search-bar-wrap" style="max-width:480px">
+    <span class="search-bar-icon">🔍</span>
+    <input class="search-bar" id="food-search" placeholder="Buscar lugar de comida..." oninput="filterFoodSearch(this.value)" type="text">
+    <button class="search-bar-clear" id="food-search-clear" onclick="clearFoodSearch()">×</button>
+  </div>
+  <div class="food-filter-row" id="food-filter-row">
+    <button class="f-btn on" onclick="filterFood('all',this)">Todos</button>
+    <button class="f-btn" onclick="filterFood('almuerzo-cena',this)">🍽️ Almuerzo/Cena</button>
+    <button class="f-btn" onclick="filterFood('merienda',this)">☕ Merienda/Postre</button>
+    <button class="f-btn" onclick="filterFood('must',this)">⭐ Must</button>
+  </div>
+  <div style="position:relative">
+    <div id="food-map" class="leaflet-map"></div>
+    <div class="food-legend">
+      <div class="food-legend-title">Referencias</div>
+      <div class="food-leg-row"><span style="font-size:16px">🍽️</span> Almuerzo / Cena</div>
+      <div class="food-leg-row"><span style="font-size:16px">☕</span> Merienda / Postre</div>
+      <div class="food-leg-row"><span style="font-size:16px">⭐</span> Must</div>
+      <div class="food-leg-row"><span style="font-size:16px">✅</span> Ya probado</div>
+    </div>
+  </div>
+  <h3 style="font-size:18px;font-weight:700;color:var(--ink);margin-bottom:14px;margin-top:8px">Checklist — ¿qué ya probamos? <span class="search-count-pill" id="food-count"></span></h3>
+  <div class="food-checklist" id="food-checklist"></div>
+</div>
+</div>
+
+<!-- TAB TIPS -->
+<div id="tab-tips" class="page-section">
+<div class="container">
+  <div class="section-header" style="margin-top:48px">
+    <div class="section-label">Lo que hay que saber</div>
+    <h2 class="section-title">Tips del viaje</h2>
+    <p class="section-sub">Transporte, tickets, apps y todo lo práctico antes y durante el viaje.</p>
+  </div>
+  <div class="tips-grid" id="tips-container"></div>
+</div>
+</div>
+
+<!-- TAB COSTOS -->
+<div id="tab-costos" class="page-section">
+<div class="container">
+  <div class="section-header" style="margin-top:48px">
+    <div class="section-label">Presupuesto</div>
+    <h2 class="section-title">Cuánto sale</h2>
+    <p class="section-sub">Estimación en USD para 4 personas. La columna "Real" la llenan ustedes durante el viaje.</p>
+  </div>
+  <div class="cost-hero-card">
+    <div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:4px">Estimado por persona</div>
+      <div class="cost-n">~$1.150</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.35);margin-top:6px">Sin vuelos ni hotel · entradas, comida, transporte · 9 días</div>
+    </div>
+  </div>
+  <div class="ct-header">
+    <span>Rubro</span>
+    <span style="text-align:right">Estimado</span>
+    <span style="text-align:right">Real ✏️</span>
+  </div>
+  <div class="cost-table" id="cost-table-body"></div>
+  <div class="savings">
+    <div class="savings-title">💡 Cómo ahorrar</div>
+    <div class="sav-item"><span style="color:var(--teal);font-weight:700;flex-shrink:0">→</span><span>La entrada del <strong>Met es voluntaria</strong> para turistas internacionales. La tarifa de $30 es sugerida, no obligatoria.</span></div>
+    <div class="sav-item"><span style="color:var(--teal);font-weight:700;flex-shrink:0">→</span><span><strong>TKTS en Times Square</strong> vende Broadway el mismo día con hasta 50% de descuento. Ir antes de las 18hs.</span></div>
+    <div class="sav-item"><span style="color:var(--teal);font-weight:700;flex-shrink:0">→</span><span>El <strong>AirTrain + Subway desde JFK</strong> sale ~$15 c/u. El taxi sale $60-80. Ahorran ~$180 entre los cuatro.</span></div>
+    <div class="sav-item"><span style="color:var(--teal);font-weight:700;flex-shrink:0">→</span><span>El <strong>AMNH es gratis después de las 16:30</strong>. Si van a la última hora, sin pagar pueden ver lo principal.</span></div>
+    <div class="sav-item"><span style="color:var(--teal);font-weight:700;flex-shrink:0">→</span><span>Comer en <strong>Chinatown, Hell's Kitchen o Flushing</strong> cuesta 40-60% menos que en Midtown o Times Square.</span></div>
+  </div>
+</div>
+</div>
+
+<!-- TAB GASTOS -->
+<div id="tab-gastos" class="page-section">
+<div class="container">
+  <div class="section-header" style="margin-top:48px">
+    <div class="section-label">División de gastos</div>
+    <h2 class="section-title">Splitwise del grupo</h2>
+    <p class="section-sub">Carguen cada gasto — quién pagó y entre quiénes se divide. Se sincroniza en tiempo real entre los 4 dispositivos.</p>
+  <div id="fb-sync-badge" style="display:none;align-items:center;gap:8px;font-size:12px;font-weight:600;padding:7px 14px;border-radius:20px;background:rgba(201,146,42,.1);color:var(--gold);margin-bottom:16px;width:fit-content">⏳ Conectando...</div>
+  </div>
+  <div class="gasto-form">
+    <h3>Agregar un gasto</h3>
+    <div class="gf-row">
+      <div>
+        <label class="gf-label">Descripción</label>
+        <input class="gf-input" id="g-desc" placeholder="ej. Entradas Empire State">
+      </div>
+      <div>
+        <label class="gf-label">Monto (USD)</label>
+        <input class="gf-input" id="g-monto" type="number" min="0" step="0.01" placeholder="0.00">
+      </div>
+    </div>
+    <div>
+      <label class="gf-label">¿Quién pagó?</label>
+      <div class="gf-who" id="g-pago-who">
+        <button class="gf-who-btn" onclick="selPagador('reni',this)" id="gp-reni"><span style="width:18px;height:18px;border-radius:50%;background:#c8392b;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff">R</span>Reni</button>
+        <button class="gf-who-btn" onclick="selPagador('mateo',this)" id="gp-mateo"><span style="width:18px;height:18px;border-radius:50%;background:#1a7a6e;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff">M</span>Mateo</button>
+        <button class="gf-who-btn" onclick="selPagador('nico',this)" id="gp-nico"><span style="width:18px;height:18px;border-radius:50%;background:#c9922a;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff">N</span>Nico</button>
+        <button class="gf-who-btn" onclick="selPagador('benja',this)" id="gp-benja"><span style="width:18px;height:18px;border-radius:50%;background:#3d5a80;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff">B</span>Benja</button>
+      </div>
+    </div>
+    <div>
+      <label class="gf-label">¿Entre quiénes se divide?</label>
+      <div class="gf-who" id="g-divide-who">
+        <button class="gf-who-btn on" onclick="toggleDivide('reni',this)" id="gd-reni"><span style="width:18px;height:18px;border-radius:50%;background:#c8392b;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff">R</span>Reni</button>
+        <button class="gf-who-btn on" onclick="toggleDivide('mateo',this)" id="gd-mateo"><span style="width:18px;height:18px;border-radius:50%;background:#1a7a6e;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff">M</span>Mateo</button>
+        <button class="gf-who-btn on" onclick="toggleDivide('nico',this)" id="gd-nico"><span style="width:18px;height:18px;border-radius:50%;background:#c9922a;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff">N</span>Nico</button>
+        <button class="gf-who-btn on" onclick="toggleDivide('benja',this)" id="gd-benja"><span style="width:18px;height:18px;border-radius:50%;background:#3d5a80;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff">B</span>Benja</button>
+      </div>
+    </div>
+    <button class="gf-add-btn" onclick="addGasto()">+ Agregar gasto</button>
+  </div>
+  <div class="gastos-list" id="gastos-list"></div>
+  <div class="balance-panel" id="balance-panel">
+    <div class="balance-title">Balance del grupo</div>
+    <div id="balance-content"><div style="color:rgba(255,255,255,.3);font-size:13px">Agreguen gastos para ver el balance</div></div>
+    <div id="transfers-content"></div>
+  </div>
+</div>
+</div>
+
+<!-- TAB PUNTUACIONES -->
+<div id="tab-puntuaciones" class="page-section">
+<div class="container">
+  <div class="section-header" style="margin-top:48px">
+    <div class="section-label">Post-viaje</div>
+    <h2 class="section-title">Puntuaciones</h2>
+    <p class="section-sub">Ya estando en el viaje o al volver, califiquen cada lugar del 1 al 5 y dejen su experiencia.</p>
+  </div>
+  <div class="search-bar-wrap" style="max-width:480px">
+    <span class="search-bar-icon">🔍</span>
+    <input class="search-bar" id="score-search" placeholder="Buscar lugar..." oninput="filterScores(this.value)" type="text">
+    <button class="search-bar-clear" id="score-search-clear" onclick="clearScoreSearch()">×</button>
+  </div>
+  <div class="score-user-sel">
+    <button class="score-user-btn" onclick="selScoreUser('reni',this)"><div class="score-user-av" style="background:#c8392b">R</div>Reni</button>
+    <button class="score-user-btn" onclick="selScoreUser('mateo',this)"><div class="score-user-av" style="background:#1a7a6e">M</div>Mateo</button>
+    <button class="score-user-btn" onclick="selScoreUser('nico',this)"><div class="score-user-av" style="background:#c9922a">N</div>Nico</button>
+    <button class="score-user-btn" onclick="selScoreUser('benja',this)"><div class="score-user-av" style="background:#3d5a80">B</div>Benja</button>
+  </div>
+  <div class="score-grid" id="score-grid"></div>
+</div>
+</div>
+
+<!-- TAB BAÑOS -->
+<div id="tab-banos" class="page-section">
+<div class="container">
+  <div class="section-header" style="margin-top:48px">
+    <div class="section-label">Necesidad básica</div>
+    <h2 class="section-title">Mapa de baños públicos</h2>
+    <p class="section-sub">Baños públicos gratuitos en NYC. La mayoría en parques, museos y cadenas de comida rápida.</p>
+  </div>
+  <div class="map-info-bar">💡 <strong>Tip:</strong> Starbucks, McDonald's y otras cadenas tienen baño. Los parques también. En algunos museos podés entrar solo al baño sin pagar entrada. Los baños del Times Square están en el subsuelo de la estación.</div>
+  <div id="banos-map" class="leaflet-map"></div>
+</div>
+</div>
+
+<!-- TAB LINKNYC -->
+<div id="tab-linknyc" class="page-section">
+<div class="container">
+  <div class="section-header" style="margin-top:48px">
+    <div class="section-label">Wifi + carga gratis</div>
+    <h2 class="section-title">Kioscos LinkNYC</h2>
+    <p class="section-sub">Los kioscos LinkNYC ofrecen wifi gratuito de alta velocidad, carga USB para el celular y llamadas gratuitas a cualquier número de EEUU. Hay miles en Manhattan.</p>
+  </div>
+  <div class="map-info-bar">📡 <strong>¿Qué es LinkNYC?</strong> Son los postes azules en las veredas de Manhattan. Reemplazaron las cabinas telefónicas. Ofrecen: wifi gratis (hasta 1 Gbps), carga USB, llamadas locales gratis y una pantalla táctil con info de la ciudad. No se necesita cuenta ni registro — conectarse a "LinkNYC" y listo.</div>
+  <div id="linknyc-map" class="leaflet-map"></div>
+</div>
+</div>
+
+<!-- TAB CLIMA -->
+<div id="tab-clima" class="page-section">
+<div class="container">
+  <div class="section-header" style="margin-top:48px">
+    <div class="section-label">Noviembre 2026</div>
+    <h2 class="section-title">Clima en NYC</h2>
+    <p class="section-sub">Pronóstico para los 9 días del viaje. En noviembre NYC puede llegar a -5°C de madrugada — campera de plumas obligatoria para los free tours nocturnos.</p>
+  </div>
+  <div id="clima-container"><div class="clima-loading">⏳ Cargando pronóstico...</div></div>
+  <div style="margin-top:16px;padding:14px 18px;background:var(--paper2);border-radius:var(--r);font-size:12.5px;color:var(--ink3)">
+    💡 <strong>Noviembre en NYC:</strong> temperaturas entre 2°C y 14°C. Lluvias frecuentes. Llevar: campera de plumas, bufanda, guantes, gorro y una capa impermeable. Los free tours de noche pueden estar a -3°C o menos.
+  </div>
+</div>
+</div>
+
+<!-- TAB MI MAPA -->
+<div id="tab-mimapa" class="page-section">
+<div class="container">
+  <div class="section-header" style="margin-top:48px">
+    <div class="section-label">Google Maps guardado</div>
+    <h2 class="section-title">Mi Mapa de NYC</h2>
+    <p class="section-sub">Todos los lugares guardados en Google Maps. Tocá cualquier pin para ver el nombre y la dirección.</p>
+  </div>
+  <div style="background:var(--paper2);border:1px solid var(--border);border-radius:var(--rl);padding:24px;text-align:center;margin-bottom:20px">
+    <div style="font-size:36px;margin-bottom:12px">🗺️</div>
+    <div style="font-size:16px;font-weight:700;color:var(--ink);margin-bottom:8px">Mapa guardado de Google Maps</div>
+    <div style="font-size:13px;color:var(--ink3);margin-bottom:20px;max-width:400px;margin-left:auto;margin-right:auto;line-height:1.6">
+      Los mapas personales de Google Maps no se pueden embeber directamente. Abrilo en Google Maps para ver todos los lugares guardados.
+    </div>
+    <a href="https://maps.app.goo.gl/pRfYGPCDRD5dTBcq7" target="_blank"
+      style="display:inline-flex;align-items:center;gap:10px;font-size:14px;font-weight:700;color:#fff;background:var(--teal);padding:14px 24px;border-radius:var(--rl);text-decoration:none;transition:opacity .15s"
+      onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+      📍 Abrir Mi Mapa en Google Maps ↗
+    </a>
+    <div style="margin-top:20px;font-size:12px;color:var(--ink3)">
+      Tip: en el celular se abre directo en la app de Google Maps con todos los pines guardados.
+    </div>
+  </div>
+  <!-- Intento de embed — funciona si el mapa es público -->
+  <div style="border-radius:var(--rl);overflow:hidden;border:1px solid var(--border);margin-bottom:16px">
+    <iframe
+      src="https://maps.google.com/maps?q=Nueva+York&output=embed&z=13"
+      width="100%" height="400" frameborder="0" style="display:block" loading="lazy">
+    </iframe>
+  </div>
+
+</div>
+</div>
+
+<!-- TAB CONVERSOR -->
+<div id="tab-conversor" class="page-section">
+<div class="container">
+  <div class="section-header" style="margin-top:48px">
+    <div class="section-label">USD / ARS</div>
+    <h2 class="section-title">Conversor de moneda</h2>
+    <p class="section-sub">Tipo de cambio del día. Actualizándose automáticamente.</p>
+  </div>
+  <div class="conv-card">
+    <div id="conv-rate-display" class="conv-rate" style="margin-bottom:16px;font-size:13px;color:var(--ink3)">⏳ Obteniendo cotización...</div>
+    <div class="conv-row">
+      <input class="conv-input" id="conv-from" type="number" placeholder="0" oninput="convertMoney()" value="100">
+      <span class="conv-currency" id="conv-from-label">USD</span>
+      <button class="conv-swap" onclick="swapCurrency()" title="Invertir">⇄</button>
+      <span class="conv-currency" id="conv-to-label">ARS</span>
+    </div>
+    <div class="conv-result-box">
+      <div class="conv-result-n" id="conv-result">—</div>
+      <div class="conv-result-label" id="conv-result-label">Ingresá un monto arriba</div>
+    </div>
+    <div style="margin-top:16px;padding:12px 14px;background:var(--paper2);border-radius:var(--r);font-size:11.5px;color:var(--ink3);line-height:1.6">
+      💡 <strong>Tips de plata en NYC:</strong> Propinas: 18-22% en restaurantes. Free tours: $10-15 USD c/u en efectivo. MetroCard: $34 USD por 7 días. Muchos lugares no aceptan efectivo — tener tarjeta siempre.
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// ── USERS ─────────────────────────────────────────────────────────────────────
+const USERS={
+  reni:{name:"Reni",color:"#c8392b",letter:"R"},
+  mateo:{name:"Mateo",color:"#1a7a6e",letter:"M"},
+  nico:{name:"Nico",color:"#c9922a",letter:"N"},
+  benja:{name:"Benja",color:"#3d5a80",letter:"B"}
+};
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+function loadST(){
+  try{const s=JSON.parse(localStorage.getItem("nyc2026_v3")||"{}");
+    return{
+      
+      tickets:s.tickets||{},
+      scoreUser:s.scoreUser||null,
+      scores:s.scores||{},
+      reviews:s.reviews||{},
+      gastos:s.gastos||[],
+      foodChecked:s.foodChecked||{},
+      ftReserved:s.ftReserved||{},
+      paidTransfers:s.paidTransfers||{},
+      costsReal:s.costsReal||{},
+      pagador:s.pagador||null,
+      dividir:s.dividir||["reni","mateo","nico","benja"]
+    };}
+  catch{return{heliV:"B",scoreUser:null,scores:{},reviews:{},gastos:[],foodChecked:{},pagador:null,dividir:["reni","mateo","nico","benja"]};}
+}
+function saveST(){
+  try{localStorage.setItem("nyc2026_v3",JSON.stringify(ST));}
+  catch(e){}
+}
+let ST=loadST();
+let scoreUser=ST.scoreUser;
+let pagador=ST.pagador;
+let dividir=[...ST.dividir];
+
+// ── DAY META ──────────────────────────────────────────────────────────────────
+const DAY_META={
+  1:{label:"Sáb 21",name:"Conocer general — Times Square · Broadway",color:"#1a5cb8"},
+  2:{label:"Dom 22",name:"Central Park · AMNH · 5th Ave",color:"#1a7a6e"},
+  3:{label:"Lun 23",name:"Brooklyn · DUMBO · Friends Experience",color:"#6b35a8"},
+  4:{label:"Mar 24",name:"Midtown · MoMA · SUMMIT · Comedy Cellar",color:"#c8392b"},
+  5:{label:"Mie 25",name:"Greenwich · Chinatown · Little Italy · Patinaje",color:"#c9922a"},
+  6:{label:"Jue 26",name:"Thanksgiving 🦃 · Parade · High Line · Pier 57",color:"#880e4f"},
+  7:{label:"Vie 27",name:"Downtown · Wall St · 9/11 · Saks Light Show",color:"#b71c1c"},
+  8:{label:"Sáb 28",name:"Estatua de la Libertad · 🚁 Helicóptero · 230 Fifth",color:"#2e4057"},
+  9:{label:"Dom 29",name:"Queens · Roosevelt Island · Regreso ✈️",color:"#2e7d6e"}
+};
+
+// ── FREE TOURS DATA ───────────────────────────────────────────────────────────
+const FREE_TOURS=[
+  {id:"ft1",
+   name:"Central Park",
+   day:"Dom 22 · 10:00hs",
+   dayNum:2,
+   hour:"10:00 AM (disponible 09:30 / 10:00 / 14:30)",
+   duration:"~2 hs 45 min",
+   meeting:"West 59th St (Columbus Circle, entrada sur del parque)",
+   meetingMaps:"https://maps.google.com/?q=Columbus+Circle+New+York",
+   end:"72nd St (dentro del parque)",
+   endMaps:"https://maps.google.com/?q=72nd+Street+Central+Park+New+York",
+   propina:"$10-15 c/u en efectivo",
+   url:"https://www.civitatis.com/ar/nueva-york/tour-central-park/",
+   desc:"El tour más completo del parque: Umpire Rock, Gapstow Bridge, Bethesda Fountain, Bow Bridge, Alice in Wonderland, el Jacqueline Kennedy Reservoir y más. El guía cuenta la historia del parque desde su creación en 1858 y la vida salvaje urbana que lo habita.",
+   cover:"https://images.unsplash.com/photo-1534430480872-3498386e7856?w=800&q=80"},
+  {id:"ft2",
+   name:"Midtown / Times Square / Broadway",
+   day:"Mar 24 · 09:30hs",
+   dayNum:4,
+   hour:"09:30 AM (también 09:45 / 10:30 / 14:30 / 15:00)",
+   duration:"~2 hs 30 min",
+   meeting:"Wafels & Dinges, 42nd St & 6th Ave (frente a Bryant Park)",
+   meetingMaps:"https://maps.google.com/?q=Bryant+Park+New+York+42nd+Street",
+   end:"Times Square (45th St y Broadway)",
+   endMaps:"https://maps.google.com/?q=Times+Square+New+York",
+   propina:"$10-15 c/u en efectivo",
+   url:"https://www.civitatis.com/ar/nueva-york/free-tour-midtown-manhattan/",
+   desc:"La Biblioteca Pública de NY con sus leones Patience y Fortitude, Grand Central Terminal y el secreto del susurro en el arco, el Edificio Chrysler, el Rockefeller Center y el mural de Diego Rivera, Radio City Music Hall, y terminando en el epicentro de Times Square.",
+   cover:"https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=800&q=80"},
+  {id:"ft3",
+   name:"Chinatown + Little Italy + SoHo",
+   day:"Mie 25 · 15:00hs",
+   dayNum:5,
+   hour:"15:00 PM (también 11:00)",
+   duration:"~2 hs",
+   meeting:"Foley Square (frente al Tribunal Federal de NY)",
+   meetingMaps:"https://maps.google.com/?q=Foley+Square+New+York",
+   end:"Gunther Building, SoHo (Spring St y Greene St)",
+   endMaps:"https://maps.google.com/?q=Greene+Street+SoHo+New+York",
+   propina:"$10-15 c/u en efectivo",
+   url:"https://www.civitatis.com/ar/nueva-york/free-tour-nueva-york/",
+   desc:"El tour recorre el Chinatown más denso del hemisferio occidental, la Little Italy que sobrevivió a la gentrificación, y el SoHo de la arquitectura de hierro fundido del siglo XIX. Se cuentan las historias de la inmigración italiana y china que formaron estas comunidades únicas.",
+   cover:"https://images.unsplash.com/photo-1517732306149-e8f829eb588a?w=800&q=80"},
+  {id:"ft4",
+   name:"High Line + Hudson Yards + Chelsea",
+   day:"Jue 26 · 18:00hs",
+   dayNum:6,
+   hour:"18:00 PM (lunes a sábado)",
+   duration:"~2 hs 30 min",
+   meeting:"Estación línea 7 Hudson Yards (34th St & 11th Ave)",
+   meetingMaps:"https://maps.google.com/?q=Hudson+Yards+Station+New+York",
+   end:"Pier 57 (West Side Highway & 15th St)",
+   endMaps:"https://maps.google.com/?q=Pier+57+New+York",
+   propina:"$10-15 c/u en efectivo",
+   url:"https://www.guruwalk.com/es/nueva-york/free-tour-high-line-hudson-yards",
+   desc:"El High Line — la línea de tren elevada del siglo XX reconvertida en parque urbano de 2.5 km — es uno de los proyectos de renovación urbana más exitosos del mundo. El tour cubre Hudson Yards, el Vessel de Thomas Heatherwick, los murales de Chelsea y termina en el Pier 57.",
+   cover:"https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=800&q=80"},
+  {id:"ft5",
+   name:"Downtown / Wall Street / 9-11",
+   day:"Vie 27 · 09:15hs",
+   dayNum:7,
+   hour:"09:15 AM (también 09:50 / 10:00 / 14:00 / 14:30)",
+   duration:"~2 hs 30 min",
+   meeting:"National Museum of the American Indian (escaleras del museo)",
+   meetingMaps:"https://maps.google.com/?q=National+Museum+American+Indian+New+York",
+   end:"9/11 Memorial (plaza sur)",
+   endMaps:"https://maps.google.com/?q=9/11+Memorial+New+York",
+   propina:"$10-15 c/u en efectivo",
+   url:"https://www.civitatis.com/ar/nueva-york/free-tour-nueva-york/",
+   desc:"El origen de Nueva York: la muralla holandesa que dio nombre a Wall Street, el Charging Bull instalado ilegalmente en 1989, la Bolsa de Nueva York, Federal Hall donde se juró la constitución, Battery Park con vistas a la Estatua de la Libertad, y el 9/11 Memorial con toda la historia de ese día.",
+   cover:"https://images.unsplash.com/photo-1560969184-10fe8719e047?w=800&q=80"},
+  {id:"ft6",
+   name:"Greenwich Village",
+   day:"Mie 25 · 11:00hs",
+   dayNum:5,
+   hour:"11:00 AM (también 15:00)",
+   duration:"~2 hs",
+   meeting:"Washington Square Arch (arco norte)",
+   meetingMaps:"https://maps.google.com/?q=Washington+Square+Park+New+York",
+   end:"Jefferson Market Library (6th Ave & W 10th St)",
+   endMaps:"https://maps.google.com/?q=Jefferson+Market+Library+New+York",
+   propina:"$10-15 c/u en efectivo",
+   url:"https://www.civitatis.com/ar/nueva-york/free-tour-mujeres-village/",
+   desc:"Greenwich Village: el barrio bohemio donde nacieron el jazz, el folk y el movimiento de derechos LGBT+. El tour cubre Christopher Park, el Stonewall Inn (el primer lugar donde la comunidad LGBT+ resistió arrestos policiales en 1969), Jefferson Market Library y las calles de adoquines del West Village.",
+   cover:"https://images.unsplash.com/photo-1534430480872-3498386e7856?w=800&q=80"}
+];
+
+// ── ITINERARY DATA ─────────────────────────────────────────────────────────────
+// ─── EDIT HERE: cambiar horarios o notas es simple, editar en el array de abajo ───
+const DAYS=[
+  // ── DÍA 1: SÁBADO 21 ──────────────────────────────────────────────────────
+  {day:1,stops:[
+    {t:"09:30",n:"Aterrizaje JFK",p:"--",addr:"John F. Kennedy International Airport, Queens"},
+    {t:"10:30",n:"AirTrain + Subway A hasta Times Square",p:"~$15 c/u",addr:"AirTrain → Jamaica Station → Subway A → 42nd St-Port Authority",note:"~50 min en total."},
+    {t:"13:00",n:"Llegada al hotel · dejar valijas",p:"--",addr:"330 W 40th St, Hell's Kitchen (entre 8th y 9th Ave)",note:"Check-in oficial a las 16hs. Guardan las valijas sin cargo."},
+    {t:"13:30",n:"Almuerzo",p:"--",opts:"Westway Diner (614 9th Ave) · Joe's Pizza (1435 Broadway) · $1.50 Fresh Pizza (varios en Midtown)"},
+    {t:"15:00",n:"Target · Five Below · caminata Hell's Kitchen",p:"Variable",addr:"Target: 11 W 42nd St · Five Below: buscar en maps la más cercana"},
+    {t:"16:00",n:"Check-in oficial",p:"--",addr:"Fairfield Marriott · 330 W 40th St"},
+    {t:"17:00",n:"Times Square · M&M's World · Hershey's · Grand Slam",p:"GRATIS",addr:"Times Square: Broadway & 7th Ave · M&M's: 1600 Broadway · Hershey's: 1593 Broadway"},
+    {t:"18:30",n:"Merienda",p:"--",opts:"I'm Donut? (W 45th St, Times Square) · Carlos Bakery (625 8th Ave) · Krispy Kreme (1601 Broadway)"},
+    {t:"19:00",n:"Broadway Show",p:"~$70-150 c/u",addr:"Theater District: W 41st–54th St entre 6th y 9th Ave",note:"⚠️ Reservar con anticipación o ir a TKTS (47th & Broadway) ese día.",ticket:true,ticketId:"broadway_d1"},
+    {t:"21:30",n:"Cena",p:"--",opts:"Carmine's (200 W 44th St) · Ellen's Stardust Diner (1650 Broadway) · Pasta de Pasta (673 9th Ave) · Joe's Pizza (1435 Broadway)"}
+  ]},
+  // ── DÍA 2: DOMINGO 22 ─────────────────────────────────────────────────────
+  {day:2,stops:[
+    {t:"08:00",n:"Salida hacia Central Park",p:"--",addr:"Entrada sur: Columbus Circle (59th St & 8th Ave)",note:"A pie desde el hotel ~25 min, o subte C hasta 59th St."},
+    {t:"09:00",n:"Umpire Rock · Gapstow Bridge",p:"GRATIS",addr:"Umpire Rock: Central Park South, cerca de 62nd St · Gapstow Bridge: The Pond, 59th St"},
+    {t:"10:00",n:"🎙️ Free Tour — Central Park",p:"GRATIS + propina",ft:"ft1",addr:"Encuentro: West 59th St (Columbus Circle) · Fin: 72nd St"},
+    {t:"12:30",n:"Bicicleta · Bethesda Fountain · Belvedere Castle · Alice in Wonderland · Jacqueline Kennedy Reservoir",p:"~$20 c/u bici",addr:"Loeb Boathouse (alquiler bici): E 74th St, dentro del parque · Bethesda: 72nd St Transverse · Belvedere: 79th St"},
+    {t:"14:30",n:"Almuerzo — Lexington Candy Shop ⭐",p:"~$15 c/u",addr:"1226 Lexington Ave (esquina E 83rd St)",note:"Diner de 1925. Must absoluto."},
+    {t:"16:15",n:"AMNH — última hora gratis",p:"GRATIS (~16:30)",addr:"200 Central Park W (esquina W 79th St)",note:"Llegar puntual. Ballena azul, dinosaurios, Planetario.",ticket:true,ticketId:"amnh_d2"},
+    {t:"17:30",n:"Merienda",p:"--",opts:"Levain Bakery (167 W 74th St) · Magnolia Bakery (401 Bleecker St o Rockefeller Center)"},
+    {t:"18:30",n:"Regreso a pie · Lincoln Center · Catedral de San Patricio · 5th Ave",p:"GRATIS",addr:"Lincoln Center: Columbus Ave & 64th St · St. Patrick's: 5th Ave & 50th St · Louis Vuitton: 1 E 57th St · Lego: 636 5th Ave"},
+    {t:"21:30",n:"Cena",p:"--",opts:"Carmine's (200 W 44th St) · Westway Diner (614 9th Ave) · Joe's Pizza (varios) · $1.50 Fresh Pizza"}
+  ]},
+  // ── DÍA 3: LUNES 23 ───────────────────────────────────────────────────────
+  {day:3,stops:[
+    {t:"08:00",n:"Flatiron · Union Square Park · Strand Book Store · Madison Square Park · Parque Sara D. Roosevelt",p:"GRATIS",addr:"Flatiron: 175 5th Ave · Union Square: 14th St & Broadway · Strand: 828 Broadway · Sara D. Roosevelt: Chrystie St & Houston St"},
+    {t:"11:00",n:"Brooklyn Bridge — caminata desde Manhattan",p:"GRATIS",addr:"Acceso peatonal: Centre St & Chambers St (lado Manhattan)",note:"~30 min caminando. El carril de madera. Fotos del skyline desde arriba."},
+    {t:"12:00",n:"Almuerzo en Brooklyn",p:"--",opts:"Bubby's (1 Main St, DUMBO) · Brooklyn Bridge Park Pier 6 food trucks"},
+    {t:"14:00",n:"DUMBO · Jane's Carousel · Pebble Beach · Empire Fulton Ferry · Brooklyn Heights Promenade · Squibb Park Bridge · Brooklyn Bridge Park",p:"GRATIS",addr:"DUMBO: Washington St & Water St · Jane's Carousel: Pier 2, Brooklyn Bridge Park · Pebble Beach: Pier 6 · Brooklyn Heights Promenade: Columbia Heights",note:"La foto: pararse en el centro de Washington St mirando al Manhattan Bridge."},
+    {t:"18:00",n:"Vuelta en subte a Manhattan",p:"~$3 c/u",addr:"Subte A/C desde High St-Brooklyn Bridge hasta 23rd St",note:"~15 min."},
+    {t:"19:00",n:"Friends Experience · Central Perk",p:"~$70 c/u",addr:"130 E 23rd St (entre Lexington y Park Ave S)",note:"⚠️ Reservar en friendstheexperience.com.",ticket:true,ticketId:"friends_d3"},
+    {t:"21:00",n:"Cena",p:"--",opts:"Pasta Rullo / Papi Pasta (673 9th Ave) · Shake Shack (Madison Square Park) · Chick-fil-A (varios)"}
+  ]},
+  // ── DÍA 4: MARTES 24 ──────────────────────────────────────────────────────
+  {day:4,stops:[
+    {t:"09:00",n:"Stavros Niarchos Foundation Library (SNFL) — mirador",p:"GRATIS",addr:"455 5th Ave (esquina W 40th St)",note:"Vista espectacular de Midtown desde la terraza. Gratis."},
+    {t:"09:30",n:"🎙️ Free Tour — Midtown / Times Square / Broadway",p:"GRATIS + propina",ft:"ft2",addr:"Encuentro: Bryant Park (42nd St & 6th Ave, frente a Wafels & Dinges) · Fin: Times Square"},
+    {t:"12:00",n:"MoMA — Museum of Modern Art",p:"~$30 c/u",addr:"11 W 53rd St (entre 5th y 6th Ave)",note:"⚠️ Reservar en moma.org. Ir directo al Van Gogh al entrar. ~2 horas.",ticket:true,ticketId:"moma_d4"},
+    {t:"14:00",n:"Almuerzo",p:"--",opts:"Nathan's Famous (1482 Broadway) · Halal Guys (53rd St & 6th Ave)"},
+    {t:"15:30",n:"Greenacre Park · SUMMIT One Vanderbilt",p:"SUMMIT ~$55 c/u",addr:"Greenacre Park: 217 E 51st St · SUMMIT: 45 E 42nd St (One Vanderbilt, piso 93)",note:"⚠️ Reservar SUMMIT en summitov.com. Ir al atardecer.",ticket:true,ticketId:"summit_d4"},
+    {t:"17:00",n:"Chrysler · Grand Central · Public Library · Tudor City Bridge",p:"GRATIS",addr:"Chrysler: 405 Lexington Ave · Grand Central: 89 E 42nd St · NYPL: 476 5th Ave · Tudor City: E 42nd St & 1st Ave"},
+    {t:"19:30",n:"Merienda",p:"--",opts:"Wafels and Dinges (varios, buscar en maps el más cercano)"},
+    {t:"20:30",n:"Cena",p:"--",opts:"Emily Burger (177 W 10th St, West Village — reservar) · Hamburger America (32 W 35th St)"},
+    {t:"21:30",n:"Comedy Cellar",p:"~$15 cover + 2 consumiciones",addr:"117 MacDougal St, Greenwich Village",note:"⚠️ Reservar en comedycellar.com. Hasta las 3am.",ticket:true,ticketId:"comedy_d4"}
+  ]},
+  // ── DÍA 5: MIÉRCOLES 25 ───────────────────────────────────────────────────
+  {day:5,stops:[
+    {t:"09:00",n:"Departamento de Friends (foto exterior) · Photo Booth · Souvenir",p:"~$15-30",addr:"90 Bedford St (esquina Grove St), West Village",note:"El frente del departamento de la serie. Solo exterior, no se puede entrar."},
+    {t:"11:00",n:"🎙️ Free Tour — Greenwich Village",p:"GRATIS + propina",ft:"ft_village",addr:"Encuentro: Washington Square Park (arco norte) · Fin: Jefferson Market Library (6th Ave & W 10th St)"},
+    {t:"13:00",n:"Almuerzo",p:"--",opts:"Emily (177 W 10th St) · Hamburger America (32 W 35th St) · Leon's Bagels · Chinatown: Vanessa's Dumplings (220 E 14th St)"},
+    {t:"15:00",n:"🎙️ Free Tour — Chinatown + Little Italy + SoHo",p:"GRATIS + propina",ft:"ft3",addr:"Encuentro: Foley Square (Centre St & Worth St) · Fin: Gunther Building, SoHo (469-475 Broome St)"},
+    {t:"18:00",n:"Merienda — Lafayette ⭐",p:"~$8-15 c/u",addr:"380 Lafayette St, Nolita (entre Great Jones St y E 4th St)",note:"El café más bonito de downtown. Croissants y café."},
+    {t:"20:30",n:"Patinaje sobre hielo",p:"~$20-35 c/u patines",addr:"Bryant Park: 6th Ave & 42nd St (gratis entrar, patines ~$20) · Rockefeller Center: 45 Rockefeller Plaza (~$30-35)"},
+    {t:"22:00",n:"Cena",p:"--",opts:"Katz's Delicatessen (205 E Houston St) · S'MAC (345 E 12th St)"}
+  ]},
+  // ── DÍA 6: JUEVES 26 — THANKSGIVING ──────────────────────────────────────
+  {day:6,stops:[
+    {t:"06:00",n:"Conseguir lugar en Central Park West",p:"--",addr:"Central Park West entre W 60th y W 72nd St",note:"Salir muy temprano. Las calles cierran desde las 7am."},
+    {t:"08:30",n:"🎉 Macy's Thanksgiving Parade — 100° Aniversario",p:"GRATIS",addr:"Sale de 77th St & Central Park West · Baja por CW · Gira en 6th Ave · Termina en Herald Square (34th St & Broadway)",note:"Abrigo total, snacks, hidratación. Puede haber -5°C."},
+    {t:"12:00",n:"Almuerzo de Thanksgiving",p:"~$35-50 c/u",addr:"⚠️ Reservar restaurante con menú especial. Muchos cierran ese día."},
+    {t:"14:30",n:"Descanso",p:"--",addr:"Hotel: 330 W 40th St"},
+    {t:"15:30",n:"High Line · Vessel · The New Yorker · Madison Square Garden",p:"GRATIS",addr:"High Line entrada sur: Gansevoort St & Washington St · Vessel: 20 Hudson Yards · The New Yorker: 481 8th Ave · MSG: 4 Pennsylvania Plaza"},
+    {t:"16:30",n:"Little Island · Chelsea Market",p:"GRATIS",addr:"Little Island: Pier 55, Hudson River Park (W 13th St) · Chelsea Market: 75 9th Ave (entre 15th y 16th St)"},
+    {t:"17:00",n:"Merienda",p:"--",opts:"I'm Donut? (W 45th St) · Carlos Bakery (625 8th Ave) · Krispy Kreme (1601 Broadway) · Magnolia Bakery (401 Bleecker St)"},
+    {t:"18:00",n:"🎙️ Free Tour — High Line + Hudson Yards + Chelsea",p:"GRATIS + propina",ft:"ft4",addr:"Encuentro: Estación 7 Hudson Yards (34th St & 11th Ave) · Fin: Pier 57 (W 15th St & Hudson River)"},
+    {t:"20:30",n:"Rooftop Pier 57",p:"Variable",addr:"Pier 57, W 15th St & West Side Highway",note:"Al terminar el tour están ahí. Cenar arriba o Tacos/Shake Shack y subir al rooftop."}
+  ]},
+  // ── DÍA 7: VIERNES 27 ─────────────────────────────────────────────────────
+  {day:7,stops:[
+    {t:"09:00",n:"Charging Bull · National Museum of the American Indian",p:"GRATIS",addr:"Charging Bull: Broadway & Morris St, Bowling Green · Museo: 1 Bowling Green (Edificio Federal de Aduanas)"},
+    {t:"09:15",n:"🎙️ Free Tour — Downtown / Wall Street / 9-11",p:"GRATIS + propina",ft:"ft5",addr:"Encuentro: escaleras del Museo Nacional del Indio Americano (1 Bowling Green) · Fin: 9/11 Memorial (180 Greenwich St)"},
+    {t:"12:00",n:"Oculus · One World Observatory · Jenga Tower Bar",p:"OWO ~$44 c/u",addr:"Oculus: 185 Greenwich St · One World Trade Center: 285 Fulton St · Jenga Bar: en el área WTC",note:"⚠️ Reservar OWO en oneworldobservatory.com.",ticket:true,ticketId:"owo_d7"},
+    {t:"13:30",n:"Almuerzo",p:"--",opts:"Shake Shack Battery Park (2 Fulton St) · Tacos No.1 (229 W 43rd St o 136 E 46th St) · Pasta Papi (673 9th Ave)"},
+    {t:"15:00",n:"Rockefeller Center · Empire State · Morgan Library",p:"Empire ~$48 c/u",addr:"Rockefeller: 30 Rockefeller Plaza · Empire State: 20 W 34th St · Morgan Library: 225 Madison Ave (hasta 17hs)",note:"⚠️ Reservar Empire State en esbnyc.com.",ticket:true,ticketId:"empire_d7"},
+    {t:"19:30",n:"Saks Fifth Avenue Light Show",p:"GRATIS",addr:"611 5th Ave (entre 49th y 50th St, frente a St. Patrick's Cathedral)",note:"⚠️ Confirmar fechas de inicio en noviembre 2026. Cada 30 min."},
+    {t:"22:30",n:"Cena",p:"--",opts:"Carmine's (200 W 44th St) · Ellen's Stardust (1650 Broadway) · Halal Cart (53rd St & 6th Ave)"}
+  ]},
+  // ── DÍA 8: SÁBADO 28 ──────────────────────────────────────────────────────
+  {day:8,stops:[
+    {t:"08:00",n:"Subte a Battery Park",p:"~$3 c/u",addr:"Subte 1 desde Times Square-42nd St hasta South Ferry",note:"~15 min."},
+    {t:"09:00",n:"Ferry + Estatua de la Libertad + Ellis Island",p:"~$40 c/u",addr:"Terminal: Battery Park, 1 Audrey Zapp Dr (cerca de State St)",note:"⚠️ Reservar en statuecruises.com. ~4 horas.",ticket:true,ticketId:"liberty_d8"},
+    {t:"12:30",n:"Almuerzo",p:"--",opts:"Shake Shack Battery Park (2 Fulton St) · Ver qué hay cerca"},
+    {t:"13:30",n:"Vuelta al hotel en subte",p:"~$3 c/u",addr:"Subte 1 desde South Ferry hasta Times Square-42nd St"},
+    {t:"15:00",n:"Estar en el helipuerto",p:"--",addr:"FlyNYON Helipad: W 30th St & 12th Ave (Hudson River)",note:"~15 min a pie del hotel hacia el oeste."},
+    {t:"16:00",n:"🚁 Helicóptero por NYC — FlyNYON",p:"~$150-250 c/u",addr:"Salida: W 30th St & 12th Ave, Manhattan Heliport",note:"⚠️ Reservar en flynyon.com. ~15-20 min de vuelo.",ticket:true,ticketId:"heli_d8"},
+    {t:"18:00",n:"Vuelta al hotel · descanso",p:"--",addr:"330 W 40th St"},
+    {t:"22:00",n:"230 Fifth Rooftop",p:"~$20-30 c/u",addr:"230 Fifth Ave (entre 26th y 27th St)",note:"Sin reserva. Empire State iluminado de fondo. Mantas de polar incluidas."}
+  ]},
+  // ── DÍA 9: DOMINGO 29 ─────────────────────────────────────────────────────
+  {day:9,stops:[
+    {t:"08:30",n:"Check-out · dejar valijas en consigna del hotel",p:"--",addr:"Fairfield Marriott · 330 W 40th St",note:"El hotel guarda valijas hasta las 22hs sin cargo."},
+    {t:"10:00",n:"Roosevelt Island Tramway · Roosevelt Island",p:"~$3 c/u",addr:"Tramway: 59th St & 2nd Ave (esquina, entrada en 2nd Ave) · Roosevelt Island: acceso por el tramway",note:"El teleférico urbano más icónico de NYC. Vista única del Queensboro Bridge."},
+    {t:"11:00",n:"Queensbridge Park · Hunters Point South Park",p:"GRATIS",addr:"Queensbridge Park: 21st St & 41st Ave, Queens · Hunters Point South: 54th Ave & Center Blvd, Long Island City",note:"Vista del skyline de Manhattan desde Queens. Completamente diferente."},
+    {t:"13:30",n:"Almuerzo",p:"--",note:"Ver dónde están en Queens o vuelta a Manhattan."},
+    {t:"17:00",n:"Volver al hotel · retirar valijas",p:"--",addr:"330 W 40th St"},
+    {t:"17:30",n:"Salir hacia JFK",p:"~$15 c/u",addr:"Subte A desde 42nd St-Port Authority hasta Howard Beach → AirTrain a JFK",note:"~50 min. Salir con 3.5 horas mínimo antes del vuelo."},
+    {t:"18:15",n:"Llegada aeropuerto JFK",p:"--",addr:"John F. Kennedy International Airport, Queens",note:"Check-in, migraciones, security. Todo lleva tiempo."},
+    {t:"22:00",n:"✈️ Vuelo JFK → EZE",p:"--",addr:"Terminal 8, JFK (American Airlines)",note:"~10 hs 45 min. Llegan el lunes 30 a las 10:45am a Buenos Aires."}
+  ]}
+];
+
+// ── FOOD DATA ─────────────────────────────────────────────────────────────────
+// tipo: "almuerzo-cena" o "merienda" | must: true/false
+const FOOD=[
+  // ALMUERZO / CENA ──────────────────────────────────────────────────────────
+  {id:"f01",name:"Westway Diner",type:"almuerzo-cena",must:true,
+   price:"~$18-25 c/u",addr:"614 9th Ave (W 44th St), Hell's Kitchen",
+   lat:40.7607,lng:-73.9913,
+   maps:"https://maps.google.com/?q=Westway+Diner+614+9th+Ave+New+York",
+   note:"Abierto 24hs. El diner del barrio del hotel."},
+  {id:"f02",name:"Joe's Pizza",type:"almuerzo-cena",must:true,
+   price:"~$4 por slice",addr:"7 Carmine St, West Village / otros en Midtown",
+   lat:40.7302,lng:-74.0019,
+   maps:"https://maps.google.com/?q=Joe%27s+Pizza+Carmine+Street+New+York",
+   note:"El slice más famoso de NYC. Parado en la vereda."},
+  {id:"f03",name:"Joe's Pizza Midtown",type:"almuerzo-cena",must:false,
+   price:"~$4 por slice",addr:"1435 Broadway, Times Square",
+   lat:40.7560,lng:-73.9864,
+   maps:"https://maps.google.com/?q=Joe%27s+Pizza+1435+Broadway+New+York"},
+  {id:"f04",name:"$1.50 Fresh Pizza",type:"almuerzo-cena",must:true,
+   price:"~$2-3 por slice",addr:"Varios en Midtown — buscar en maps",
+   lat:40.7549,lng:-73.9840,
+   maps:"https://maps.google.com/?q=%241.50+Fresh+Pizza+Midtown+New+York"},
+  {id:"f05",name:"Katz's Delicatessen",type:"almuerzo-cena",must:true,
+   price:"~$25 c/u",addr:"205 E Houston St, Lower East Side",
+   lat:40.7223,lng:-73.9874,
+   maps:"https://maps.google.com/?q=Katz%27s+Delicatessen+205+E+Houston+St",
+   note:"Desde 1888. El pastrami más famoso. El lugar de When Harry Met Sally."},
+  {id:"f06",name:"Shake Shack (Madison Sq Park)",type:"almuerzo-cena",must:true,
+   price:"~$15 c/u",addr:"Madison Square Park (E 23rd St & Madison Ave)",
+   lat:40.7420,lng:-73.9874,
+   maps:"https://maps.google.com/?q=Shake+Shack+Madison+Square+Park+New+York",
+   note:"El original de 2004."},
+  {id:"f07",name:"Shake Shack (Battery Park)",type:"almuerzo-cena",must:false,
+   price:"~$15 c/u",addr:"Battery Park City, Lower Manhattan",
+   lat:40.7069,lng:-74.0157,
+   maps:"https://maps.google.com/?q=Shake+Shack+Battery+Park+New+York"},
+  {id:"f08",name:"Nathan's Famous",type:"almuerzo-cena",must:true,
+   price:"~$6-10 c/u",addr:"1482 Broadway, Times Square",
+   lat:40.7569,lng:-73.9856,
+   maps:"https://maps.google.com/?q=Nathan%27s+Famous+Times+Square+New+York",
+   note:"Hot dog más famoso de EEUU desde 1916."},
+  {id:"f09",name:"Hamburger America",type:"almuerzo-cena",must:true,
+   price:"~$12-15 c/u",addr:"32 W 35th St, Midtown",
+   lat:40.7497,lng:-73.9885,
+   maps:"https://maps.google.com/?q=Hamburger+America+32+W+35th+St+New+York"},
+  {id:"f10",name:"Emily Burger",type:"almuerzo-cena",must:true,
+   price:"~$18-22 c/u",addr:"35 Downtown Fulton St / 919 Fulton St Brooklyn / 177 W 10th St",
+   lat:40.7261,lng:-74.0083,
+   maps:"https://maps.google.com/?q=Emily+Restaurant+West+Village+New+York",
+   note:"Reservar con anticipación."},
+  {id:"f11",name:"Tacos No.1 (Chelsea Market)",type:"almuerzo-cena",must:true,
+   price:"~$10-14 c/u",addr:"75 9th Ave (Chelsea Market), Chelsea",
+   lat:40.7423,lng:-74.0067,
+   maps:"https://maps.google.com/?q=Los+Tacos+No.1+Chelsea+Market+New+York",
+   note:"Los mejores tacos de la ciudad según todos los rankings."},
+  {id:"f12",name:"Tacos No.1 (Times Square)",type:"almuerzo-cena",must:false,
+   price:"~$10-14 c/u",addr:"229 W 43rd St, Times Square",
+   lat:40.7567,lng:-73.9887,
+   maps:"https://maps.google.com/?q=Los+Tacos+No.1+Times+Square+New+York"},
+  {id:"f13",name:"Tacos No.1 (Grand Central)",type:"almuerzo-cena",must:false,
+   price:"~$10-14 c/u",addr:"136 E 46th St, Midtown",
+   lat:40.7544,lng:-73.9748,
+   maps:"https://maps.google.com/?q=Los+Tacos+No.1+Grand+Central+New+York"},
+  {id:"f14",name:"Carmine's Restaurant",type:"almuerzo-cena",must:false,
+   price:"~$25-35 c/u",addr:"200 W 44th St, Theater District",
+   lat:40.7579,lng:-73.9882,
+   maps:"https://maps.google.com/?q=Carmine%27s+200+W+44th+St+New+York",
+   note:"Porciones familiares, cocina italiana, ideal para grupos."},
+  {id:"f15",name:"Ellen's Stardust Diner",type:"almuerzo-cena",must:false,
+   price:"~$30-40 c/u",addr:"1650 Broadway, Times Square",
+   lat:40.7614,lng:-73.9839,
+   maps:"https://maps.google.com/?q=Ellen%27s+Stardust+Diner+1650+Broadway",
+   note:"⚠️ Reservar online. Los mozos cantan Broadway mientras te sirven."},
+  {id:"f16",name:"Pasta Rullo / Papi Pasta",type:"almuerzo-cena",must:false,
+   price:"~$10-15 c/u",addr:"673 9th Ave, Hell's Kitchen",
+   lat:40.7638,lng:-73.9895,
+   maps:"https://maps.google.com/?q=673+9th+Ave+New+York",
+   note:"Mismo local. Pasta barata y abundante."},
+  {id:"f17",name:"Chick-fil-A",type:"almuerzo-cena",must:false,
+   price:"~$10-12 c/u",addr:"Varios en Midtown / Brooklyn",
+   lat:40.7520,lng:-73.9870,
+   maps:"https://maps.google.com/?q=Chick-fil-A+New+York+City"},
+  {id:"f18",name:"Bubby's (DUMBO)",type:"almuerzo-cena",must:false,
+   price:"~$22 c/u",addr:"1 Main St, DUMBO Brooklyn",
+   lat:40.7033,lng:-73.9892,
+   maps:"https://maps.google.com/?q=Bubby%27s+1+Main+St+Brooklyn",
+   note:"El brunch de DUMBO. Pancakes y french toast legendarios."},
+  {id:"f19",name:"Leon's Bagels",type:"almuerzo-cena",must:false,
+   price:"~$8-12 c/u",addr:"30-49 38th St, Queens / varios",
+   lat:40.7522,lng:-73.9856,
+   maps:"https://maps.google.com/?q=Leon%27s+Bagels+New+York"},
+  {id:"f20",name:"Grand Slam Diner",type:"almuerzo-cena",must:true,
+   price:"~$15-20 c/u",addr:"Varios en Midtown / Times Square",
+   lat:40.7590,lng:-73.9901,
+   maps:"https://maps.google.com/?q=Grand+Slam+Diner+New+York"},
+  {id:"f21",name:"Halal Cart (53rd & 6th)",type:"almuerzo-cena",must:false,
+   price:"~$10 c/u",addr:"W 53rd St & 6th Ave, Midtown",
+   lat:40.7617,lng:-73.9795,
+   maps:"https://maps.google.com/?q=Halal+Guys+53rd+6th+Ave+New+York",
+   note:"El carrito de comida más famoso de NYC. Cola siempre."},
+  // MERIENDA / POSTRE ────────────────────────────────────────────────────────
+  {id:"f22",name:"I'm Donut?",type:"merienda",must:true,
+   price:"~$5-8 c/u",addr:"W 45th St, Times Square",
+   lat:40.7580,lng:-73.9855,
+   maps:"https://maps.google.com/?q=I%27m+Donut+Times+Square+New+York"},
+  {id:"f23",name:"Carlos Bakery (Cake Boss)",type:"merienda",must:true,
+   price:"~$8-15 c/u",addr:"625 8th Ave, Hell's Kitchen",
+   lat:40.7583,lng:-73.9926,
+   maps:"https://maps.google.com/?q=Carlos+Bakery+625+8th+Ave+New+York",
+   note:"El Cake Boss. El lobster tail es el must."},
+  {id:"f24",name:"Magnolia Bakery",type:"merienda",must:true,
+   price:"~$8 c/u",addr:"401 Bleecker St, West Village / 1240 Ave of Americas (Rockefeller)",
+   lat:40.7327,lng:-74.0041,
+   maps:"https://maps.google.com/?q=Magnolia+Bakery+401+Bleecker+St+New+York",
+   note:"El banana pudding. Popularizado por Sex and the City."},
+  {id:"f25",name:"Magnolia Bakery (Rockefeller)",type:"merienda",must:false,
+   price:"~$8 c/u",addr:"1240 Ave of Americas, Rockefeller Center",
+   lat:40.7597,lng:-73.9784,
+   maps:"https://maps.google.com/?q=Magnolia+Bakery+Rockefeller+Center+New+York"},
+  {id:"f26",name:"Levain Bakery",type:"merienda",must:true,
+   price:"~$5 c/u",addr:"167 W 74th St, Upper West Side",
+   lat:40.7767,lng:-73.9804,
+   maps:"https://maps.google.com/?q=Levain+Bakery+167+W+74th+St+New+York",
+   note:"Cookie de 170g. Siempre tibia."},
+  {id:"f27",name:"Levain Bakery (Midtown)",type:"merienda",must:false,
+   price:"~$5 c/u",addr:"351 Amsterdam Ave / 1484 3rd Ave",
+   lat:40.7555,lng:-73.9867,
+   maps:"https://maps.google.com/?q=Levain+Bakery+Midtown+New+York"},
+  {id:"f28",name:"Lafayette",type:"merienda",must:true,
+   price:"~$8-15 c/u",addr:"380 Lafayette St, Nolita",
+   lat:40.7254,lng:-73.9952,
+   maps:"https://maps.google.com/?q=Lafayette+Grand+Cafe+Bakery+New+York",
+   note:"El café más bonito de downtown. Croissants y café."},
+  {id:"f29",name:"Krispy Kreme",type:"merienda",must:false,
+   price:"~$3-5 c/u",addr:"Varios en Times Square y Midtown",
+   lat:40.7573,lng:-73.9857,
+   maps:"https://maps.google.com/?q=Krispy+Kreme+Times+Square+New+York"},
+  {id:"f30",name:"Wafels and Dinges",type:"merienda",must:false,
+   price:"~$8 c/u",addr:"Varios puestos en Midtown (42nd & 6th, etc.)",
+   lat:40.7531,lng:-73.9840,
+   maps:"https://maps.google.com/?q=Wafels+and+Dinges+New+York"}
+];
+
+// ── COSTS DATA ─────────────────────────────────────────────────────────────────
+const COSTS=[
+  ["🚇","MetroCard / OMNY 9 días","~$34","~$136",""],
+  ["✈️","AirTrain + Subway JFK x2","~$30","~$120",""],
+  ["🎭","Broadway — 1 show (TKTS)","~$90","~$360",""],
+  ["🏙️","Empire State Building","~$48","~$192",""],
+  ["🎨","MoMA","~$30","~$120",""],
+  ["🔮","SUMMIT One Vanderbilt","~$55","~$220",""],
+  ["🗽","Estatua de la Libertad + Ellis","~$40","~$160",""],
+  ["🌍","One World Observatory","~$44","~$176",""],
+  ["🎬","Friends Experience","~$35","~$140",""],
+  ["🏛️","Met Museum (sugerido)","~$30","~$120",""],
+  ["🏠","Comedy Cellar (cover + 2 consumiciones)","~$35","~$140",""],
+  ["🚲","Bicicletas Central Park","~$20","~$80",""],
+  ["🚁","Helicóptero FlyNYON x2 días","~$200","~$800",""],
+  ["🎙️","Free Tours x5 (propinas)","~$60","~$240",""],
+  ["—","Subtotal entradas y actividades","~$751","~$3.004",""],
+  ["🍕","Comida (9 días × ~$45)","~$405","~$1.620",""],
+  ["🛍️","Compras (estimado)","~$150","~$600",""],
+  ["🔀","Imprevistos (10%)","~$130","~$520",""],
+  ["💰","TOTAL","~$1.436","~$5.744",""]
+];
+
+// ── TIPS DATA ─────────────────────────────────────────────────────────────────
+const TIPS=[
+  {color:"#c8392b",cat:"🎭 Tickets",title:"Comprar entradas en TKTS",
+   desc:"La taquilla de Broadway con hasta 50% de descuento el mismo día. Está en la escalinata roja de Times Square (47th St). Abre a las 15hs para shows nocturnos y a las 10hs para matinées. Llegar 30-45 min antes para mejor selección.",
+   link:"https://www.tdf.org/nyc/7/TKTS-ticket-booths",linkText:"Ver TKTS →"},
+  {color:"#1a5cb8",cat:"🚇 Transporte",title:"Descargar Citymapper y MyMTA",
+   desc:"Citymapper: la mejor app de transporte de NYC. Te dice exactamente qué tren tomar, en qué vagón subir para salir cerca de la salida y cuándo llega. MyMTA: la app oficial para ver el estado del servicio en tiempo real. Ambas gratis.",
+   link:"https://citymapper.com/nyc",linkText:"Citymapper →"},
+  {color:"#1a7a6e",cat:"🚇 Metro",title:"OMNY — la MetroCard del futuro",
+   desc:"OMNY es el sistema de pago contactless del metro de NYC. Se puede usar con cualquier tarjeta de crédito/débito o el celular (Apple Pay / Google Pay) tocando directo en el torniquete. No necesitan comprar MetroCard física. El precio es el mismo: ~$2.90 por viaje. Los puntos NEGROS en los mapas del subte indican paradas express (paran menos estaciones y van mucho más rápido).",},
+  {color:"#c9922a",cat:"🗺️ Navegación",title:"Mapa de baños públicos",
+   desc:"NYC tiene menos baños públicos de lo que parece. Las mejores opciones: parks.nyc.gov tiene el mapa oficial. Starbucks y McDonald's tienen baño. Museos y bibliotecas son gratuitos. El mapa en la solapa 'Baños' de esta app tiene los principales.",
+   link:"https://data.cityofnewyork.us/Recreation/Directory-of-Toilets-in-Public-Parks/hjae-yuav",linkText:"Mapa oficial →"},
+  {color:"#6b35a8",cat:"📡 Wifi",title:"LinkNYC — wifi y carga gratis",
+   desc:"Los postes azules en las veredas de Manhattan son kioscos LinkNYC. Ofrecen wifi gratis (hasta 1 Gbps), carga USB para el celular y llamadas locales gratis a cualquier número de EEUU. Solo conectarse a la red 'LinkNYC'. Ver el mapa en la solapa LinkNYC.",},
+  {color:"#2e7d6e",cat:"💡 General",title:"Caminar más que tomar el subte",
+   desc:"Manhattan es más caminable de lo que parece. De Times Square al MoMA son 15 min a pie. Del hotel al High Line son 20 min. Caminar permite ver la ciudad de otra forma. Guardar el subte para distancias reales (más de 30 cuadras o cruzar a Brooklyn/Queens)."},
+  {color:"#c9922a",cat:"🎄 Noviembre",title:"Vidrieras navideñas y atardeceres",
+   desc:"En noviembre las vidrieras de Bergdorf Goodman, Saks 5th Avenue y Tiffany ya están decoradas. El show de luces de Saks empieza generalmente a mediados de noviembre, cada 30 minutos a partir de las 18hs. Los atardeceres en noviembre son entre las 16:30 y las 17:00 — planificar miradores para ese horario."},
+  {color:"#b71c1c",cat:"🦃 Thanksgiving",title:"El 26 de noviembre — todo cerrado",
+   desc:"Thanksgiving es el feriado más importante de EEUU. Muchos restaurantes cierran o tienen menú especial. Reservar cena de Thanksgiving con mucha anticipación. Los negocios abren tarde o no abren. Los museos también pueden tener horarios reducidos."}
+];
+
+// ── PLACES (para mapa general) ────────────────────────────────────────────────
+// Places enriched with day number for map filtering
+const PLACES=[
+  {name:"Hotel — Fairfield Marriott",lat:40.7568,lng:-73.9924,cat:"hotel",addr:"330 W 40th St"},
+  {name:"Times Square",lat:40.7580,lng:-73.9855,cat:"icono",addr:"Times Square, Midtown"},
+  {name:"Central Park",lat:40.7851,lng:-73.9683,cat:"parque",addr:"Central Park"},
+  {name:"Brooklyn Bridge",lat:40.7061,lng:-73.9969,cat:"icono",addr:"Brooklyn Bridge"},
+  {name:"Estatua de la Libertad",lat:40.6892,lng:-74.0445,cat:"icono",addr:"Liberty Island"},
+  {name:"MoMA",lat:40.7615,lng:-73.9777,cat:"museo",addr:"11 W 53rd St"},
+  {name:"Met Museum",lat:40.7794,lng:-73.9632,cat:"museo",addr:"1000 5th Ave"},
+  {name:"SUMMIT One Vanderbilt",lat:40.7527,lng:-73.9773,cat:"mirador",addr:"45 E 42nd St"},
+  {name:"Empire State Building",lat:40.7484,lng:-73.9857,cat:"mirador",addr:"20 W 34th St"},
+  {name:"Grand Central Terminal",lat:40.7527,lng:-73.9772,cat:"icono",addr:"89 E 42nd St"},
+  {name:"High Line",lat:40.7480,lng:-74.0048,cat:"parque",addr:"Gansevoort St"},
+  {name:"Chelsea Market",lat:40.7423,lng:-74.0067,cat:"icono",addr:"75 9th Ave"},
+  {name:"9/11 Memorial",lat:40.7115,lng:-74.0128,cat:"historia",addr:"180 Greenwich St"},
+  {name:"AMNH",lat:40.7813,lng:-73.9740,cat:"museo",addr:"200 Central Park W"},
+  {name:"One World Observatory",lat:40.7128,lng:-74.0134,cat:"mirador",addr:"285 Fulton St"},
+  {name:"Brooklyn Heights Promenade",lat:40.6966,lng:-73.9968,cat:"parque",addr:"Brooklyn Heights"},
+  {name:"Friends Experience",lat:40.7397,lng:-73.9851,cat:"especial",addr:"130 E 23rd St"},
+  {name:"Little Island",lat:40.7421,lng:-74.0101,cat:"parque",addr:"Pier 55, Hudson River"},
+  {name:"Rockefeller Center",lat:40.7587,lng:-73.9787,cat:"icono",addr:"30 Rockefeller Plaza"},
+  {name:"Catedral de San Patricio",lat:40.7584,lng:-73.9763,cat:"historia",addr:"5th Ave & 50th St"},
+  {name:"Flatiron Building",lat:40.7411,lng:-73.9897,cat:"icono",addr:"175 5th Ave"},
+  {name:"DUMBO",lat:40.7033,lng:-73.9880,cat:"barrio",addr:"DUMBO, Brooklyn"},
+  {name:"Vessel (Hudson Yards)",lat:40.7536,lng:-74.0019,cat:"icono",addr:"Hudson Yards"},
+  {name:"Pier 57 Rooftop",lat:40.7476,lng:-74.0091,cat:"bar",addr:"Pier 57, W 15th St"},
+  {name:"Roosevelt Island Tramway",lat:40.7578,lng:-73.9514,cat:"icono",addr:"59th St & 2nd Ave"},
+  {name:"Hunters Point South Park",lat:40.7428,lng:-73.9579,cat:"parque",addr:"Center Blvd, Queens"},
+  {name:"Morgan Library",lat:40.7493,lng:-73.9815,cat:"museo",addr:"225 Madison Ave"},
+  {name:"Charging Bull",lat:40.7055,lng:-74.0134,cat:"icono",addr:"Broadway & Morris St"},
+  {name:"230 Fifth Rooftop",lat:40.7456,lng:-73.9883,cat:"bar",addr:"1150 Broadway"},
+  {name:"Macy's Herald Square",lat:40.7507,lng:-73.9900,cat:"compras",addr:"151 W 34th St"}
+];
+
+// ── BAÑOS PÚBLICOS ─────────────────────────────────────────────────────────────
+const BANOS=[
+  {name:"Bryant Park — Baño público",addr:"6th Ave & 42nd St, Midtown",lat:40.7536,lng:-73.9832,note:"Gratuito, muy limpio, climatizado. Dentro del parque, detrás de la fuente."},
+  {name:"Central Park — Baño 79th St",addr:"Mid-Park at 79th St, Central Park",lat:40.7814,lng:-73.9732,note:"Dentro del parque, gratuito. Cerca del Museo de Historia Natural."},
+  {name:"Central Park — Baño Columbus Circle",addr:"Central Park South & 8th Ave",lat:40.7681,lng:-73.9819,note:"Entrada sur del parque, fácil acceso."},
+  {name:"Central Park — Baño Bethesda Terrace",addr:"72nd St Transverse, Central Park",lat:40.7736,lng:-73.9706,note:"Subterráneo bajo la terraza. Gratuito."},
+  {name:"Battery Park — Baño público",addr:"State St & Battery Pl, Lower Manhattan",lat:40.7034,lng:-74.0170,note:"Cerca de la terminal del ferry a la Estatua de la Libertad."},
+  {name:"Washington Square Park — Baño",addr:"Washington Square S, West Village",lat:40.7308,lng:-73.9981,note:"Al sur del parque, cerca de la fuente. Gratuito."},
+  {name:"Penn Station — Baños",addr:"8th Ave & W 31st St (nivel subterráneo)",lat:40.7506,lng:-73.9971,note:"Seguir señales dentro de la estación."},
+  {name:"Grand Central — Baños",addr:"89 E 42nd St, nivel inferior (Lower Level)",lat:40.7527,lng:-73.9772,note:"Señalizados en el nivel inferior, al lado del Oyster Bar. Gratuito."},
+  {name:"High Line — Baño en Gansevoort St",addr:"Gansevoort St & Washington St (entrada sur)",lat:40.7408,lng:-74.0058,note:"Al entrar por la entrada sur del High Line."},
+  {name:"High Line — Baño en 30th St",addr:"W 30th St & 10th Ave",lat:40.7520,lng:-74.0020,note:"A mitad del recorrido del High Line."},
+  {name:"Chelsea Market — Baños",addr:"75 9th Ave, Chelsea (nivel planta baja)",lat:40.7423,lng:-74.0067,note:"Dentro del mercado, seguir señales. Gratuito."},
+  {name:"Brookfield Place — Baños",addr:"230 Vesey St, Lower Manhattan",lat:40.7127,lng:-74.0153,note:"Centro comercial junto al WTC. Gratuito, muy limpio."},
+  {name:"Brooklyn Bridge Park — Baño Pier 1",addr:"334 Furman St, Brooklyn (Pier 1)",lat:40.6996,lng:-73.9996,note:"En el parque, al bajar del puente Brooklyn."},
+  {name:"Brooklyn Bridge Park — Baño Pier 6",addr:"Pier 6, Brooklyn Bridge Park",lat:40.6938,lng:-73.9988,note:"Punta sur del parque, cerca de Atlantic Ave."},
+  {name:"Times Square — Baño (42nd St Station)",addr:"42nd St & 7th Ave (subte, señalizado)",lat:40.7556,lng:-73.9877,note:"Dentro de la estación 42nd St-Times Square. Señalizado en la plataforma."},
+  {name:"AMNH — Baño (horario museo)",addr:"200 Central Park W & W 79th St",lat:40.7813,lng:-73.9740,note:"Dentro del museo. Gratuito con entrada, o entrar gratis al baño después de las 16:30."},
+  {name:"New York Public Library — Baño",addr:"476 5th Ave (42nd St & 5th Ave)",lat:40.7532,lng:-73.9822,note:"Dentro de la biblioteca, planta baja. Gratis, muy limpio."},
+  {name:"The Oculus / Westfield — Baños",addr:"185 Greenwich St, Lower Manhattan",lat:40.7114,lng:-74.0133,note:"Dentro del Oculus, bien señalizados. Impecables."},
+];
+
+// ── LINKNYC (muestra de kioscos — son miles en Manhattan) ─────────────────────
+const LINKNYC=[
+  {name:"LinkNYC — Times Square (42nd & 7th)",lat:40.7571,lng:-73.9859},
+  {name:"LinkNYC — Times Square (44th & Broadway)",lat:40.7582,lng:-73.9856},
+  {name:"LinkNYC — 5th Ave & 42nd St",lat:40.7535,lng:-73.9818},
+  {name:"LinkNYC — 34th St & 8th Ave",lat:40.7510,lng:-73.9932},
+  {name:"LinkNYC — 23rd St & 8th Ave",lat:40.7441,lng:-73.9982},
+  {name:"LinkNYC — 14th St & 7th Ave",lat:40.7390,lng:-74.0002},
+  {name:"LinkNYC — Canal St & Broadway",lat:40.7198,lng:-74.0002},
+  {name:"LinkNYC — Houston St & Broadway",lat:40.7255,lng:-73.9977},
+  {name:"LinkNYC — 59th St & Lexington Ave",lat:40.7626,lng:-73.9659},
+  {name:"LinkNYC — 86th St & Broadway",lat:40.7890,lng:-73.9762},
+  {name:"LinkNYC — 72nd St & Broadway",lat:40.7777,lng:-73.9819},
+  {name:"LinkNYC — 6th Ave & 34th St",lat:40.7499,lng:-73.9888},
+  {name:"LinkNYC — Fulton St & Broadway",lat:40.7088,lng:-74.0091},
+  {name:"LinkNYC — 9th Ave & 40th St",lat:40.7566,lng:-73.9924},
+  {name:"LinkNYC — Columbus Circle",lat:40.7681,lng:-73.9825},
+  {name:"LinkNYC — Lexington Ave & 51st St",lat:40.7571,lng:-73.9729},
+  {name:"LinkNYC — 2nd Ave & 42nd St",lat:40.7505,lng:-73.9697},
+  {name:"LinkNYC — Park Ave & 47th St",lat:40.7549,lng:-73.9757},
+  {name:"LinkNYC — W 14th St & 6th Ave",lat:40.7377,lng:-74.0007},
+  {name:"LinkNYC — Atlantic Ave Brooklyn",lat:40.6843,lng:-73.9797}
+];
+
+// ── SCORE PLACES (para puntuaciones) ─────────────────────────────────────────
+const SCORE_PLACES=PLACES.filter(p=>p.cat!=="hotel").map(p=>({...p,id:"sp_"+p.name.replace(/[^a-z]/gi,"_")}));
+
+// ── TAB SWITCHING ─────────────────────────────────────────────────────────────
+let mapaInit=false,foodMapInit=false,banosInit=false,linknycInit=false,climaInit=false,convInit=false;
+function showTab(id,btn){
+  document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('visible'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('visible');
+  btn.classList.add('active');
+  window.scrollTo({top:document.querySelector('nav').offsetTop,behavior:'smooth'});
+  if(id==='mapa'&&!mapaInit){initMainMap();mapaInit=true;}
+  if(id==='comida'&&!foodMapInit){initFoodMap();foodMapInit=true;}
+  if(id==='banos'&&!banosInit){initBanosMap();banosInit=true;}
+  if(id==='linknyc'&&!linknycInit){initLinkNYCMap();linknycInit=true;}
+  if(id==='clima'&&!climaInit){initClima();climaInit=true;}
+  if(id==='conversor'&&!convInit){initConversor();convInit=true;}
+  if(id==='puntuaciones')renderScores();
+  if(id==='gastos')renderGastos();
+  if(id==='freetours')renderFreeTours();
+}
+
+// Helicóptero: solo sábado 28 (ver día 8 del itinerario)
+
+// ── ITINERARY RENDER ──────────────────────────────────────────────────────────
+function stopPriceClass(p){
+  if(!p||p==='--')return 'sp-other';
+  if(p.startsWith('GRATIS'))return 'sp-free';
+  return 'sp-paid';
+}
+// Village free tour data (for Wed 25 option B)
+const FT_VILLAGE={
+  name:"Greenwich Village",
+  hour:"11:00 AM (también 15:00)",
+  meeting:"Washington Square Arch (arco norte del parque)",
+  meetingMaps:"https://maps.google.com/?q=Washington+Square+Park+New+York",
+  end:"Jefferson Market Library (6th Ave & W 10th St)",
+  endMaps:"https://maps.google.com/?q=Jefferson+Market+Library+New+York",
+  duration:"~2 hs",
+  propina:"$10-15 c/u en efectivo",
+  url:"https://www.civitatis.com/ar/nueva-york/free-tour-mujeres-village/"
+};
+
+function toggleTicket(ticketId){
+  if(!ST.tickets)ST.tickets={};
+  const newVal=!ST.tickets[ticketId];
+  ST.tickets[ticketId]=newVal;
+  saveST();
+  // Optimistic UI update
+  const el=document.getElementById('ticket_'+ticketId);
+  if(el){
+    el.classList.toggle('done',newVal);
+    el.querySelector('.ticket-check-box').textContent=newVal?'✓':'';
+    el.querySelector('.ticket-check-label').textContent=newVal?'✅ Entrada sacada':'🎟️ Marcar entrada como sacada';
+  }
+  // Sync to Firebase
+  if(window.fbReady)window.fbSetTicket(ticketId,newVal).catch(e=>console.warn('FB ticket',e));
+}
+
+function renderDay(dayData){
+  const dm=DAY_META[dayData.day];
+  let stops=dayData.stops||[];
+  // Día 5 (Miércoles): itinerario fijo — grupo completo
+  const id='day'+dayData.day;
+  let stopsHtml=stops.map(s=>{
+    let ftHtml='';
+    if(s.ft){
+      const ft=s.ft==='ft_village'?FT_VILLAGE:FREE_TOURS.find(f=>f.id===s.ft);
+      if(ft)ftHtml=`<div class="stop-ft">
+        <div class="stop-ft-name">🎙️ ${ft.name}</div>
+        <div class="stop-ft-meta">
+          <span>🕙 <strong>${ft.hour}</strong></span>
+          <span>📍 <strong>${ft.meeting}</strong></span>
+          <span>⏱ <strong>${ft.duration}</strong></span>
+          <span>💵 <strong>${ft.propina}</strong></span>
+        </div>
+        <div>
+          <a class="stop-ft-btn" href="${ft.url}" target="_blank">Reservar gratis ↗</a>
+          <a class="stop-ft-maps" href="${ft.meetingMaps}" target="_blank">📍 Cómo llegar</a>
+        </div>
+      </div>`;
+    }
+    let optsHtml='';
+    if(s.opts)optsHtml=`<div class="stop-options"><strong>Opciones</strong>${s.opts}</div>`;
+    let ticketHtml='';
+    if(s.ticket&&s.ticketId){
+      const done=ST.tickets&&ST.tickets[s.ticketId];
+      ticketHtml=`<div class="ticket-check${done?' done':''}" id="ticket_${s.ticketId}" onclick="toggleTicket('${s.ticketId}')">
+        <div class="ticket-check-box">${done?'✓':''}</div>
+        <div class="ticket-check-label">${done?'✅ Entrada sacada':'🎟️ Marcar entrada como sacada'}</div>
+      </div>`;
+    }
+    return `<div class="stop-row">
+      <div class="stop-time">${s.t}</div>
+      <div class="stop-body">
+        <div class="stop-name">${s.n}</div>
+        ${s.addr?`<div style="font-size:11px;color:var(--ink3);margin-top:1px;margin-bottom:2px">📍 ${s.addr}</div>`:''}
+        ${s.note?`<div class="stop-note">${s.note}</div>`:''}
+        ${ftHtml}${optsHtml}${ticketHtml}
+      </div>
+      ${s.p&&s.p!=='--'?`<div class="stop-price ${stopPriceClass(s.p)}">${s.p}</div>`:''}
+    </div>`;
+  }).join('');
+  const ticketCount=stops.filter(s=>s.ticket).length;
+  const ticketDone=stops.filter(s=>s.ticket&&s.ticketId&&ST.tickets&&ST.tickets[s.ticketId]).length;
+  const ticketPill=ticketCount>0?`<span class="day-block-badge" style="background:rgba(26,92,184,.08);color:var(--blue)">🎟️ ${ticketDone}/${ticketCount}</span>`:'';
+  return `<div class="day-block" id="${id}">
+    <div class="day-block-header" onclick="toggleDay('${id}')">
+      <div class="day-color-bar" style="background:${dm.color}"></div>
+      <div class="day-block-info">
+        <div class="day-block-name">${dm.label} — ${dm.name}</div>
+        <div class="day-block-sub">${stops[0]?stops[0].n:''}</div>
+      </div>
+      ${ticketPill}
+      <div class="day-block-toggle">▾</div>
+    </div>
+    <div class="day-stops">${stopsHtml}</div>
+  </div>`;
+}
+function toggleDay(id){
+  document.getElementById(id).classList.toggle('open');
+}
+function renderItinerary(){
+  const cont=document.getElementById('itinerario-container');
+  cont.innerHTML=DAYS.map(renderDay).join('');
+}
+
+// ── FREE TOURS RENDER ─────────────────────────────────────────────────────────
+function renderFreeTours(){
+  const cont=document.getElementById('freetours-container');
+  if(!cont)return;
+  // Sort by day number
+  const sorted=[...FREE_TOURS].sort((a,b)=>a.dayNum-b.dayNum);
+  cont.innerHTML=sorted.map((ft,i)=>`
+    <div class="ft-card">
+      <div class="ft-card-header">
+        <div class="ft-card-num">${i+1}</div>
+        <div>
+          <div class="ft-card-title">${ft.name}</div>
+          <div class="ft-card-day">📅 ${ft.day} · ${ft.duration}</div>
+        </div>
+      </div>
+      <div class="ft-card-body">
+        <div class="ft-card-desc">${ft.desc}</div>
+        <div class="ft-meta-grid">
+          <div class="ft-meta-item">
+            <div class="ft-meta-label">Horarios disponibles</div>
+            <div class="ft-meta-val">${ft.hour}</div>
+          </div>
+          <div class="ft-meta-item">
+            <div class="ft-meta-label">Propina sugerida</div>
+            <div class="ft-meta-val">${ft.propina}</div>
+          </div>
+          <div class="ft-meta-item">
+            <div class="ft-meta-label">Punto de encuentro</div>
+            <div class="ft-meta-val"><a href="${ft.meetingMaps}" target="_blank">${ft.meeting} ↗</a></div>
+          </div>
+          <div class="ft-meta-item">
+            <div class="ft-meta-label">Punto de fin</div>
+            <div class="ft-meta-val"><a href="${ft.endMaps}" target="_blank">${ft.end} ↗</a></div>
+          </div>
+        </div>
+        <div class="ft-btn-row">
+          <a class="ft-reserve-btn" href="${ft.url}" target="_blank">🎟️ Reservar gratis en Civitatis ↗</a>
+          <a class="ft-maps-btn" href="${ft.meetingMaps}" target="_blank">📍 Cómo llegar al encuentro</a>
+        </div>
+        <div onclick="toggleFtReserved('${ft.id}')" id="ft-res-${ft.id}"
+          style="margin-top:12px;display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--r);cursor:pointer;user-select:none;border:1.5px solid var(--border);background:var(--paper);transition:all .15s"
+          onmouseover="this.style.background='var(--paper2)'" onmouseout="this.style.background=ST.ftReserved&&ST.ftReserved['${ft.id}']?'rgba(26,122,110,.06)':'var(--paper)'">
+          <div style="width:22px;height:22px;border-radius:6px;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;flex-shrink:0;background:${ST.ftReserved&&ST.ftReserved[ft.id]?'var(--teal)':'transparent'};border-color:${ST.ftReserved&&ST.ftReserved[ft.id]?'var(--teal)':'var(--border2)'}">
+            ${ST.ftReserved&&ST.ftReserved[ft.id]?'<span style="color:#fff">✓</span>':''}
+          </div>
+          <span style="font-size:13px;font-weight:600;color:${ST.ftReserved&&ST.ftReserved[ft.id]?'var(--teal)':'var(--ink3)'}">
+            ${ST.ftReserved&&ST.ftReserved[ft.id]?'✅ Tour reservado':'Marcar como reservado'}
+          </span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ── MAIN MAP ──────────────────────────────────────────────────────────────────
+// PLACE_DAYS: map place names to itinerary day
+const PLACE_DAYS={
+  "Hotel — Fairfield Marriott":0,
+  "Times Square":1,"M&M's World":1,"Grand Slam Diner":1,
+  "Central Park":2,"AMNH":2,"Catedral de San Patricio":2,"Rockefeller Center":2,
+  "Flatiron Building":3,"Brooklyn Bridge":3,"DUMBO":3,"Brooklyn Heights Promenade":3,
+  "Friends Experience":3,"Madison Square Park":3,
+  "MoMA":4,"SUMMIT One Vanderbilt":4,"Grand Central Terminal":4,
+  "Morgan Library":4,"Empire State Building":4,
+  "Departamento Friends":5,"Greenwich Village":5,"Vessel (Hudson Yards)":5,
+  "Chelsea Market":5,"High Line":5,
+  "9/11 Memorial":6,"Macy's Herald Square":6,"Little Island":6,
+  "Pier 57 Rooftop":6,"High Line":6,
+  "Charging Bull":7,"9/11 Memorial":7,"El Oculus":7,"One World Observatory":7,
+  "Saks 5th Avenue":7,"Estatua de la Libertad":8,"230 Fifth Rooftop":8,
+  "Roosevelt Island Tramway":9,"Hunters Point South Park":9
+};
+
+const DAY_COLORS={
+  0:'#c8392b',1:'#1a5cb8',2:'#1a7a6e',3:'#6b35a8',
+  4:'#c8392b',5:'#c9922a',6:'#880e4f',7:'#b71c1c',
+  8:'#2e4057',9:'#2e7d6e'
+};
+const DAY_LABELS={
+  0:'Hotel',1:'Sáb 21',2:'Dom 22',3:'Lun 23',4:'Mar 24',
+  5:'Mie 25',6:'Jue 26',7:'Vie 27',8:'Sáb 28',9:'Dom 29'
+};
+
+let _mainMap=null, _mainMarkers=[];
+
+function initMainMap(){
+  _mainMap=L.map('mapa-map').setView([40.7500,-73.9800],13);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © CartoDB',subdomains:'abcd',maxZoom:19}).addTo(_mainMap);
+
+  // Add day filter buttons
+  const filterWrap=document.getElementById('mapa-day-filter');
+  if(filterWrap){
+    const days=[{d:'all',l:'Todos'},...Object.entries(DAY_LABELS).map(([d,l])=>({d:parseInt(d),l}))];
+    filterWrap.innerHTML=days.map(({d,l})=>`<button class="f-btn${d==='all'?' on':''}" onclick="filterMainMap(${JSON.stringify(d)},this)">${l}</button>`).join('');
+  }
+
+  // Build markers
+  buildMainMapMarkers('all');
+
+  // Hotel marker (always shown)
+  const hotelIcon=L.divIcon({className:'',html:'<div style="background:#c8392b;width:16px;height:16px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.4)"></div>',iconSize:[16,16],iconAnchor:[8,8]});
+  L.marker([40.7568,-73.9924],{icon:hotelIcon}).addTo(_mainMap)
+    .bindPopup('<strong>🏨 Hotel — Fairfield Marriott</strong><br><small>330 W 40th St · Tu base</small>');
+}
+
+function buildMainMapMarkers(dayFilter){
+  // Remove old markers
+  _mainMarkers.forEach(m=>_mainMap.removeLayer(m));
+  _mainMarkers=[];
+
+  const filtered=dayFilter==='all'?PLACES:PLACES.filter(p=>{
+    const d=PLACE_DAYS[p.name];
+    return d===dayFilter||d===0;
+  });
+
+  filtered.forEach(p=>{
+    const d=PLACE_DAYS[p.name]||0;
+    const col=p.cat==='hotel'?'#c8392b':(DAY_COLORS[d]||'#555');
+    const size=p.cat==='hotel'?16:11;
+    const icon=L.divIcon({
+      className:'',
+      html:`<div style="background:${col};width:${size}px;height:${size}px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>`,
+      iconSize:[size,size],iconAnchor:[size/2,size/2]
+    });
+    const dayLabel=d>0?`<br><span style="font-size:10px;font-weight:700;color:${col}">${DAY_LABELS[d]||''}</span>`:'';
+    const m=L.marker([p.lat,p.lng],{icon}).addTo(_mainMap);
+    m.bindPopup(`<strong>${p.name}</strong><br><small>${p.addr}</small>${dayLabel}`);
+    _mainMarkers.push(m);
+  });
+
+  // Fit bounds if filtering by day
+  if(dayFilter!=='all'&&_mainMarkers.length>0){
+    const group=L.featureGroup(_mainMarkers);
+    _mainMap.fitBounds(group.getBounds().pad(0.2));
+  } else {
+    _mainMap.setView([40.7500,-73.9800],13);
+  }
+}
+
+function filterMainMap(day,btn){
+  document.querySelectorAll('#mapa-day-filter .f-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  buildMainMapMarkers(day);
+}
+
+// ── FOOD MAP ──────────────────────────────────────────────────────────────────
+let foodFilter='all';
+function filterFood(type,btn){
+  foodFilter=type;
+  document.querySelectorAll('#food-filter-row .f-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderFoodChecklist();
+  if(window._foodMap)updateFoodMapMarkers();
+}
+function initFoodMap(){
+  const map=L.map('food-map').setView([40.7500,-73.9800],13);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © CartoDB',subdomains:'abcd',maxZoom:19}).addTo(map);
+  window._foodMap=map;
+  window._foodMarkers=[];
+  updateFoodMapMarkers();
+  renderFoodChecklist();
+}
+function updateFoodMapMarkers(){
+  const map=window._foodMap;
+  window._foodMarkers.forEach(m=>map.removeLayer(m));
+  window._foodMarkers=[];
+  const filtered=FOOD.filter(f=>{
+    if(foodSearchQ&&!f.name.toLowerCase().includes(foodSearchQ)&&!f.addr.toLowerCase().includes(foodSearchQ))return false;
+    if(foodFilter==='almuerzo-cena')return f.type==='almuerzo-cena';
+    if(foodFilter==='merienda')return f.type==='merienda';
+    if(foodFilter==='must')return f.must;
+    return true;
+  });
+  filtered.forEach(f=>{
+    const checked=ST.foodChecked[f.id];
+    if(checked)return; // Hide already-tried places from map
+    const emoji=f.must?'⭐':f.type==='merienda'?'☕':'🍽️';
+    const icon=L.divIcon({className:'',html:`<div style="font-size:18px;line-height:1;text-shadow:0 1px 3px rgba(0,0,0,.4)">${emoji}</div>`,iconSize:[22,22],iconAnchor:[11,11]});
+    const m=L.marker([f.lat,f.lng],{icon}).addTo(map);
+    m.bindPopup(`<strong>${f.name}</strong><br><small>${f.addr}</small><br><small>${f.price}</small>${f.note?`<br><em>${f.note}</em>`:''}`);
+    window._foodMarkers.push(m);
+  });
+}
+function toggleFoodCheck(id){
+  const newVal=!ST.foodChecked[id];
+  ST.foodChecked[id]=newVal;
+  saveST();
+  renderFoodChecklist();
+  if(window._foodMap)updateFoodMapMarkers();
+  if(window.fbReady)window.fbSetFoodCheck(id,newVal).catch(e=>console.warn('FB food',e));
+}
+function renderFoodChecklist(){
+  const cont=document.getElementById('food-checklist');
+  const filtered=FOOD.filter(f=>{
+    // Filtro por tipo
+    if(foodFilter==='almuerzo-cena'&&f.type!=='almuerzo-cena')return false;
+    if(foodFilter==='merienda'&&f.type!=='merienda')return false;
+    if(foodFilter==='must'&&!f.must)return false;
+    // Filtro por búsqueda
+    if(foodSearchQ){
+      const q=foodSearchQ.toLowerCase();
+      const matchName=f.name.toLowerCase().includes(q);
+      const matchAddr=f.addr.toLowerCase().includes(q);
+      const matchNote=(f.note||'').toLowerCase().includes(q);
+      if(!matchName&&!matchAddr&&!matchNote)return false;
+    }
+    return true;
+  });
+  const countEl=document.getElementById('food-count');
+  if(countEl){
+    if(!foodSearchQ&&foodFilter==='all'){
+      countEl.textContent='';
+    } else {
+      countEl.textContent=filtered.length+' resultado'+(filtered.length!==1?'s':'');
+    }
+  }
+  if(filtered.length===0){
+    cont.innerHTML=`<div class="empty-state" style="grid-column:1/-1;padding:40px 20px">
+      <div class="big">🔍</div>
+      <p>No hay resultados${foodSearchQ?' para "<strong>'+foodSearchQ+'</strong>"':''}</p>
+    </div>`;
+    return;
+  }
+  cont.innerHTML=filtered.map(f=>{
+    const checked=ST.foodChecked[f.id]?true:false;
+    const emoji=f.type==='merienda'?'☕':'🍽️';
+    const mustTag=f.must?'<span class="fci-type fci-meal">⭐ Must</span>':'';
+    const typeTag=f.type==='merienda'?'<span class="fci-type fci-merienda">☕ Merienda/Postre</span>':'<span class="fci-type fci-meal">🍽️ Almuerzo/Cena</span>';
+    return `<div class="food-check-item${checked?' checked':''}" onclick="toggleFoodCheck('${f.id}')">
+      <div class="fci-check">${checked?'✓':''}</div>
+      <div class="fci-body">
+        <div class="fci-name">${emoji} ${f.name}</div>
+        <div class="fci-meta">${typeTag}${mustTag}<span>${f.price}</span></div>
+        ${f.note?`<div style="font-size:11px;color:var(--ink3);margin-top:2px">${f.note}</div>`:''}
+        <a class="fci-maps-link" href="${f.maps}" target="_blank" onclick="event.stopPropagation()">📍 ${f.addr} ↗</a>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── TIPS RENDER ───────────────────────────────────────────────────────────────
+function renderTips(){
+  const cont=document.getElementById('tips-container');
+  cont.innerHTML=TIPS.map(t=>`
+    <div class="tip-card">
+      <div class="tip-bar" style="background:${t.color}"></div>
+      <div class="tip-body">
+        <div class="tip-eye" style="color:${t.color}">${t.cat}</div>
+        <div class="tip-n">${t.title}</div>
+        <div class="tip-d">${t.desc}</div>
+        ${t.link?`<a class="tip-link" href="${t.link}" target="_blank">${t.linkText||'Ver más →'}</a>`:''}
+      </div>
+    </div>`).join('');
+}
+
+// ── COSTOS RENDER ─────────────────────────────────────────────────────────────
+function parseDollar(s){
+  if(!s)return 0;
+  const n=parseFloat(String(s).replace(/[^0-9.]/g,''));
+  return isNaN(n)?0:n;
+}
+function renderCosts(){
+  const body=document.getElementById('cost-table-body');
+  // Render rows (skip TOTAL row — we render it dynamically)
+  const dataRows=COSTS.filter(r=>r[0]!=='💰');
+  body.innerHTML=dataRows.map((r,i)=>{
+    const isSub=r[0]==='—';
+    const cls=isSub?'ct-row ct-sub':'ct-row';
+    const realVal=ST.costsReal&&ST.costsReal[i]!==undefined?ST.costsReal[i]:'';
+    return `<div class="${cls}">
+      <span class="ct-name"><span class="ct-ico">${r[0]}</span>${r[1]}</span>
+      <span class="ct-pp">${r[2]}</span>
+      <span class="ct-real"><input type="text" placeholder="—" value="${realVal}" oninput="saveReal(${i},this.value)" style="width:100px;border:1.5px solid var(--border);border-radius:8px;padding:5px 8px;font-size:12px;font-family:inherit;color:var(--ink);background:var(--paper);text-align:right;transition:border-color .15s" onfocus="this.style.borderColor='var(--border2)'" onblur="this.style.borderColor='var(--border)'"></span>
+    </div>`;
+  }).join('');
+  // Auto-calculate total row
+  renderCostTotal();
+}
+function renderCostTotal(){
+  const existing=document.getElementById('cost-total-row');
+  if(existing)existing.remove();
+  // Sum all real values
+  const dataRows=COSTS.filter(r=>r[0]!=='💰'&&r[0]!=='—');
+  let totalReal=0;
+  let allEmpty=true;
+  dataRows.forEach((_,i)=>{
+    const v=ST.costsReal&&ST.costsReal[i]?parseDollar(ST.costsReal[i]):0;
+    if(v>0){allEmpty=false;totalReal+=v;}
+  });
+  const body=document.getElementById('cost-table-body');
+  const totDiv=document.createElement('div');
+  totDiv.id='cost-total-row';
+  totDiv.className='ct-row ct-tot';
+  totDiv.innerHTML=`
+    <span class="ct-name">💰 TOTAL POR PERSONA</span>
+    <span class="ct-pp">~$1.436</span>
+    <span class="ct-real" style="display:flex;align-items:center;justify-content:flex-end">
+      ${allEmpty
+        ? '<span style="font-size:12px;color:rgba(255,255,255,.3)">—</span>'
+        : `<span style="font-size:16px;font-weight:900;color:var(--gold2)">$${totalReal.toFixed(2)}</span>`
+      }
+    </span>`;
+  body.appendChild(totDiv);
+}
+function saveReal(i,val){
+  if(!ST.costsReal)ST.costsReal={};
+  ST.costsReal[i]=val;
+  saveST();
+  renderCostTotal();
+}
+
+// ── GASTOS (SPLITWISE) ────────────────────────────────────────────────────────
+let dividir2=[...dividir];
+let pagador2=pagador;
+
+function selPagador(u,btn){
+  pagador2=u;
+  ST.pagador=u;saveST();
+  document.querySelectorAll('#g-pago-who .gf-who-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+function toggleDivide(u,btn){
+  const idx=dividir2.indexOf(u);
+  if(idx>-1)dividir2.splice(idx,1);
+  else dividir2.push(u);
+  ST.dividir=[...dividir2];saveST();
+  btn.classList.toggle('on');
+}
+function addGasto(){
+  const desc=document.getElementById('g-desc').value.trim();
+  const monto=parseFloat(document.getElementById('g-monto').value);
+  if(!desc||!monto||monto<=0){alert('Ponele una descripción y un monto.');return;}
+  if(!pagador2){alert('Elegí quién pagó.');return;}
+  if(dividir2.length===0){alert('Elegí entre quiénes dividir.');return;}
+  const item={desc,monto,pagador:pagador2,divide:[...dividir2],date:new Date().toLocaleDateString('es-AR')};
+  document.getElementById('g-desc').value='';
+  document.getElementById('g-monto').value='';
+  if(window.fbReady){
+    window.fbAddGasto(item).catch(e=>console.warn('FB gasto error',e));
+    // listener will update UI
+  } else {
+    ST.gastos.unshift({...item,id:'g'+Date.now()});
+    saveST();renderGastos();
+  }
+}
+function delGasto(id){
+  if(window.fbReady){
+    window.fbDelGasto(id).catch(e=>console.warn('FB del error',e));
+    // listener will update UI
+  } else {
+    ST.gastos=ST.gastos.filter(g=>g.id!==id&&g.fbId!==id);
+    saveST();renderGastos();
+  }
+}
+function renderGastos(){
+  // Render list
+  const list=document.getElementById('gastos-list');
+  if(ST.gastos.length===0){
+    list.innerHTML='<div class="empty-state"><div class="big">💸</div><p>Sin gastos todavía. Agreguen el primero.</p></div>';
+  } else {
+    list.innerHTML=ST.gastos.map(g=>{
+      const u=USERS[g.pagador];
+      const divNames=g.divide.map(d=>USERS[d]?.name||d).join(', ');
+      return `<div class="gasto-item">
+        <div class="gi-avatar" style="background:${u?.color||'#333'}">${u?.letter||'?'}</div>
+        <div class="gi-body">
+          <div class="gi-desc">${g.desc}</div>
+          <div class="gi-meta">Pagó <strong>${u?.name||g.pagador}</strong> · Divide: ${divNames}</div>
+        </div>
+        <div class="gi-amount">$${g.monto.toFixed(2)}</div>
+        <button class="gi-del" onclick="delGasto('${g.fbId||g.id}')">×</button>
+      </div>`;
+    }).join('');
+  }
+  // Calcular balances
+  const users=['reni','mateo','nico','benja'];
+  const balance={reni:0,mateo:0,nico:0,benja:0};
+  ST.gastos.forEach(g=>{
+    const share=g.monto/g.divide.length;
+    balance[g.pagador]=(balance[g.pagador]||0)+g.monto;
+    g.divide.forEach(d=>{balance[d]=(balance[d]||0)-share;});
+  });
+  // ── Resumen total pagado por persona ──────────────────────────────
+  const paidSummaryEl=document.getElementById('paid-summary');
+  if(paidSummaryEl){
+    const totPaid={reni:0,mateo:0,nico:0,benja:0};
+    ST.gastos.forEach(g=>{if(g.pagador&&totPaid[g.pagador]!==undefined)totPaid[g.pagador]+=g.monto;});
+    const grandTotal=Object.values(totPaid).reduce((a,b)=>a+b,0);
+    paidSummaryEl.innerHTML=`
+      <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px">Total pagado por persona</div>
+      ${Object.entries(totPaid).map(([u,amt])=>{
+        const uu=USERS[u];
+        const pct=grandTotal>0?Math.round(amt/grandTotal*100):0;
+        return`<div style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:22px;height:22px;border-radius:50%;background:${uu.color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff">${uu.letter}</div>
+              <span style="font-size:13px;color:rgba(255,255,255,.8)">${uu.name}</span>
+            </div>
+            <span style="font-size:15px;font-weight:700;color:${amt>0?'var(--gold2)':'rgba(255,255,255,.3)'}">${amt>0?'$'+amt.toFixed(2):'$0'}</span>
+          </div>
+          <div style="height:5px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden">
+            <div style="height:100%;width:${pct}%;background:${uu.color};border-radius:3px;transition:width .4s ease"></div>
+          </div>
+        </div>`;
+      }).join('')}
+      <div style="border-top:1px solid rgba(255,255,255,.1);margin-top:10px;padding-top:10px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:11px;color:rgba(255,255,255,.4)">Total del grupo</span>
+        <span style="font-size:17px;font-weight:900;color:var(--gold2)">$${grandTotal.toFixed(2)}</span>
+      </div>`;
+  }
+  // ── Balance ──────────────────────────────────────────────────────
+  const bcont=document.getElementById('balance-content');
+  bcont.innerHTML=users.map(u=>{
+    const b=balance[u]||0;
+    const uu=USERS[u];
+    const cls=b>0.01?'br-pos':b<-0.01?'br-neg':'br-zero';
+    const label=b>0.01?`le deben $${b.toFixed(2)}`:b<-0.01?`debe $${Math.abs(b).toFixed(2)}`:'está al día';
+    return `<div class="balance-row">
+      <div class="br-name" style="display:flex;align-items:center;gap:8px">
+        <span style="width:22px;height:22px;border-radius:50%;background:${uu.color};display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff">${uu.letter}</span>
+        ${uu.name}
+      </div>
+      <div class="br-amount ${cls}">${label}</div>
+    </div>`;
+  }).join('');
+  // Calcular transferencias mínimas
+  const pos=users.filter(u=>(balance[u]||0)>0.01).map(u=>({u,b:balance[u]})).sort((a,b)=>b.b-a.b);
+  const neg=users.filter(u=>(balance[u]||0)<-0.01).map(u=>({u,b:-balance[u]})).sort((a,b)=>b.b-a.b);
+  const transfers=[];
+  let pi=0,ni=0;
+  const pb=[...pos],nb=[...neg];
+  while(pi<pb.length&&ni<nb.length){
+    const amt=Math.min(pb[pi].b,nb[ni].b);
+    if(amt>0.01)transfers.push({from:nb[ni].u,to:pb[pi].u,amt});
+    pb[pi].b-=amt;nb[ni].b-=amt;
+    if(pb[pi].b<0.01)pi++;
+    if(nb[ni].b<0.01)ni++;
+  }
+  const tcont=document.getElementById('transfers-content');
+  if(transfers.length>0){
+    tcont.innerHTML='<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;margin:16px 0 10px">Transferencias mínimas</div>'+
+      transfers.map(t=>`<div class="transfer-row" id="tr-${t.from}-${t.to}" style="${ST.paidTransfers&&ST.paidTransfers[t.from+'_'+t.to]?'opacity:.4;text-decoration:line-through':''}" onclick="toggleTransferPaid('${t.from}_${t.to}')">
+        <span class="transfer-from">${USERS[t.from]?.name||t.from}</span>
+        <span style="color:rgba(255,255,255,.4)">→</span>
+        <span class="transfer-to">${USERS[t.to]?.name||t.to}</span>
+        <span class="transfer-amount">$${t.amt.toFixed(2)}</span>
+        <span style="font-size:11px;color:rgba(255,255,255,.35);margin-left:4px">${ST.paidTransfers&&ST.paidTransfers[t.from+'_'+t.to]?'✅ Pagada':'Tocar para marcar como pagada'}</span>
+      </div>`).join('');
+  } else {
+    tcont.innerHTML='';
+  }
+}
+
+// ── SCORES ────────────────────────────────────────────────────────────────────
+function selScoreUser(u,btn){
+  scoreUser=u;ST.scoreUser=u;saveST();
+  document.querySelectorAll('.score-user-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderScores();
+}
+function setScore(placeId,n){
+  if(!scoreUser){alert('Primero elegí tu nombre arriba.');return;}
+  if(!ST.scores[placeId])ST.scores[placeId]={};
+  ST.scores[placeId][scoreUser]=n;
+  saveST();
+  renderScores();
+  if(window.fbReady)window.fbSetScore(placeId,scoreUser,n).catch(e=>console.warn('FB score',e));
+}
+function saveReview(placeId){
+  if(!scoreUser){alert('Primero elegí tu nombre.');return;}
+  const ta=document.getElementById('ta_'+placeId);
+  if(!ta)return;
+  const text=ta.value.trim();
+  if(!text)return;
+  const score=ST.scores[placeId]?.[scoreUser]||0;
+  const review={user:scoreUser,text,score,placeId,date:new Date().toLocaleDateString('es-AR')};
+  if(!ST.reviews[placeId])ST.reviews[placeId]=[];
+  ST.reviews[placeId].push(review);
+  saveST();ta.value='';
+  renderScores();
+  if(window.fbReady)window.fbSetReview(placeId,review).catch(e=>console.warn('FB review',e));
+}
+function renderScores(){
+  const grid=document.getElementById('score-grid');
+  const filteredSP=scoreSearchQ?SCORE_PLACES.filter(p=>p.name.toLowerCase().includes(scoreSearchQ)||p.addr.toLowerCase().includes(scoreSearchQ)):SCORE_PLACES;
+  if(filteredSP.length===0){
+    grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="big">🔍</div><p>No hay resultados para "<strong>${scoreSearchQ}</strong>"</p></div>`;
+    return;
+  }
+  // Photo mapping for score cards
+  const PLACE_PHOTOS={
+    "Times Square":"https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=400&q=75",
+    "Central Park":"https://images.unsplash.com/photo-1534430480872-3498386e7856?w=400&q=75",
+    "Brooklyn Bridge":"https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=400&q=75",
+    "MoMA":"https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&q=75",
+    "Empire State Building":"https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?w=400&q=75",
+    "SUMMIT One Vanderbilt":"https://images.unsplash.com/photo-1602940659805-770d1b3b9911?w=400&q=75",
+    "Estatua de la Libertad":"https://images.unsplash.com/photo-1538430859929-7e9d0fe5ffe3?w=400&q=75",
+    "The Metropolitan Museum of Art":"https://images.unsplash.com/photo-1543946602-a0fce8117697?w=400&q=75",
+    "AMNH":"https://images.unsplash.com/photo-1567446537708-ac4aa75c9c28?w=400&q=75",
+    "High Line":"https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=400&q=75",
+    "Chelsea Market":"https://images.unsplash.com/photo-1517732306149-e8f829eb588a?w=400&q=75",
+    "9/11 Memorial":"https://images.unsplash.com/photo-1560969184-10fe8719e047?w=400&q=75",
+    "One World Observatory":"https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?w=400&q=75",
+    "Rockefeller Center":"https://images.unsplash.com/photo-1576485375217-d6a95e34d043?w=400&q=75",
+    "Grand Central Terminal":"https://images.unsplash.com/photo-1568393691622-c7ba131d63b4?w=400&q=75",
+    "Flatiron Building":"https://images.unsplash.com/photo-1490644658840-3f2e3f8c5625?w=400&q=75",
+    "DUMBO":"https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=400&q=75",
+    "Brooklyn Heights Promenade":"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=75",
+    "Vessel (Hudson Yards)":"https://images.unsplash.com/photo-1602940659805-770d1b3b9911?w=400&q=75",
+    "Pier 57 Rooftop":"https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=400&q=75",
+    "Roosevelt Island Tramway":"https://images.unsplash.com/photo-1522083165195-3424ed129620?w=400&q=75",
+    "Morgan Library":"https://images.unsplash.com/photo-1543946602-a0fce8117697?w=400&q=75",
+    "Catedral de San Patricio":"https://images.unsplash.com/photo-1569263979104-865ab7cd8d13?w=400&q=75",
+    "230 Fifth Rooftop":"https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?w=400&q=75",
+    "Hunters Point South Park":"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=75",
+    "Friends Experience":"https://images.unsplash.com/photo-1590736969955-71cc94901144?w=400&q=75",
+    "Madison Square Park":"https://images.unsplash.com/photo-1490644658840-3f2e3f8c5625?w=400&q=75",
+    "Charging Bull":"https://images.unsplash.com/photo-1560969184-10fe8719e047?w=400&q=75",
+  };
+  const DEFAULT_PHOTO="https://images.unsplash.com/photo-1522083165195-3424ed129620?w=400&q=75";
+  const DAY_LABEL_MAP={1:'Sáb 21',2:'Dom 22',3:'Lun 23',4:'Mar 24',5:'Mie 25',6:'Jue 26',7:'Vie 27',8:'Sáb 28',9:'Dom 29'};
+
+  grid.innerHTML=filteredSP.map(p=>{
+    const myScore=scoreUser&&ST.scores[p.id]?ST.scores[p.id][scoreUser]||0:0;
+    const allScores=ST.scores[p.id]?Object.values(ST.scores[p.id]).filter(s=>s>0):[];
+    const avg=allScores.length?allScores.reduce((a,b)=>a+b,0)/allScores.length:0;
+    const avgStars=avg>0?`${'★'.repeat(Math.round(avg))}${'☆'.repeat(5-Math.round(avg))}`:'';
+    const avgText=avg>0?`${avgStars} ${avg.toFixed(1)} · ${allScores.length} voto${allScores.length>1?'s':''}`:'Sin calificaciones aún';
+    const stars=[1,2,3,4,5].map(n=>`<span class="star${myScore>=n?' lit':''}" onclick="setScore('${p.id}',${n})" onmouseover="hoverStar(this,${n},'${p.id}')" onmouseout="resetStar('${p.id}')">★</span>`).join('');
+    const revs=ST.reviews[p.id]||[];
+    const dayNum=PLACE_DAYS[p.name]||0;
+    const dayLabel=dayNum>0?`<span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;background:${DAY_COLORS[dayNum]||'#555'};color:#fff">${DAY_LABEL_MAP[dayNum]||''}</span>`:'';
+    const photo=PLACE_PHOTOS[p.name]||DEFAULT_PHOTO;
+    const freeTag=p.cat&&p.cat==='parque'?'<span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;background:rgba(26,122,110,.15);color:var(--teal)">GRATIS</span>':'';
+    const scoreBar=scoreUser?`
+      <div style="margin-bottom:6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3)">Calificar como ${USERS[scoreUser]?.name||scoreUser}</div>
+      <div class="stars-row" id="stars_${p.id}">${stars}</div>`:`
+      <div style="font-size:12px;color:var(--ink3);padding:8px 0">Elegí tu nombre arriba para calificar</div>`;
+    const revsHtml=revs.length?`<div class="reviews-list" style="margin-top:10px">${revs.slice(0,3).map(r=>{const u=USERS[r.user];return`<div class="review-item"><div class="review-header"><div class="review-av" style="background:${u?.color||'#333'}">${u?.letter||'?'}</div><span class="review-name">${u?.name||r.user}</span><span class="review-stars">${'★'.repeat(r.score)}</span></div><div class="review-text">${r.text}</div></div>`;}).join('')}</div>`:'';
+    return `<div class="score-card">
+      <div style="position:relative;height:160px;overflow:hidden;border-radius:var(--rl) var(--rl) 0 0">
+        <img src="${photo}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;display:block" loading="lazy">
+        <div style="position:absolute;top:10px;left:10px;display:flex;gap:5px">${dayLabel}${freeTag}</div>
+        ${myScore>0?`<div style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,.6);color:var(--gold2);font-size:13px;font-weight:700;padding:3px 8px;border-radius:10px">${'★'.repeat(myScore)}</div>`:''}
+      </div>
+      <div class="score-card-body">
+        <div class="score-card-name">${p.name}</div>
+        <div class="score-card-day">${p.cat?p.cat.toUpperCase():''}</div>
+        ${avg>0?`<div style="font-size:12px;color:var(--gold);margin-bottom:8px">${avgText}</div>`:`<div style="font-size:11px;color:var(--ink3);margin-bottom:8px">${avgText}</div>`}
+        ${scoreBar}
+        <textarea class="comment-field" id="ta_${p.id}" placeholder="Contá la experiencia..." style="margin-top:8px"></textarea>
+        <button class="save-btn" onclick="saveReview('${p.id}')">Guardar</button>
+        ${revsHtml}
+      </div>
+    </div>`;
+  }).join('');
+}
+function hoverStar(el,n,pid){
+  document.querySelectorAll(`#stars_${pid} .star`).forEach((s,i)=>s.classList.toggle('lit',i<n));
+}
+function resetStar(pid){
+  const s=scoreUser?ST.scores[pid]?.[scoreUser]||0:0;
+  document.querySelectorAll(`#stars_${pid} .star`).forEach((st,i)=>st.classList.toggle('lit',i<s));
+}
+
+// ── BAÑOS MAP ─────────────────────────────────────────────────────────────────
+function initBanosMap(){
+  const map=L.map('banos-map').setView([40.7500,-73.9800],13);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © CartoDB',subdomains:'abcd',maxZoom:19}).addTo(map);
+  BANOS.forEach(b=>{
+    const icon=L.divIcon({className:'',html:'<div style="font-size:20px;text-shadow:0 1px 3px rgba(0,0,0,.3)">🚻</div>',iconSize:[24,24],iconAnchor:[12,12]});
+    L.marker([b.lat,b.lng],{icon}).addTo(map).bindPopup(
+      `<strong>${b.name}</strong>${b.addr?`<br><span style="font-size:11px;color:#666">📍 ${b.addr}</span>`:''}${b.note?`<br><small style="color:#888">${b.note}</small>`:''}<br><a href="https://maps.google.com/?q=${encodeURIComponent(b.name+' '+b.addr)}" target="_blank" style="font-size:11px;color:#1a7a6e">Ver en Maps ↗</a>`
+    );
+  });
+}
+
+// ── LINKNYC MAP ───────────────────────────────────────────────────────────────
+function initLinkNYCMap(){
+  const map=L.map('linknyc-map').setView([40.7550,-73.9900],13);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © CartoDB',subdomains:'abcd',maxZoom:19}).addTo(map);
+  LINKNYC.forEach(k=>{
+    const icon=L.divIcon({className:'',html:'<div style="font-size:20px;text-shadow:0 1px 3px rgba(0,0,0,.3)">📡</div>',iconSize:[24,24],iconAnchor:[12,12]});
+    L.marker([k.lat,k.lng],{icon}).addTo(map).bindPopup(`<strong>${k.name}</strong><br><small>WiFi gratis · Carga USB · Llamadas gratuitas</small>`);
+  });
+}
+
+// ── TRANSFER PAID TOGGLE ─────────────────────────────────────────────────────
+function toggleTransferPaid(key){
+  if(!ST.paidTransfers)ST.paidTransfers={};
+  ST.paidTransfers[key]=!ST.paidTransfers[key];
+  saveST();
+  renderGastos();
+}
+
+// ── FREE TOUR RESERVATION TOGGLE ────────────────────────────────────────────
+function toggleFtReserved(ftId){
+  if(!ST.ftReserved)ST.ftReserved={};
+  const newVal=!ST.ftReserved[ftId];
+  ST.ftReserved[ftId]=newVal;
+  saveST();
+  // Optimistic UI update
+  const el=document.getElementById('ft-res-'+ftId);
+  if(el){
+    el.style.background=newVal?'rgba(26,122,110,.06)':'var(--paper)';
+    const box=el.querySelector('div');
+    const label=el.querySelector('span');
+    if(box){box.style.background=newVal?'var(--teal)':'transparent';box.style.borderColor=newVal?'var(--teal)':'var(--border2)';box.innerHTML=newVal?'<span style="color:#fff">✓</span>':'';}
+    if(label){label.style.color=newVal?'var(--teal)':'var(--ink3)';label.textContent=newVal?'✅ Tour reservado':'Marcar como reservado';}
+  }
+  // Sync Firebase
+  if(window.fbReady)window.fbSetFtReserved(ftId,newVal).catch(e=>console.warn('FB ft',e));
+}
+
+// ── COUNTDOWN ────────────────────────────────────────────────────────────────
+function initCountdown(){
+  const TRIP_START=new Date('2026-11-21T09:30:00-05:00'); // JFK arrival
+  const TRIP_END  =new Date('2026-11-29T22:00:00-05:00'); // Departure
+  const el=document.getElementById('countdown-badge');
+  if(!el)return;
+
+  function update(){
+    const now=new Date();
+    if(now>=TRIP_START&&now<=TRIP_END){
+      // We're in NYC!
+      const dayNum=Math.floor((now-TRIP_START)/(1000*60*60*24))+1;
+      el.innerHTML=`<div class="countdown-wrap"><span style="font-size:36px">🗽</span><div style="color:var(--gold2);font-size:22px;font-weight:800;font-family:'Playfair Display',serif">¡Estamos en Nueva York!</div><div style="color:rgba(255,255,255,.5);font-size:13px">Día ${Math.min(dayNum,9)} de 9 del viaje</div></div>`;
+    } else if(now>TRIP_END){
+      el.innerHTML=`<div class="countdown-wrap"><span style="font-size:36px">📸</span><div style="color:var(--gold2);font-size:22px;font-weight:800;font-family:'Playfair Display',serif">El viaje terminó. ¡Fue increíble!</div></div>`;
+    } else {
+      const diff=TRIP_START-now;
+      const days=Math.floor(diff/(1000*60*60*24));
+      const hrs=Math.floor((diff%(1000*60*60*24))/(1000*60*60));
+      const mins=Math.floor((diff%(1000*60*60))/(1000*60));
+      el.innerHTML=`<div class="countdown-wrap">
+        <div style="display:flex;align-items:baseline;gap:6px">
+          <span style="font-family:'Playfair Display',serif;font-size:42px;font-weight:900;color:var(--gold2);line-height:1">${days}</span>
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.45)">días</span>
+          <span style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:rgba(255,255,255,.6);margin-left:8px">${String(hrs).padStart(2,'0')}h ${String(mins).padStart(2,'0')}m</span>
+        </div>
+        <div style="color:rgba(255,255,255,.5);font-size:13px">para aterrizar en Nueva York ✈️</div>
+      </div>`;
+    }
+  }
+  update();
+  setInterval(update,30000); // update every 30s
+}
+
+// ── CLIMA ─────────────────────────────────────────────────────────────────────
+async function initClima(){
+  const cont=document.getElementById('clima-container');
+  if(!cont)return;
+  // Open-Meteo API — free, no key needed
+  // NYC coords: 40.7128, -74.0060
+  // Get daily forecast for Nov 21-29 2026
+  const url='https://api.open-meteo.com/v1/forecast?latitude=40.7128&longitude=-74.0060&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weathercode&timezone=America%2FNew_York&start_date=2026-11-21&end_date=2026-11-29';
+  
+  const wmoIcon={0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️',95:'⛈️',96:'⛈️',99:'⛈️'};
+  const wmoDesc={0:'Despejado',1:'Mayormente despejado',2:'Parcialmente nublado',3:'Nublado',45:'Niebla',48:'Niebla',51:'Llovizna',53:'Llovizna',55:'Llovizna intensa',61:'Lluvia leve',63:'Lluvia moderada',65:'Lluvia intensa',71:'Nieve leve',73:'Nieve moderada',75:'Nieve intensa',80:'Chubascos',81:'Chubascos fuertes',82:'Chubascos violentos',95:'Tormenta',96:'Tormenta con granizo',99:'Tormenta con granizo'};
+  const dayNames=['Sáb 21','Dom 22','Lun 23','Mar 24','Mie 25','Jue 26','Vie 27','Sáb 28','Dom 29'];
+  const dayThemes=['Llegada','Central Park','Friends · Brooklyn','Midtown · Comedy','Greenwich · Chinatown','Thanksgiving 🦃','Downtown · Wall St','Estatua · Heli','Queens · Vuelo'];
+
+  try{
+    const res=await fetch(url);
+    const data=await res.json();
+    const d=data.daily;
+    cont.innerHTML=`<div class="clima-grid">${d.time.map((date,i)=>{
+      const code=d.weathercode[i]||0;
+      const icon=wmoIcon[code]||'🌡️';
+      const desc=wmoDesc[code]||'';
+      const tmax=Math.round(d.temperature_2m_max[i]);
+      const tmin=Math.round(d.temperature_2m_min[i]);
+      const rain=d.precipitation_sum[i]||0;
+      const rainBadge=rain>0?`<div style="font-size:9px;color:#2e7d6e;margin-top:2px">💧 ${rain.toFixed(1)}mm</div>`:'';
+      return`<div class="clima-card">
+        <div class="clima-date">${dayNames[i]||date}</div>
+        <div style="font-size:9px;color:var(--ink3);margin-bottom:6px;line-height:1.2">${dayThemes[i]||''}</div>
+        <div class="clima-icon">${icon}</div>
+        <div class="clima-temps">${tmax}°C</div>
+        <div class="clima-min">Min ${tmin}°C</div>
+        <div class="clima-desc">${desc}</div>
+        ${rainBadge}
+      </div>`;
+    }).join('')}</div>
+    <div style="font-size:11px;color:var(--ink3);margin-top:8px">Fuente: Open-Meteo · Actualizado automáticamente</div>`;
+  } catch(e){
+    cont.innerHTML=`<div class="clima-loading">⚠️ No se pudo cargar el pronóstico. Verificá tu conexión a internet.<br><small style="font-size:11px;margin-top:6px;display:block">El pronóstico para noviembre 2026 estará disponible más cerca de la fecha.</small></div>`;
+    console.warn('Clima error',e);
+  }
+}
+
+// ── CONVERSOR ─────────────────────────────────────────────────────────────────
+let convRate=null,convDir='usd-ars';
+
+async function initConversor(){
+  // Use exchangerate-api (free tier)
+  try{
+    const res=await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+    const data=await res.json();
+    convRate=data.rates?.ARS||null;
+    if(convRate){
+      document.getElementById('conv-rate-display').innerHTML=
+        `💱 <strong>1 USD = ${convRate.toLocaleString('es-AR',{minimumFractionDigits:0,maximumFractionDigits:0})} ARS</strong> · Tasa oficial · Actualizado ${new Date().toLocaleDateString('es-AR')}`;
+      convertMoney();
+    } else {
+      throw new Error('No ARS rate');
+    }
+  } catch(e){
+    // Fallback: use a reasonable estimate
+    convRate=950;
+    document.getElementById('conv-rate-display').innerHTML=
+      `💱 <strong>1 USD ≈ ${convRate.toLocaleString('es-AR')} ARS</strong> · Tasa estimada (sin conexión)`;
+    convertMoney();
+  }
+}
+
+function convertMoney(){
+  if(!convRate)return;
+  const input=parseFloat(document.getElementById('conv-from').value)||0;
+  const result=convDir==='usd-ars'?input*convRate:input/convRate;
+  const toLabel=convDir==='usd-ars'?'ARS':'USD';
+  const fromLabel=convDir==='usd-ars'?'USD':'ARS';
+  document.getElementById('conv-result').textContent=
+    result.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('conv-result-label').textContent=
+    `${fromLabel} → ${toLabel} · Tasa: 1 USD = ${convRate.toLocaleString('es-AR',{maximumFractionDigits:0})} ARS`;
+}
+
+function swapCurrency(){
+  convDir=convDir==='usd-ars'?'ars-usd':'usd-ars';
+  const fl=document.getElementById('conv-from-label');
+  const tl=document.getElementById('conv-to-label');
+  if(convDir==='usd-ars'){fl.textContent='USD';tl.textContent='ARS';}
+  else{fl.textContent='ARS';tl.textContent='USD';}
+  convertMoney();
+}
+
+// ── SCORE SEARCH ───────────────────────────────────────────
+let scoreSearchQ='';
+function filterScores(q){
+  scoreSearchQ=q.trim().toLowerCase();
+  const cb=document.getElementById('score-search-clear');
+  if(cb)cb.classList.toggle('visible',q.length>0);
+  renderScores();
+}
+function clearScoreSearch(){
+  const inp=document.getElementById('score-search');
+  if(inp)inp.value='';
+  filterScores('');
+}
+// ── FOOD SEARCH ────────────────────────────────────────────
+let foodSearchQ='';
+function filterFoodSearch(q){
+  foodSearchQ=q.trim().toLowerCase();
+  const cb=document.getElementById('food-search-clear');
+  if(cb)cb.classList.toggle('visible',q.length>0);
+  renderFoodChecklist();
+  if(window._foodMap)updateFoodMapMarkers();
+}
+function clearFoodSearch(){
+  const inp=document.getElementById('food-search');
+  if(inp)inp.value='';
+  filterFoodSearch('');
+}
+// ── FIREBASE LISTENERS ───────────────────────────────────────────────────────
+function initFbListeners(){
+  // Gastos (splitwise)
+  if(window.fbListenGastos){
+    window.fbListenGastos(items=>{
+      ST.gastos=items;
+      saveST();
+      const el=document.getElementById('gastos-list');
+      if(el)renderGastos();
+    });
+  }
+  // Tickets (entradas sacadas)
+  if(window.fbListenTickets){
+    window.fbListenTickets(data=>{
+      ST.tickets=data;
+      saveST();
+      // Refresh itinerary if visible
+      const tab=document.getElementById('tab-itinerario');
+      if(tab&&tab.classList.contains('visible'))renderItinerary();
+    });
+  }
+  // Food checked
+  if(window.fbListenFood){
+    window.fbListenFood(data=>{
+      ST.foodChecked=data;
+      saveST();
+      if(document.getElementById('food-checklist'))renderFoodChecklist();
+      if(window._foodMap)updateFoodMapMarkers();
+    });
+  }
+  // Free Tour reservations
+  if(window.fbListenFtReserved){
+    window.fbListenFtReserved(data=>{
+      ST.ftReserved=data;
+      saveST();
+      const ftCont=document.getElementById('freetours-container');
+      if(ftCont&&ftCont.children.length)renderFreeTours();
+    });
+  }
+  // Scores
+  if(window.fbListenScores){
+    window.fbListenScores(data=>{
+      // Merge Firebase scores into ST.scores
+      Object.entries(data).forEach(([placeId,vals])=>{
+        if(!ST.scores[placeId])ST.scores[placeId]={};
+        Object.entries(vals).forEach(([k,v])=>{
+          // k is "user_score" format
+          const user=k.replace('_score','');
+          if(v>0)ST.scores[placeId][user]=v;
+        });
+      });
+      saveST();
+      const sg=document.getElementById('score-grid');
+      if(sg&&sg.children.length)renderScores();
+    });
+  }
+
+  // Show sync indicator
+  const syncEl=document.getElementById('fb-sync-badge');
+  if(syncEl){syncEl.style.display='flex';syncEl.innerHTML='🔄 Conectando con Firebase...';}
+  setTimeout(()=>{
+    if(syncEl){syncEl.innerHTML='✅ Sincronizado en tiempo real';syncEl.style.background='rgba(26,122,110,.1)';syncEl.style.color='var(--teal)';}
+  },2000);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+renderItinerary();
+renderTips();
+renderCosts();
+renderGastos();
+// Restore user selection
+if(scoreUser){
+  const btn=document.querySelector(`.score-user-btn:nth-child(${Object.keys(USERS).indexOf(scoreUser)+1})`);
+  if(btn){btn.classList.add('active');}
+}
+// Init Firebase
+if(window.fbReady)initFbListeners();
+else document.addEventListener('fbReady',initFbListeners);
+if(pagador2){
+  const btn=document.getElementById('gp-'+pagador2);
+  if(btn)btn.classList.add('on');
+}
+dividir2.forEach(u=>{
+  const btn=document.getElementById('gd-'+u);
+  if(btn)btn.classList.add('on');
+});
+</script>
+</body>
+</html>
