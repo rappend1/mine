@@ -1,0 +1,1029 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Itinerario NYC</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,600&family=Work+Sans:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap');
+
+  :root{
+    --bg:#fcf8ea;
+    --card:#ffffff;
+    --mint:#edf5f4;
+    --blush:#f8edec;
+    --line:#e3d9c8;
+    --line-soft:#e7ecdf;
+
+    --ink:#3d6367;
+    --heading:#3a5f63;
+    --muted:#7c9497;
+    --muted-2:#8d9a95;
+
+    --rose:#c5858d;
+    --rose-soft:rgba(197,133,141,.16);
+
+    --fucsia:#cf2f79;
+    --fucsia-soft:rgba(207,47,121,.12);
+
+    --teal:#2f8890;
+    --teal-soft:rgba(47,136,144,.12);
+
+    --coral:#c5858d;
+    --coral-soft:rgba(197,133,141,.16);
+
+    --green:#4a7c59;
+    --green-soft:rgba(74,124,89,.14);
+
+    --pink:#e86aa3;
+    --pink-soft:rgba(232,106,163,.15);
+    --pink-ink:#c94586;
+
+    --red:#c0392b;
+    --red-soft:rgba(192,57,43,.11);
+    --amber:#b7791f;
+    --amber-soft:rgba(183,121,31,.13);
+
+    --shadow: 0 1px 2px rgba(75,90,80,.05), 0 16px 34px -20px rgba(75,90,80,.28);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Work Sans',system-ui,-apple-system,Segoe UI,sans-serif;
+  }
+  .wrap{max-width:740px;margin:0 auto;padding-inline:22px;}
+
+  h1,h2,h3{font-family:'Playfair Display',Georgia,serif;letter-spacing:.01em;text-wrap:balance;margin:0;color:var(--heading);}
+
+  a{color:var(--teal);}
+
+  /* ---------- Header ---------- */
+  header.hero{
+    padding-block:52px 30px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.hero::after{
+    content:"";position:absolute;inset:auto 0 0 0;height:1px;
+    background:linear-gradient(90deg, transparent, var(--rose) 20%, var(--rose) 80%, transparent);
+    opacity:.6;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--rose);
+    font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::before,.eyebrow::after{content:"";height:1px;width:26px;background:var(--rose);opacity:.6;}
+  h1.title{
+    font-size:clamp(3.1rem,11vw,5.2rem);line-height:.94;font-weight:700;font-style:normal;
+    color:var(--teal);
+  }
+  .crew{margin-top:12px;font-size:1.02rem;color:var(--muted);font-weight:500;font-style:italic;font-family:'Playfair Display',Georgia,serif;}
+
+  /* ---------- Ticket / pass ---------- */
+  .pass{
+    margin-top:28px;
+    background:var(--mint);
+    border:1px solid var(--line-soft);
+    border-radius:16px;
+    box-shadow:var(--shadow);
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    position:relative;
+  }
+  .pass > div{padding:16px 18px;position:relative;}
+  .pass > div + div{border-left:1px dashed var(--rose);}
+  .pass > div + div::before,.pass > div + div::after{
+    content:"";position:absolute;left:-7px;width:14px;height:14px;border-radius:50%;background:var(--bg);
+  }
+  .pass > div + div::before{top:-7px;}
+  .pass > div + div::after{bottom:-7px;}
+  .pass .k{font-size:.64rem;text-transform:uppercase;letter-spacing:.14em;color:var(--rose);font-weight:700;}
+  .pass .v{font-size:.92rem;margin-top:6px;font-weight:600;line-height:1.35;color:var(--heading);}
+  .pass .v small{display:block;font-weight:500;color:var(--green);font-size:.8rem;margin-top:3px;}
+  @media (max-width:560px){
+    .pass{grid-template-columns:1fr;}
+    .pass > div + div{border-left:none;border-top:1px dashed var(--line);}
+    .pass > div + div::before{left:50%;top:-7px;transform:translateX(-50%);}
+    .pass > div + div::after{display:none;}
+  }
+
+  .legend{display:flex;flex-wrap:wrap;gap:9px 16px;margin-block:22px 4px;}
+  .legend span{display:inline-flex;align-items:center;gap:7px;font-size:.76rem;color:var(--muted);font-weight:500;}
+  .dot{width:8px;height:8px;border-radius:50%;flex:none;}
+
+  /* ---------- Day nav ---------- */
+  nav.daynav{
+    position:sticky;top:env(safe-area-inset-top,0px);z-index:5;
+    background:rgba(252,248,234,.9);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  nav.daynav .wrap{display:flex;gap:8px;overflow-x:auto;padding-block:12px;scrollbar-width:none;}
+  nav.daynav .wrap::-webkit-scrollbar{display:none;}
+  nav.daynav a{
+    flex:none;font-size:.74rem;font-weight:600;letter-spacing:.04em;color:var(--teal);
+    background:var(--card);border:1px solid var(--line);
+    padding:6px 13px;border-radius:999px;text-decoration:none;
+    font-variant-numeric:tabular-nums;
+  }
+  nav.daynav a:hover, nav.daynav a:focus-visible{color:#fff;background:var(--teal);border-color:var(--teal);}
+
+  /* ---------- Alerts ---------- */
+  section.alerts{padding-block:26px 8px;display:flex;flex-direction:column;gap:11px;}
+  .alert{
+    display:flex;gap:13px;
+    background:var(--blush);border:1px solid var(--line);border-left:3px solid var(--rose);
+    border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);
+  }
+  .alert.info{background:var(--mint);border-left-color:var(--teal);}
+  .alert svg{flex:none;margin-top:2px;width:18px;height:18px;color:var(--rose);}
+  .alert.info svg{color:var(--teal);}
+  .alert .t{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:1rem;margin-bottom:3px;color:var(--heading);}
+  .alert .d{font-size:.86rem;color:var(--ink);opacity:.85;line-height:1.55;}
+
+  /* ---------- Day sections ---------- */
+  section.day{padding-block:38px;scroll-margin-top:64px;position:relative;}
+  section.day + section.day{border-top:1px solid var(--line);}
+  .day-head{display:flex;align-items:flex-end;gap:16px;margin-bottom:2px;}
+  .day-num{font-family:'Playfair Display';font-weight:800;font-size:3.4rem;line-height:.85;color:var(--teal);}
+  .day-name{font-size:1.5rem;font-weight:600;color:var(--heading);padding-bottom:.35rem;}
+  .day-theme{color:var(--rose);font-weight:500;font-size:.92rem;font-style:italic;font-family:'Playfair Display',Georgia,serif;margin:4px 0 22px;}
+
+  ol.stops{list-style:none;margin:0;padding:0;border-radius:12px;overflow:hidden;border:1px solid var(--line-soft);}
+  .stop{display:grid;grid-template-columns:84px 1fr;gap:16px;padding:14px 16px;position:relative;}
+  .stop:nth-child(even){background:var(--mint);}
+  .stop + .stop{border-top:1px solid var(--line-soft);}
+  .time{
+    font-weight:700;font-size:.82rem;font-variant-numeric:tabular-nums;color:var(--teal);
+    text-align:left;padding-top:2px;line-height:1.3;
+  }
+  .stop-title{font-weight:600;font-size:1rem;line-height:1.35;color:var(--heading);}
+  .stop-meta{font-size:.86rem;color:var(--muted);margin-top:3px;line-height:1.5;}
+  .stop-addr{font-size:.8rem;color:var(--muted);margin-top:5px;line-height:1.5;}
+  .stop-addr a{color:var(--teal);text-decoration:underline;text-underline-offset:2px;font-weight:600;}
+  .stop-note{font-size:.82rem;font-style:italic;color:var(--rose);opacity:.95;margin-top:6px;line-height:1.5;}
+
+  /* fijo = highlighted, the important stuff */
+  .stop.fijo{
+    background:linear-gradient(135deg, var(--fucsia-soft), var(--fucsia-soft) 40%, transparent 100%);
+    border-left:4px solid var(--fucsia);
+    padding-left:12px;
+  }
+  .stop.fijo .time{color:var(--fucsia);}
+  .stop.fijo .stop-title{color:var(--fucsia);}
+
+  /* check-in / check-out = green */
+  .stop.checkin{
+    background:linear-gradient(135deg, var(--green-soft), var(--green-soft) 40%, transparent 100%);
+    border-left:4px solid var(--green);
+    padding-left:12px;
+  }
+  .stop.checkin .time{color:var(--green);}
+  .stop.checkin .stop-title{color:var(--green);}
+
+  /* free time blocks */
+  .stop.free{background:transparent;}
+  .stop.free .time{color:var(--muted-2);}
+  .stop.free .stop-title{color:var(--muted);font-style:italic;font-weight:500;}
+
+  /* sub-item lists for multi-stop blocks */
+  ul.item-list{list-style:none;margin:9px 0 0;padding:0;}
+  ul.item-list li{font-size:.86rem;color:var(--ink);line-height:1.5;margin-bottom:7px;padding-left:14px;position:relative;}
+  ul.item-list li::before{content:"–";position:absolute;left:0;color:var(--rose);}
+  ul.item-list a{color:var(--teal);text-decoration:underline;text-underline-offset:2px;font-weight:600;}
+
+  /* ---------- Meal picks ---------- */
+  .picks{
+    margin-top:14px;background:var(--blush);border:1px solid var(--line);
+    border-radius:12px;padding:16px 18px;
+  }
+  .picks + .picks{margin-top:10px;}
+  .picks h4{
+    font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--rose);
+    font-weight:800;margin:0 0 11px;
+  }
+  .pick{font-size:.87rem;margin-bottom:9px;line-height:1.5;color:var(--ink);}
+  .pick:last-child{margin-bottom:0;}
+  .pick b{color:var(--heading);}
+  .pick a{color:var(--teal);text-decoration:underline;text-underline-offset:2px;font-weight:600;}
+
+  .badge{
+    display:inline-flex;align-items:center;gap:5px;font-size:.63rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    padding:3px 9px;border-radius:999px;margin-left:9px;vertical-align:middle;position:relative;top:-1px;
+    border:1px solid transparent;
+  }
+  .badge.fijo{background:var(--fucsia-soft);color:var(--fucsia);border-color:rgba(207,47,121,.4);}
+  .badge.tour{background:var(--teal-soft);color:var(--teal);border-color:rgba(75,117,121,.35);}
+  .badge.res{background:var(--rose-soft);color:var(--rose);border-color:rgba(197,133,141,.45);}
+  .badge.opt{background:transparent;color:var(--muted);border:1px solid var(--line);}
+  .badge.checkin{background:var(--green-soft);color:var(--green);border-color:rgba(74,124,89,.4);}
+  .badge.ok{background:var(--fucsia);color:#fff;border-color:var(--fucsia);}
+  .badge.falta{background:var(--red-soft);color:var(--red);border-color:rgba(192,57,43,.45);}
+  .badge.conf{background:var(--amber-soft);color:var(--amber);border-color:rgba(183,121,31,.45);}
+
+  /* falta reservar = rojo */
+  .stop.pend{
+    background:linear-gradient(135deg, var(--red-soft), var(--red-soft) 40%, transparent 100%);
+    border-left:4px solid var(--red);
+    padding-left:12px;
+  }
+  .stop.pend .time{color:var(--red);}
+  /* free tour reservado = rosita */
+  .badge.tourok{background:var(--pink-soft);color:var(--pink-ink);border-color:rgba(232,106,163,.5);}
+  .stop.tourok{
+    background:linear-gradient(135deg, var(--pink-soft), var(--pink-soft) 40%, transparent 100%);
+    border-left:4px solid var(--pink);
+    padding-left:12px;
+  }
+  .stop.tourok .time, .stop.tourok .stop-title{color:var(--pink-ink);}
+  .ticket.t-rose{color:var(--pink-ink);}
+  .status-card.s-tour{border-top:3px solid var(--pink);}
+  .status-card.s-tour h3{color:var(--pink-ink);} .status-card.s-tour .n{background:var(--pink-soft);color:var(--pink-ink);}
+
+  /* recordatorio en verde agua intenso */
+  .stop.reminder{background:var(--teal) !important;border-left:4px solid #1d5f65;padding-left:12px;}
+  .stop.reminder .time, .stop.reminder .stop-title, .stop.reminder .stop-meta{color:#fff;}
+  .stop.reminder .stop-meta{opacity:.92;}
+
+  /* día dividido en dos columnas */
+  .split{display:grid;grid-template-columns:1fr 1fr;margin-top:10px;border:1px solid var(--line-soft);border-radius:12px;overflow:hidden;background:var(--card);}
+  .split > .side{padding:12px 14px;min-width:0;}
+  .split > .side + .side{border-left:2px solid var(--teal);}
+  .side h5{margin:0 0 8px;font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--teal);font-weight:700;}
+  .sstop{display:grid;grid-template-columns:46px 1fr;gap:8px;padding:7px 0;border-top:1px dashed var(--line-soft);font-size:.85rem;line-height:1.45;}
+  .side h5 + .sstop{border-top:none;}
+  .sstop .t{font-weight:700;color:var(--teal);font-variant-numeric:tabular-nums;font-size:.78rem;padding-top:1px;}
+  .sstop .ti{font-weight:600;color:var(--heading);}
+  .sstop .m{font-size:.78rem;color:var(--muted);margin-top:2px;}
+  .sstop .m a{color:var(--teal);font-weight:600;}
+  .sstop.fijo .t, .sstop.fijo .ti{color:var(--fucsia);}
+  .sstop .badge{margin-left:6px;}
+  @media (max-width:560px){
+    .split{grid-template-columns:1fr;}
+    .split > .side + .side{border-left:none;border-top:2px solid var(--teal);}
+  }
+
+  .picks.nearby{background:var(--mint);border-color:var(--line-soft);}
+  .picks.nearby h4{color:var(--teal);}
+
+  .ticket{font-size:.8rem;color:var(--fucsia);margin-top:5px;font-weight:500;line-height:1.5;}
+  .warn-note{font-size:.82rem;color:var(--red);font-weight:600;margin-top:6px;line-height:1.5;}
+
+  /* ---------- Estado de reservas ---------- */
+  .status{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;}
+  .status-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);min-width:0;}
+  .status-card h3{font-size:1rem;margin-bottom:9px;display:flex;align-items:center;gap:8px;}
+  .status-card .n{font-family:'Work Sans',sans-serif;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:999px;}
+  .status-card.s-ok{border-top:3px solid var(--fucsia);}
+  .status-card.s-ok h3{color:var(--fucsia);} .status-card.s-ok .n{background:var(--fucsia-soft);color:var(--fucsia);}
+  .status-card.s-falta{border-top:3px solid var(--red);}
+  .status-card.s-falta h3{color:var(--red);} .status-card.s-falta .n{background:var(--red-soft);color:var(--red);}
+  .status-card.s-conf{border-top:3px solid var(--amber);}
+  .status-card.s-conf h3{color:var(--amber);} .status-card.s-conf .n{background:var(--amber-soft);color:var(--amber);}
+  .status-card ul{list-style:none;margin:0;padding:0;}
+  .status-card li{display:flex;justify-content:space-between;gap:10px;font-size:.84rem;line-height:1.45;padding-block:4px;border-top:1px dashed var(--line-soft);}
+  .status-card li:first-child{border-top:none;}
+  .status-card li span:last-child{color:var(--muted);font-size:.76rem;white-space:nowrap;font-variant-numeric:tabular-nums;}
+
+  .tracks{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;}
+  @media (max-width:480px){.tracks{grid-template-columns:1fr;}}
+  .track{background:var(--mint);border:1px solid var(--line-soft);border-radius:11px;padding:13px 14px;}
+  .track h4{font-family:'Work Sans';font-weight:700;font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--teal);margin:0 0 9px;}
+  .track .tstop{font-size:.85rem;margin-bottom:7px;line-height:1.45;color:var(--muted);}
+  .track .tstop b{font-variant-numeric:tabular-nums;color:var(--heading);}
+  .track .tstop a{color:var(--teal);font-weight:600;}
+
+  .parallel-flat{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+  .parallel-flat .chip{
+    background:var(--mint);border:1px solid var(--line-soft);border-radius:8px;
+    padding:7px 12px;font-size:.84rem;font-weight:500;color:var(--heading);
+  }
+
+  /* ---------- Directorio ---------- */
+  section.directorio, section.infoutil{padding-block:40px;border-top:1px solid var(--line);}
+  .section-head{margin-bottom:6px;}
+  .section-head h2{font-size:2rem;color:var(--teal);}
+  .section-sub{color:var(--rose);font-style:italic;font-family:'Playfair Display',Georgia,serif;font-size:.92rem;margin:4px 0 22px;}
+
+  table.dtable{width:100%;border-collapse:collapse;border:1px solid var(--line-soft);border-radius:12px;overflow:hidden;font-size:.86rem;}
+  table.dtable th{
+    text-align:left;background:var(--teal);color:#fff;font-size:.68rem;text-transform:uppercase;
+    letter-spacing:.08em;padding:10px 14px;font-weight:700;
+  }
+  table.dtable td{padding:10px 14px;border-top:1px solid var(--line-soft);vertical-align:top;color:var(--ink);}
+  table.dtable tr:nth-child(even) td{background:var(--mint);}
+  table.dtable td.lugar{font-weight:600;color:var(--heading);}
+  table.dtable td.maps a, table.dtable td a{color:var(--teal);font-weight:600;text-decoration:underline;text-underline-offset:2px;white-space:nowrap;}
+  .dtable-wrap{overflow-x:auto;border-radius:12px;}
+
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:6px;}
+  @media (max-width:600px){.info-grid{grid-template-columns:1fr;}}
+  .info-card{background:var(--card);border:1px solid var(--line-soft);border-radius:12px;padding:16px 18px;}
+  .info-card h3{font-size:1.05rem;color:var(--teal);margin-bottom:10px;}
+  .info-card ul{margin:0;padding-left:18px;}
+  .info-card li{font-size:.86rem;color:var(--ink);line-height:1.55;margin-bottom:7px;}
+  .info-card li::marker{color:var(--rose);}
+  .checklist{list-style:none;padding:0;margin:0;}
+  .checklist li{display:flex;gap:9px;align-items:flex-start;font-size:.86rem;color:var(--ink);line-height:1.5;margin-bottom:8px;}
+  .checklist li::before{content:"";flex:none;width:15px;height:15px;margin-top:2px;border:1.5px solid var(--rose);border-radius:4px;}
+  .quicklinks{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;}
+  .quicklinks a{
+    background:var(--mint);border:1px solid var(--line-soft);color:var(--teal);font-weight:600;font-size:.83rem;
+    padding:7px 13px;border-radius:8px;text-decoration:none;
+  }
+  .quicklinks a:hover{background:var(--teal);color:#fff;}
+
+  footer{padding-block:40px 60px;text-align:center;color:var(--muted);font-size:.8rem;position:relative;}
+  footer::before{
+    content:"";position:absolute;inset:0 0 auto 0;height:1px;
+    background:linear-gradient(90deg, transparent, var(--rose) 20%, var(--rose) 80%, transparent);opacity:.5;
+  }
+  footer{border-top:1px solid transparent;margin-top:6px;padding-top:34px;}
+  footer .sig{font-family:'Playfair Display',Georgia,serif;font-style:italic;color:var(--teal);font-size:.95rem;display:block;margin-bottom:6px;}
+
+  @media (prefers-reduced-motion:no-preference){
+    html{scroll-behavior:smooth;}
+  }
+
+  @media print{
+    body{background:#fcf8ea !important; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    nav.daynav{display:none;}
+    header.hero{padding-block:22px 16px;}
+    .alert{break-inside:avoid;}
+    section.day{break-before:page;}
+    section.day:first-of-type{break-before:auto;}
+    section.directorio{break-before:page;}
+    .stop{break-inside:avoid;}
+    .picks{break-inside:avoid;}
+    table.dtable tr{break-inside:avoid;}
+    .info-card{break-inside:avoid;}
+  }
+</style>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">21 – 29 noviembre 2026</div>
+    <h1 class="title">Nueva York</h1>
+    <div class="crew">Reni · Benja · Teo · Nico</div>
+
+    <div class="pass">
+      <div>
+        <div class="k">Hotel</div>
+        <div class="v">Fairfield by Marriott — Manhattan/Times Sq.<small style="color:var(--muted)">330 W 40th St</small></div>
+      </div>
+      <div>
+        <div class="k">Llegada</div>
+        <div class="v">Sáb 21 · JFK 09:00<small>check-in 16:00</small></div>
+      </div>
+      <div>
+        <div class="k">Regreso</div>
+        <div class="v">Dom 29 · vuelo 22:00<small>check-out formal 12:00</small></div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <span><span class="dot" style="background:var(--fucsia)"></span> Entrada sacada / fijo</span>
+      <span><span class="dot" style="background:var(--green)"></span> Check-in / check-out</span>
+      <span><span class="dot" style="background:var(--rose)"></span> Free tour reservado</span>
+      <span><span class="dot" style="background:var(--red)"></span> Falta reservar</span>
+      <span><span class="dot" style="background:var(--muted)"></span> Opción / a elegir / tiempo libre</span>
+    </div>
+  </div>
+</header>
+
+<nav class="daynav" aria-label="Ir a un día">
+  <div class="wrap">
+    <a href="#d21">SÁB 21</a><a href="#d22">DOM 22</a><a href="#d23">LUN 23</a><a href="#d24">MAR 24</a>
+    <a href="#d25">MIÉ 25</a><a href="#d26">JUE 26</a><a href="#d27">VIE 27</a><a href="#d28">SÁB 28</a><a href="#d29">DOM 29</a>
+    <a href="#directorio">DIRECTORIO</a><a href="#infoutil">INFO ÚTIL</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <section class="alerts">
+    <div class="status">
+      <div class="status-card s-ok">
+        <h3>✓ Entradas sacadas <span class="n">9</span></h3>
+        <ul>
+          <li><span>Aladdin</span><span>Sáb 21</span></li>
+          <li><span>Friends Experience</span><span>Lun 23</span></li>
+          <li><span>Empire State</span><span>Lun 23</span></li>
+          <li><span>MoMA</span><span>Mar 24</span></li>
+          <li><span>SUMMIT One Vanderbilt</span><span>Mar 24</span></li>
+          <li><span>One World Observatory</span><span>Vie 27</span></li>
+          <li><span>Estatua de la Libertad</span><span>Vie 27</span></li>
+          <li><span>Top of the Rock</span><span>Vie 27</span></li>
+          <li><span>Helicóptero FlyNYON</span><span>Sáb 28</span></li>
+        </ul>
+      </div>
+      <div class="status-card s-tour">
+        <h3>✓ Free tours reservados <span class="n">6</span></h3>
+        <ul>
+          <li><span>Central Park</span><span>Dom 22</span></li>
+          <li><span>Midtown Manhattan</span><span>Mar 24</span></li>
+          <li><span>Greenwich Village</span><span>Mié 25</span></li>
+          <li><span>Chinatown, Little Italy y SoHo</span><span>Mié 25</span></li>
+          <li><span>High Line y Hudson Yards</span><span>Jue 26</span></li>
+          <li><span>Free tour por Nueva York</span><span>Vie 27</span></li>
+        </ul>
+      </div>
+      <div class="status-card s-falta">
+        <h3>⚠ Falta reservar <span class="n">5</span></h3>
+        <ul>
+          <li><span>Comedy Cellar</span><span>Mar 24</span></li>
+          <li><span>Patinaje</span><span>Mié 25</span></li>
+          <li><span>Almuerzo de Thanksgiving</span><span>Jue 26</span></li>
+          <li><span>Tour de los Contrastes (se saca allá)</span><span>Dom 29</span></li>
+          <li><span>AMNH (opción)</span><span>Dom 22 o Dom 29</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="alert">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.86 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.86a2 2 0 0 0-3.4 0Z"/></svg>
+      <div>
+        <div class="t">Horarios del plan que no coinciden con el ticket</div>
+        <div class="d">Dejé los horarios del plan como estaban y marqué en rojo lo que dice cada ticket: <b>Aladdin</b> 19:30 (plan 19:15) · <b>Friends</b> 19:00 (plan 18:45) · <b>Estatua</b> control de seguridad 14:45, llegar 14:15 (plan 15:00) · <b>Free tour Midtown</b> 9:45 (plan 9:30) · <b>Free tour High Line</b> 18:00 (plan 17:50). Helicóptero: estar a las 14:40 en Kearny (el límite del ticket es 14:55, si no se pierde el vuelo).</div>
+      </div>
+    </div>
+    <div class="alert">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.86 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.86a2 2 0 0 0-3.4 0Z"/></svg>
+      <div>
+        <div class="t">Cantidad de entradas</div>
+        <div class="d">Empire State, Top of the Rock y helicóptero son para <b>3 personas</b>. De Friends hay <b>2 tickets</b> en la carpeta. Aladdin, MoMA, SUMMIT y One World son para 4.</div>
+      </div>
+    </div>
+    <div class="alert">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.86 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.86a2 2 0 0 0-3.4 0Z"/></svg>
+      <div>
+        <div class="t">Viernes 27: la Estatua puede correr el resto de la tarde</div>
+        <div class="d">El ticket marca el control de seguridad a las 14:45 (piden llegar 30 min antes). La visita completa a Liberty + Ellis Island (ferry, seguridad, ambas islas) suele llevar 3–4 horas, así que para llegar con margen al bloque de las 19:30 (Top of the Rock / Morgan) no sumen paradas extra al volver.</div>
+      </div>
+    </div>
+    <div class="alert">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.86 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.86a2 2 0 0 0-3.4 0Z"/></svg>
+      <div>
+        <div class="t">Sábado 28: la salida al helipuerto sale desde The Mills</div>
+        <div class="d">En vez de volver primero al hotel, conviene tomar un taxi/Uber directo desde The Mills hacia el helipuerto de FlyNYON en Kearny, NJ (no es el Downtown Manhattan Heliport; queda en New Jersey, cerca de The Mills). Reni vuelve al hotel y hace Roosevelt Island y Long Island City; el día está dividido en dos columnas.</div>
+      </div>
+    </div>
+    <div class="alert">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.86 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.86a2 2 0 0 0-3.4 0Z"/></svg>
+      <div>
+        <div class="t">Domingo 29: el tour arranca antes del check-out formal</div>
+        <div class="d">El check-out formal del Fairfield es a las 12:00, pero el Tour de los Contrastes sale a las 8:15. Dejen el equipaje armado y en conserjería antes de salir (no hace falta hacer el check-out formal a esa hora).</div>
+      </div>
+    </div>
+    <div class="alert info">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>
+      <div>
+        <div class="t">¿Qué es el Saks Light Show?</div>
+        <div class="d">El espectáculo de luces y música que se proyecta sobre la fachada de Saks Fifth Avenue (611 5th Ave, frente al Rockefeller Center) todas las noches de la temporada navideña, aprox. desde fines de noviembre hasta comienzos de enero. Cada función dura ~3 minutos y se repite cada 10 minutos, de 17:00 a 23:00 (no hay función el día de inauguración ni el 24/12). Como se repite tan seguido, yendo a las 20:00 el sábado 28 van a alcanzar una función dentro de los primeros minutos sin problema. Conviene reconfirmar la fecha exacta de apertura 2026 cerca del viaje.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SÁB 21 ===== -->
+  <section class="day" id="d21">
+    <div class="day-head"><span class="day-num">21</span><span class="day-name">Sábado</span></div>
+    <div class="day-theme">Llegada · Times Square · Aladdin</div>
+    <ol class="stops">
+      <li class="stop"><div class="time">09:00</div><div><div class="stop-title">Llegada JFK</div><div class="stop-addr">John F. Kennedy International Airport · <a href="https://www.google.com/maps/search/?api=1&query=John+F.+Kennedy+International+Airport%2C+Queens%2C+NY+11430" target="_blank" rel="noopener">Maps</a></div></div></li>
+      <li class="stop"><div class="time">12:00</div><div><div class="stop-title">Llegada al hotel</div><div class="stop-meta">Dejar valijas</div><div class="stop-addr">330 West 40th Street · <a href="https://www.google.com/maps/search/?api=1&query=330+West+40th+Street%2C+New+York%2C+NY+10018" target="_blank" rel="noopener">Maps</a></div></div></li>
+      <li class="stop"><div class="time">13:00<br>14:00</div><div><div class="stop-title">Almuerzo cerca del hotel</div></div></li>
+      <li class="stop"><div class="time">15:00<br>15:30</div><div><div class="stop-title">Target / Five Below</div><div class="stop-meta">Caminata por Hell's Kitchen (barrio del hotel)</div></div></li>
+      <li class="stop checkin"><div class="time">16:00</div><div><div class="stop-title">Check-in<span class="badge checkin">Check-in</span></div><div class="stop-meta">Ducha rápida, acomodar lo básico y salir livianos</div></div></li>
+      <li class="stop"><div class="time">17:00</div><div>
+        <div class="stop-title">Times Square</div>
+        <ul class="item-list">
+          <li>M&amp;M's World — <a href="https://www.google.com/maps/search/?api=1&query=1600+Broadway%2C+New+York%2C+NY+10036" target="_blank" rel="noopener">Maps</a></li>
+          <li>Hershey's Chocolate World — <a href="https://www.google.com/maps/search/?api=1&query=701+7th+Ave%2C+New+York%2C+NY+10036" target="_blank" rel="noopener">Maps</a></li>
+          <li>Grand Slam (souvenirs) — <a href="https://www.google.com/maps/search/?api=1&query=Grand+Slam+New+York+Souvenirs%2C+Times+Square%2C+New+York%2C+NY" target="_blank" rel="noopener">Maps</a></li>
+        </ul>
+      </div></li>
+      <li class="stop"><div class="time">—</div><div><div class="stop-title">Merienda</div></div></li>
+      <li class="stop fijo"><div class="time">19:00</div><div><div class="stop-title">Ir al teatro / buscar entradas<span class="badge fijo">Fijo</span></div><div class="stop-addr">New Amsterdam Theatre, 214 W 42nd St · <a href="https://www.google.com/maps/search/?api=1&query=214+W+42nd+St%2C+New+York%2C+NY+10036" target="_blank" rel="noopener">Maps</a></div></div></li>
+      <li class="stop fijo"><div class="time">19:15</div><div><div class="stop-title">ALADDIN — arranca la función<span class="badge ok">✓ Entrada sacada</span></div><div class="stop-note">Duración aprox. 2 h 30.</div><div class="ticket">Balcony H16–H22 · 4 entradas · retiro en boletería (abre 30 min antes) · Orden 207234034-8629227</div><div class="warn-note">El ticket dice función a las 19:30.</div></div></li>
+      <li class="stop"><div class="time">~22:00</div><div><div class="stop-title">Cena</div><div class="stop-meta">Post función, en Theater District / Hell's Kitchen</div></div></li>
+    </ol>
+
+    <div class="picks">
+      <h4>Almuerzo</h4>
+      <div class="pick"><b>Westway Diner</b> — 614 9th Ave, New York, NY 10036 · <a href="https://www.google.com/maps/search/?api=1&query=614+9th+Ave%2C+New+York%2C+NY+10036" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Joe's Pizza</b> — 1435 Broadway, New York, NY 10018 · <a href="https://www.google.com/maps/search/?api=1&query=1435+Broadway%2C+New+York%2C+NY+10018" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>$1.50 Fresh Pizza</b> — buscar sucursal más cercana en Times Square · <a href="https://www.google.com/maps/search/?api=1&query=%241.50+Fresh+Pizza+Times+Square+New+York" target="_blank" rel="noopener">Maps</a></div>
+    </div>
+    <div class="picks">
+      <h4>Merienda</h4>
+      <div class="pick"><b>I'm Donut?</b> — 154 W 45th St, New York, NY 10036 · <a href="https://www.google.com/maps/search/?api=1&query=154+W+45th+St%2C+New+York%2C+NY+10036" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Carlo's Bakery</b> — 625 8th Ave, New York, NY 10018 · <a href="https://www.google.com/maps/search/?api=1&query=625+8th+Ave%2C+New+York%2C+NY+10018" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Krispy Kreme</b> — 1601 Broadway, New York, NY 10019 · <a href="https://www.google.com/maps/search/?api=1&query=1601+Broadway%2C+New+York%2C+NY+10019" target="_blank" rel="noopener">Maps</a></div>
+    </div>
+    <div class="picks">
+      <h4>Cena</h4>
+      <div class="pick"><b>Carmine's</b> — 200 W 44th St, New York, NY 10036 · <a href="https://www.google.com/maps/search/?api=1&query=200+W+44th+St%2C+New+York%2C+NY+10036" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Ellen's Stardust Diner</b> — 1650 Broadway, New York, NY 10019 · <a href="https://www.google.com/maps/search/?api=1&query=1650+Broadway%2C+New+York%2C+NY+10019" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Pasta de Pasta</b> — 673 9th Ave, New York, NY 10036 · <a href="https://www.google.com/maps/search/?api=1&query=673+9th+Ave%2C+New+York%2C+NY+10036" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Joe's Pizza</b> — 1435 Broadway, New York, NY 10018 · <a href="https://www.google.com/maps/search/?api=1&query=1435+Broadway%2C+New+York%2C+NY+10018" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>$1.50 Fresh Pizza</b> — buscar sucursal más cercana · <a href="https://www.google.com/maps/search/?api=1&query=%241.50+Fresh+Pizza+Times+Square+New+York" target="_blank" rel="noopener">Maps</a></div>
+    </div>
+    <div class="picks nearby">
+      <h4>Si nos sobra tiempo · cerca</h4>
+      <div class="pick"><b>Disney Store Times Square</b> — 1540 Broadway, New York, NY 10036 · <a href="https://www.google.com/maps/search/?api=1&query=Disney+Store+Times+Square%2C+1540+Broadway%2C+New+York%2C+NY+10036" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Nintendo New York</b> — 10 Rockefeller Plaza, New York, NY 10020 · <a href="https://www.google.com/maps/search/?api=1&query=Nintendo+New+York%2C+10+Rockefeller+Plaza%2C+New+York%2C+NY+10020" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Gotham West Market</b> — 600 11th Ave, New York, NY 10036 · <a href="https://www.google.com/maps/search/?api=1&query=Gotham+West+Market%2C+600+11th+Ave%2C+New+York%2C+NY+10036" target="_blank" rel="noopener">Maps</a></div>
+    </div>
+  </section>
+
+  <!-- ===== DOM 22 ===== -->
+  <section class="day" id="d22">
+    <div class="day-head"><span class="day-num">22</span><span class="day-name">Domingo</span></div>
+    <div class="day-theme">Central Park de punta a punta</div>
+    <ol class="stops">
+      <li class="stop"><div class="time">08:00</div><div><div class="stop-title">Ir a Central Park</div><div class="stop-addr"><a href="https://www.google.com/maps/search/?api=1&query=Central+Park%2C+New+York%2C+NY+10019" target="_blank" rel="noopener">Maps</a></div></div></li>
+      <li class="stop"><div class="time">09:00<br>09:30</div><div>
+        <div class="stop-title">Umpire Rock / Gapstow Bridge</div>
+        <ul class="item-list">
+          <li>Umpire Rock — <a href="https://www.google.com/maps/search/?api=1&query=Umpire+Rock%2C+Central+Park%2C+New+York%2C+NY" target="_blank" rel="noopener">Maps</a></li>
+          <li>Gapstow Bridge — <a href="https://www.google.com/maps/search/?api=1&query=Gapstow+Bridge%2C+Central+Park%2C+New+York%2C+NY+10019" target="_blank" rel="noopener">Maps</a></li>
+        </ul>
+      </div></li>
+      <li class="stop tourok"><div class="time">10:00</div><div><div class="stop-title">Free Tour<span class="badge tourok">✓ Free tour reservado</span></div><div class="stop-meta">Encuentro 59th St, termina en 72nd St</div><div class="ticket t-rose">4 personas · Civitatis A41580371 · encuentro en el USS Maine Monument (Columbus Circle), 15 min antes · guía con paraguas morado</div></div></li>
+      <li class="stop"><div class="time">12:30</div><div><div class="stop-title">Almuerzo</div></div></li>
+      <li class="stop"><div class="time">14:00</div><div>
+        <div class="stop-title">Bicicleta por Central Park</div>
+        <div class="stop-meta">Alquiler ~20 USD el día</div>
+        <ul class="item-list">
+          <li>Bethesda Fountain — <a href="https://www.google.com/maps/search/?api=1&query=Bethesda+Fountain%2C+Central+Park%2C+New+York%2C+NY+10024" target="_blank" rel="noopener">Maps</a></li>
+          <li>Belvedere Castle — <a href="https://www.google.com/maps/search/?api=1&query=Belvedere+Castle%2C+Central+Park%2C+New+York%2C+NY+10024" target="_blank" rel="noopener">Maps</a></li>
+          <li>Alice in Wonderland (estatua) — <a href="https://www.google.com/maps/search/?api=1&query=Alice+in+Wonderland+Statue%2C+Central+Park%2C+New+York%2C+NY+10028" target="_blank" rel="noopener">Maps</a></li>
+          <li>Jacqueline Kennedy Onassis Reservoir — <a href="https://www.google.com/maps/search/?api=1&query=Jacqueline+Kennedy+Onassis+Reservoir%2C+Central+Park%2C+New+York%2C+NY" target="_blank" rel="noopener">Maps</a></li>
+          <li>MET (exterior) — <a href="https://www.google.com/maps/search/?api=1&query=1000+5th+Ave%2C+New+York%2C+NY+10028" target="_blank" rel="noopener">Maps</a></li>
+        </ul>
+        <div class="stop-addr">Alquiler: 56 W 56th St · <a href="https://www.google.com/maps/search/?api=1&query=56+W+56th+St%2C+New+York%2C+NY+10019" target="_blank" rel="noopener">Maps</a></div>
+      </div></li>
+      <li class="stop pend"><div class="time">16:15</div><div><div class="stop-title">AMNH<span class="badge opt">Opción</span><span class="badge falta">⚠ Falta reservar</span></div><div class="stop-meta">Última hora gratis, pero igual exige ticket — 38 USD si reservan general</div><div class="stop-note">Si prefieren no apurarse hoy, el domingo 29 hay otra oportunidad de entrar (con ticket pago, sin el límite de la última hora).</div><div class="stop-addr">200 Central Park West · <a href="https://www.google.com/maps/search/?api=1&query=200+Central+Park+West%2C+New+York%2C+NY+10024" target="_blank" rel="noopener">Maps</a></div></div></li>
+      <li class="stop"><div class="time">17:30</div><div><div class="stop-title">Merienda</div></div></li>
+      <li class="stop"><div class="time">18:30</div><div>
+        <div class="stop-title">Regreso a pie</div>
+        <ul class="item-list">
+          <li>Lincoln Center — <a href="https://www.google.com/maps/search/?api=1&query=10+Lincoln+Center+Plaza%2C+New+York%2C+NY+10023" target="_blank" rel="noopener">Maps</a></li>
+          <li>Catedral de San Patricio — <a href="https://www.google.com/maps/search/?api=1&query=5th+Ave%2C+New+York%2C+NY+10022" target="_blank" rel="noopener">Maps</a></li>
+          <li>5th Ave: Louis Vuitton — <a href="https://www.google.com/maps/search/?api=1&query=6+E+57th+St%2C+New+York%2C+NY+10022" target="_blank" rel="noopener">Maps</a></li>
+          <li>LEGO Store — <a href="https://www.google.com/maps/search/?api=1&query=636+5th+Ave%2C+New+York%2C+NY+10111" target="_blank" rel="noopener">Maps</a></li>
+          <li>Apple Store 5th Ave — <a href="https://www.google.com/maps/search/?api=1&query=767+5th+Ave%2C+New+York%2C+NY+10153" target="_blank" rel="noopener">Maps</a></li>
+        </ul>
+      </div></li>
+      <li class="stop"><div class="time">21:30</div><div><div class="stop-title">Cena</div></div></li>
+    </ol>
+
+    <div class="picks">
+      <h4>Almuerzo</h4>
+      <div class="pick"><b>Lexington Candy Shop</b> — 1226 Lexington Ave, New York, NY 10028 · <a href="https://www.google.com/maps/search/?api=1&query=1226+Lexington+Ave%2C+New+York%2C+NY+10028" target="_blank" rel="noopener">Maps</a></div>
+    </div>
+    <div class="picks">
+      <h4>Merienda</h4>
+      <div class="pick"><b>Levain Bakery</b> — 351 Amsterdam Ave, New York, NY 10024 · <a href="https://www.google.com/maps/search/?api=1&query=351+Amsterdam+Ave%2C+New+York%2C+NY+10024" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Magnolia Bakery</b> — 200 Columbus Ave, New York, NY 10023 · <a href="https://www.google.com/maps/search/?api=1&query=200+Columbus+Ave%2C+New+York%2C+NY+10023" target="_blank" rel="noopener">Maps</a></div>
+    </div>
+    <div class="picks">
+      <h4>Cena</h4>
+      <div class="pick"><b>Carmine's</b> — 200 W 44th St, New York, NY 10036 · <a href="https://www.google.com/maps/search/?api=1&query=200+W+44th+St%2C+New+York%2C+NY+10036" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Ellen's Stardust Diner</b> — 1650 Broadway, New York, NY 10019 · <a href="https://www.google.com/maps/search/?api=1&query=1650+Broadway%2C+New+York%2C+NY+10019" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Pasta de Pasta</b> — 673 9th Ave, New York, NY 10036 · <a href="https://www.google.com/maps/search/?api=1&query=673+9th+Ave%2C+New+York%2C+NY+10036" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Westway Diner</b> — 614 9th Ave, New York, NY 10036 · <a href="https://www.google.com/maps/search/?api=1&query=614+9th+Ave%2C+New+York%2C+NY+10036" target="_blank" rel="noopener">Maps</a></div>
+    </div>
+    <div class="picks nearby">
+      <h4>Si nos sobra tiempo · cerca</h4>
+      <div class="pick"><b>Strawberry Fields</b> — Central Park West & W 72nd St, New York, NY 10023 · <a href="https://www.google.com/maps/search/?api=1&query=Strawberry+Fields%2C+Central+Park+West+%26+W+72nd+St%2C+New+York%2C+NY+10023" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>FAO Schwarz</b> — 30 Rockefeller Plaza, New York, NY 10112 · <a href="https://www.google.com/maps/search/?api=1&query=FAO+Schwarz%2C+30+Rockefeller+Plaza%2C+New+York%2C+NY+10112" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Bergdorf Goodman (vidrieras navideñas)</b> — 754 5th Ave, New York, NY 10019 · <a href="https://www.google.com/maps/search/?api=1&query=Bergdorf+Goodman%2C+754+5th+Ave%2C+New+York%2C+NY+10019" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>The Plaza Food Hall</b> — 1 W 58th St, New York, NY 10019 · <a href="https://www.google.com/maps/search/?api=1&query=The+Plaza+Food+Hall%2C+1+W+58th+St%2C+New+York%2C+NY+10019" target="_blank" rel="noopener">Maps</a></div>
+    </div>
+  </section>
+
+  <!-- ===== LUN 23 ===== -->
+  <section class="day" id="d23">
+    <div class="day-head"><span class="day-num">23</span><span class="day-name">Lunes</span></div>
+    <div class="day-theme">Flatiron · Brooklyn · Friends Experience · Empire State</div>
+    <ol class="stops">
+      <li class="stop"><div class="time">08:00</div><div>
+        <div class="stop-title">Flatiron / Union Square / Strand / Sara D. Roosevelt</div>
+        <ul class="item-list">
+          <li>Flatiron Building — <a href="https://www.google.com/maps/search/?api=1&query=175+5th+Ave%2C+New+York%2C+NY+10010" target="_blank" rel="noopener">Maps</a></li>
+          <li>Madison Square Park — <a href="https://www.google.com/maps/search/?api=1&query=Madison+Square+Park%2C+New+York%2C+NY+10010" target="_blank" rel="noopener">Maps</a></li>
+          <li>Union Square Park — <a href="https://www.google.com/maps/search/?api=1&query=Union+Square+Park%2C+New+York%2C+NY+10003" target="_blank" rel="noopener">Maps</a></li>
+          <li>Strand Book Store — <a href="https://maps.app.goo.gl/D1rY97eo1hMfDkRSA" target="_blank" rel="noopener">Maps</a></li>
+          <li>Parque Sara D. Roosevelt — <a href="https://www.google.com/maps/search/?api=1&query=Sara+D.+Roosevelt+Park%2C+New+York%2C+NY+10002" target="_blank" rel="noopener">Maps</a></li>
+        </ul>
+      </div></li>
+      <li class="stop"><div class="time">11:00</div><div><div class="stop-title">Brooklyn Bridge</div><div class="stop-addr"><a href="https://www.google.com/maps/search/?api=1&query=Brooklyn+Bridge%2C+New+York%2C+NY+10038" target="_blank" rel="noopener">Maps</a></div></div></li>
+      <li class="stop"><div class="time">12:00</div><div><div class="stop-title">Almuerzo en Brooklyn</div></div></li>
+      <li class="stop"><div class="time">14:00</div><div>
+        <div class="stop-title">DUMBO + waterfront</div>
+        <ul class="item-list">
+          <li>Jane's Carousel — <a href="https://www.google.com/maps/search/?api=1&query=Jane%27s+Carousel%2C+Brooklyn%2C+NY+11201" target="_blank" rel="noopener">Maps</a></li>
+          <li>Pebble Beach — <a href="https://www.google.com/maps/search/?api=1&query=Pebble+Beach%2C+Brooklyn+Bridge+Park%2C+Brooklyn%2C+NY+11201" target="_blank" rel="noopener">Maps</a></li>
+          <li>The Lookout — <a href="https://www.google.com/maps/search/?api=1&query=The+Lookout%2C+Brooklyn+Bridge+Park%2C+Brooklyn%2C+NY" target="_blank" rel="noopener">Maps</a></li>
+          <li>Empire Fulton Ferry — <a href="https://www.google.com/maps/search/?api=1&query=Empire+Fulton+Ferry%2C+Brooklyn%2C+NY+11201" target="_blank" rel="noopener">Maps</a></li>
+          <li>Brooklyn Heights Promenade — <a href="https://www.google.com/maps/search/?api=1&query=Brooklyn+Heights+Promenade%2C+Brooklyn%2C+NY+11201" target="_blank" rel="noopener">Maps</a></li>
+          <li>Squibb Park Bridge — <a href="https://www.google.com/maps/search/?api=1&query=Squibb+Park+Bridge%2C+Brooklyn%2C+NY+11201" target="_blank" rel="noopener">Maps</a></li>
+          <li>Brooklyn Bridge Park — <a href="https://www.google.com/maps/search/?api=1&query=Brooklyn+Bridge+Park%2C+Brooklyn%2C+NY+11201" target="_blank" rel="noopener">Maps</a></li>
+        </ul>
+      </div></li>
+      <li class="stop"><div class="time">17:45</div><div><div class="stop-title">Subte de regreso a Manhattan</div><div class="stop-note">No estirar Brooklyn: FRIENDS es a las 18:45.</div></div></li>
+      <li class="stop fijo"><div class="time">18:45</div><div><div class="stop-title">Friends Experience / Central Perk<span class="badge ok">✓ Entrada sacada</span></div><div class="stop-meta">1 h · 48 USD + cargos</div><div class="ticket">The One in New York City · 2 tickets en la carpeta · llevar documento y la tarjeta de compra</div><div class="warn-note">El ticket dice 19:00.</div><div class="stop-addr">130 E 23rd St · <a href="https://www.google.com/maps/search/?api=1&query=130+E+23rd+St%2C+New+York%2C+NY+10010" target="_blank" rel="noopener">Maps</a></div></div></li>
+      <li class="stop free"><div class="time">~19:45</div><div><div class="stop-title">Tiempo libre</div></div></li>
+      <li class="stop fijo"><div class="time">20:45</div><div><div class="stop-title">Empire State Building — piso 86<span class="badge ok">✓ Entrada sacada</span></div><div class="stop-meta">54,44 USD · solo válida en ese horario</div><div class="ticket">3 entradas · Civitatis A42183440</div><div class="stop-addr">20 W 34th St · <a href="https://www.google.com/maps/search/?api=1&query=20+W+34th+St%2C+New+York%2C+NY+10001" target="_blank" rel="noopener">Maps</a></div></div></li>
+      <li class="stop"><div class="time">22:00</div><div><div class="stop-title">Cena</div></div></li>
+    </ol>
+
+    <div class="picks">
+      <h4>Almuerzo</h4>
+      <div class="pick"><b>Shake Shack DUMBO</b> — 2 Water St, Brooklyn, NY 11201 · <a href="https://www.google.com/maps/search/?api=1&query=2+Water+St%2C+Brooklyn%2C+NY+11201" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Time Out Market New York</b> — 55 Water St, Brooklyn, NY 11201 · <a href="https://www.google.com/maps/search/?api=1&query=55+Water+St%2C+Brooklyn%2C+NY+11201" target="_blank" rel="noopener">Maps</a></div>
+    </div>
+    <div class="picks">
+      <h4>Cena</h4>
+      <div class="pick"><b>Chick-fil-A Herald Square</b> — 219 W 34th St, New York, NY 10001 · <a href="https://www.google.com/maps/search/?api=1&query=219+W+34th+St%2C+New+York%2C+NY+10001" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Pasta Rullo</b> — 441 E 9th St, New York, NY 10009 · <a href="https://www.google.com/maps/search/?api=1&query=441+E+9th+St%2C+New+York%2C+NY+10009" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Papi Pasta &amp; Pizza</b> — 485 7th Ave, New York, NY 10018 · <a href="https://www.google.com/maps/search/?api=1&query=485+7th+Ave%2C+New+York%2C+NY+10018" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Shake Shack DUMBO</b> — 2 Water St, Brooklyn, NY 11201 · <a href="https://www.google.com/maps/search/?api=1&query=2+Water+St%2C+Brooklyn%2C+NY+11201" target="_blank" rel="noopener">Maps</a></div>
+    </div>
+    <div class="picks nearby">
+      <h4>Si nos sobra tiempo · cerca</h4>
+      <div class="pick"><b>Eataly Flatiron</b> — 200 5th Ave, New York, NY 10010 · <a href="https://www.google.com/maps/search/?api=1&query=Eataly+Flatiron%2C+200+5th+Ave%2C+New+York%2C+NY+10010" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Trader Joe's Union Square</b> — 142 E 14th St, New York, NY 10003 · <a href="https://www.google.com/maps/search/?api=1&query=Trader+Joe%27s+Union+Square%2C+142+E+14th+St%2C+New+York%2C+NY+10003" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Foto del Manhattan Bridge (DUMBO)</b> — Washington St & Water St, Brooklyn, NY 11201 · <a href="https://www.google.com/maps/search/?api=1&query=Foto+del+Manhattan+Bridge%2C+Washington+St+%26+Water+St%2C+Brooklyn%2C+NY+11201" target="_blank" rel="noopener">Maps</a></div>
+    </div>
+  </section>
+
+  <!-- ===== MAR 24 ===== -->
+  <section class="day" id="d24">
+    <div class="day-head"><span class="day-num">24</span><span class="day-name">Martes</span></div>
+    <div class="day-theme">Midtown · MoMA · SUMMIT · Comedy Cellar</div>
+    <ol class="stops">
+      <li class="stop"><div class="time">09:00</div><div><div class="stop-title">SNFL — mirador</div><div class="stop-addr">Stavros Niarchos Foundation Library, 455 5th Ave · <a href="https://www.google.com/maps/search/?api=1&query=Stavros+Niarchos+Foundation+Library%2C+455+5th+Ave%2C+New+York%2C+NY+10016" target="_blank" rel="noopener">Maps</a></div></div></li>
+      <li class="stop tourok"><div class="time">09:30</div><div><div class="stop-title">Free Tour<span class="badge tourok">✓ Free tour reservado</span></div><div class="stop-meta">Times Square, Broadway y Midtown</div><div class="stop-addr">Encuentro: 801 2nd Ave, esquina E 43rd St · <a href="https://www.google.com/maps/search/?api=1&query=801+2nd+Ave%2C+New+York%2C+NY+10017" target="_blank" rel="noopener">Maps</a></div><div class="ticket t-rose">4 personas · Civitatis A41580372 · presentarse 10 min antes · guía con paraguas púrpura</div><div class="warn-note">El ticket dice 9:45.</div></div></li>
+      <li class="stop fijo"><div class="time">12:00</div><div><div class="stop-title">MoMA<span class="badge ok">✓ Entrada sacada</span></div><div class="stop-meta">2 h · 30 USD entrada</div><div class="ticket">4 entradas · válidas a cualquier hora del 24/11 · Orden 111829817</div><div class="stop-addr">11 W 53rd St · <a href="https://www.google.com/maps/search/?api=1&query=11+W+53rd+St%2C+New+York%2C+NY+10019" target="_blank" rel="noopener">Maps</a></div></div></li>
+      <li class="stop"><div class="time">14:00</div><div><div class="stop-title">Almuerzo</div></div></li>
+      <li class="stop"><div class="time">15:00</div><div>
+        <div class="stop-title">Chrysler / Grand Central / NYPL / Tudor City Bridge</div>
+        <ul class="item-list">
+          <li>Chrysler Building — <a href="https://www.google.com/maps/search/?api=1&query=405+Lexington+Ave%2C+New+York%2C+NY+10174" target="_blank" rel="noopener">Maps</a></li>
+          <li>Grand Central Terminal — <a href="https://www.google.com/maps/search/?api=1&query=89+E+42nd+St%2C+New+York%2C+NY+10017" target="_blank" rel="noopener">Maps</a></li>
+          <li>NYPL (Public Library) — <a href="https://www.google.com/maps/search/?api=1&query=476+5th+Ave%2C+New+York%2C+NY+10018" target="_blank" rel="noopener">Maps</a></li>
+          <li>Tudor City Bridge — <a href="https://www.google.com/maps/search/?api=1&query=Tudor+City+Bridge%2C+E+42nd+St%2C+New+York%2C+NY+10017" target="_blank" rel="noopener">Maps</a></li>
+        </ul>
+        <div class="stop-note">Recomendación: pasar por el Tudor City Bridge dos veces, ahora de día y de nuevo en el tiempo libre de la noche, para verlo con la calle 42 iluminada.</div>
+      </div></li>
+      <li class="stop fijo"><div class="time">16:10</div><div><div class="stop-title">SUMMIT One Vanderbilt<span class="badge ok">✓ Entrada sacada</span></div><div class="stop-meta">Llegar 16:10 · franja de entrada 16:30–17:00</div><div class="ticket">4 entradas · Reserva 178947723885505 · sin tacos finos</div><div class="stop-addr">45 E 42nd St · <a href="https://www.google.com/maps/search/?api=1&query=45+E+42nd+St%2C+New+York%2C+NY+10017" target="_blank" rel="noopener">Maps</a></div></div></li>
+      <li class="stop"><div class="time">18:00</div><div><div class="stop-title">Merienda</div></div></li>
+      <li class="stop free"><div class="time">~18:30</div><div><div class="stop-title">Tiempo libre</div><div class="stop-meta">Para ver lo que nos faltó de Chrysler / Grand Central / NYPL / Tudor City Bridge</div></div></li>
+      <li class="stop"><div class="time">20:30</div><div><div class="stop-title">Cena en Greenwich Village</div></div></li>
+      <li class="stop free"><div class="time">~21:30</div><div><div class="stop-title">Tiempo libre</div></div></li>
+      <li class="stop pend"><div class="time">23:00</div><div><div class="stop-title">Comedy Cellar<span class="badge falta">⚠ Falta reservar</span></div><div class="stop-meta">21+ · reservar, mínimo 2 consumiciones por persona · puede extenderse hasta las 3 am</div><div class="stop-addr">117 MacDougal St · <a href="https://www.google.com/maps/search/?api=1&query=117+MacDougal+St%2C+New+York%2C+NY+10012" target="_blank" rel="noopener">Maps</a></div></div></li>
+    </ol>
+
+    <div class="picks">
+      <h4>Almuerzo</h4>
+      <div class="pick"><b>Nathan's Famous</b> — 1251 6th Ave, New York, NY 10020 · <a href="https://www.google.com/maps/search/?api=1&query=1251+6th+Ave%2C+New+York%2C+NY+10020" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>The Halal Guys</b> — W 53rd St &amp; 6th Ave · <a href="https://www.google.com/maps/search/?api=1&query=W+53rd+St+%26+6th+Ave%2C+New+York%2C+NY" target="_blank" rel="noopener">Maps</a></div>
+    </div>
+    <div class="picks">
+      <h4>Merienda</h4>
+      <div class="pick"><b>Wafels &amp; Dinges</b> — 6th Ave &amp; W 42nd St (Bryant Park) · <a href="https://www.google.com/maps/search/?api=1&query=6th+Ave+%26+W+42nd+St%2C+New+York%2C+NY+10018" target="_blank" rel="noopener">Maps</a></div>
+    </div>
+    <div class="picks">
+      <h4>Cena</h4>
+      <div class="pick"><b>Emily</b> — 35 Downing St, New York, NY 10014 (con reserva) · <a href="https://www.google.com/maps/search/?api=1&query=35+Downing+St%2C+New+York%2C+NY+10014" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Hamburger America</b> — 155 W Houston St, New York, NY 10012 · <a href="https://www.google.com/maps/search/?api=1&query=155+W+Houston+St%2C+New+York%2C+NY+10012" target="_blank" rel="noopener">Maps</a></div>
+    </div>
+    <div class="picks nearby">
+      <h4>Si nos sobra tiempo · cerca</h4>
+      <div class="pick"><b>Macy's Herald Square</b> — 151 W 34th St, New York, NY 10001 · <a href="https://www.google.com/maps/search/?api=1&query=Macy%27s+Herald+Square%2C+151+W+34th+St%2C+New+York%2C+NY+10001" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Uniqlo 5th Avenue</b> — 666 5th Ave, New York, NY 10103 · <a href="https://www.google.com/maps/search/?api=1&query=Uniqlo+5th+Avenue%2C+666+5th+Ave%2C+New+York%2C+NY+10103" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Magnolia Bakery Bleecker</b> — 401 Bleecker St, New York, NY 10014 · <a href="https://www.google.com/maps/search/?api=1&query=Magnolia+Bakery+Bleecker%2C+401+Bleecker+St%2C+New+York%2C+NY+10014" target="_blank" rel="noopener">Maps</a></div>
+    </div>
+  </section>
+
+  <!-- ===== MIE 25 ===== -->
+  <section class="day" id="d25">
+    <div class="day-head"><span class="day-num">25</span><span class="day-name">Miércoles</span></div>
+    <div class="day-theme">Greenwich Village · SoHo · Chinatown · Little Italy</div>
+    <ol class="stops">
+      <li class="stop"><div class="time">09:00</div><div>
+        <div class="stop-title">Friends apartment / photo booth / Boyar Gifts</div>
+        <ul class="item-list">
+          <li>Friends apartment (exterior) — <a href="https://www.google.com/maps/search/?api=1&query=90+Bedford+St%2C+New+York%2C+NY+10014" target="_blank" rel="noopener">Maps</a></li>
+          <li>Photo booth</li>
+          <li>Boyar Gifts — <a href="https://www.google.com/maps/search/?api=1&query=388+Bleecker+St%2C+New+York%2C+NY+10014" target="_blank" rel="noopener">Maps</a></li>
+        </ul>
+      </div></li>
+      <li class="stop tourok"><div class="time">11:00</div><div><div class="stop-title">Free Tour<span class="badge tourok">✓ Free tour reservado</span></div><div class="stop-meta">Washington Square Arch → Jefferson Market Library</div></div></li>
+      <li class="stop"><div class="time">13:00</div><div><div class="stop-title">Almuerzo</div></div></li>
+      <li class="stop tourok"><div class="time">15:00</div><div><div class="stop-title">Free Tour<span class="badge tourok">✓ Free tour reservado</span></div><div class="stop-meta">Foley Square hasta Gunther Building (recorre SoHo · Nolita · Little Italy)</div><div class="stop-addr"><a href="https://www.google.com/maps/search/?api=1&query=Foley+Square%2C+New+York%2C+NY+10007" target="_blank" rel="noopener">Maps</a></div><div class="ticket t-rose">4 personas · Civitatis A41580374 · monumento central de Foley Square, 10 min antes · guía con paraguas turquesa</div></div></li>
+      <li class="stop"><div class="time">18:00</div><div><div class="stop-title">Merienda</div></div></li>
+      <li class="stop free"><div class="time">~18:30</div><div><div class="stop-title">Tiempo libre</div></div></li>
+      <li class="stop pend"><div class="time">20:30</div><div><div class="stop-title">Patinaje<span class="badge falta">⚠ Falta reservar</span></div><div class="stop-meta">Ver dónde, hasta 80 USD con alquiler de patines</div></div></li>
+      <li class="stop"><div class="time">22:00</div><div><div class="stop-title">Cena</div></div></li>
+    </ol>
+
+    <div class="picks">
+      <h4>Almuerzo</h4>
+      <div class="pick"><b>Emily</b> — 35 Downing St, New York, NY 10014 · <a href="https://www.google.com/maps/search/?api=1&query=35+Downing+St%2C+New+York%2C+NY+10014" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Hamburger America</b> — 155 W Houston St, New York, NY 10012 · <a href="https://www.google.com/maps/search/?api=1&query=155+W+Houston+St%2C+New+York%2C+NY+10012" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Leon's Bagels</b> — 169 Thompson St, New York, NY 10012 · <a href="https://www.google.com/maps/search/?api=1&query=169+Thompson+St%2C+New+York%2C+NY+10012" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Chinatown</b> — algo ahí mismo</div>
+    </div>
+    <div class="picks">
+      <h4>Merienda</h4>
+      <div class="pick"><b>Lafayette Grand Café &amp; Bakery</b> — 380 Lafayette St, New York, NY 10003 · <a href="https://www.google.com/maps/search/?api=1&query=380+Lafayette+St%2C+New+York%2C+NY+10003" target="_blank" rel="noopener">Maps</a></div>
+    </div>
+    <div class="picks">
+      <h4>Cena</h4>
+      <div class="pick"><b>Katz's Delicatessen</b> — 205 E Houston St, New York, NY 10002 · <a href="https://www.google.com/maps/search/?api=1&query=205+E+Houston+St%2C+New+York%2C+NY+10002" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>S'MAC</b> — 197 1st Ave, New York, NY 10003 · <a href="https://www.google.com/maps/search/?api=1&query=197+1st+Ave%2C+New+York%2C+NY+10003" target="_blank" rel="noopener">Maps</a></div>
+    </div>
+    <div class="picks nearby">
+      <h4>Si nos sobra tiempo · cerca</h4>
+      <div class="pick"><b>Ferrara Bakery (Little Italy)</b> — 195 Grand St, New York, NY 10013 · <a href="https://www.google.com/maps/search/?api=1&query=Ferrara+Bakery%2C+195+Grand+St%2C+New+York%2C+NY+10013" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Economy Candy</b> — 108 Rivington St, New York, NY 10002 · <a href="https://www.google.com/maps/search/?api=1&query=Economy+Candy%2C+108+Rivington+St%2C+New+York%2C+NY+10002" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>McNally Jackson Books</b> — 134 Prince St, New York, NY 10012 · <a href="https://www.google.com/maps/search/?api=1&query=McNally+Jackson+Books%2C+134+Prince+St%2C+New+York%2C+NY+10012" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Nike SoHo</b> — 529 Broadway, New York, NY 10012 · <a href="https://www.google.com/maps/search/?api=1&query=Nike+SoHo%2C+529+Broadway%2C+New+York%2C+NY+10012" target="_blank" rel="noopener">Maps</a></div>
+    </div>
+  </section>
+
+  <!-- ===== JUE 26 ===== -->
+  <section class="day" id="d26">
+    <div class="day-head"><span class="day-num">26</span><span class="day-name">Jueves</span></div>
+    <div class="day-theme">Thanksgiving · atardecer en el río · Hudson Yards</div>
+    <ol class="stops">
+      <li class="stop"><div class="time">06:00</div><div><div class="stop-title">Conseguir lugar en Central Park West</div><div class="stop-addr"><a href="https://www.google.com/maps/search/?api=1&query=Central+Park+West%2C+New+York%2C+NY+10024" target="_blank" rel="noopener">Maps</a></div></div></li>
+      <li class="stop"><div class="time">08:30</div><div><div class="stop-title">Macy's Thanksgiving Day Parade</div><div class="stop-meta">Edición 100</div></div></li>
+      <li class="stop pend"><div class="time">12:00</div><div><div class="stop-title">Almuerzo de Thanksgiving<span class="badge falta">⚠ Falta reservar</span></div><div class="stop-meta">A confirmar — reservar apenas publiquen menús especiales</div></div></li>
+      <li class="stop"><div class="time">14:30</div><div><div class="stop-title">Descanso en el hotel</div></div></li>
+      <li class="stop"><div class="time">16:00</div><div><div class="stop-title">Atardecer sobre el río</div><div class="stop-meta">Little Island o algún puerto cercano</div><div class="stop-addr">Pier 55 · <a href="https://www.google.com/maps/search/?api=1&query=Pier+55%2C+New+York%2C+NY+10011" target="_blank" rel="noopener">Maps</a></div></div></li>
+      <li class="stop tourok"><div class="time">17:50</div><div><div class="stop-title">Free Tour<span class="badge tourok">✓ Free tour reservado</span></div><div class="stop-meta">Línea 7 hasta Hudson Yards, termina en Pier 57</div><div class="ticket t-rose">4 personas · Civitatis A41580375 · encuentro en W 34th St y Hudson Blvd (salida de la línea 7), 15 min antes · guía con paraguas púrpura</div><div class="warn-note">El ticket dice 18:00.</div><div class="stop-addr"><a href="https://www.google.com/maps/search/?api=1&query=Pier+57%2C+New+York%2C+NY+10011" target="_blank" rel="noopener">Maps</a></div></div></li>
+      <li class="stop"><div class="time">~19:45</div><div><div class="stop-title">Pier 57 Rooftop</div><div class="stop-meta">Vistas — separado de la cena</div><div class="stop-addr">Pier 57, 25 11th Ave · <a href="https://www.google.com/maps/search/?api=1&query=Pier+57%2C+25+11th+Ave%2C+New+York%2C+NY+10011" target="_blank" rel="noopener">Maps</a></div></div></li>
+      <li class="stop free"><div class="time">~20:15</div><div><div class="stop-title">Tiempo libre</div></div></li>
+      <li class="stop"><div class="time">22:00</div><div><div class="stop-title">Cena</div></div></li>
+    </ol>
+
+    <div class="picks">
+      <h4>Cena</h4>
+      <div class="pick"><b>Los Tacos No.1</b> — 75 9th Ave (Chelsea Market), New York, NY 10011 · <a href="https://www.google.com/maps/search/?api=1&query=75+9th+Ave%2C+New+York%2C+NY+10011" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Shake Shack Hudson Yards</b> — 500 W 33rd St, New York, NY 10001 · <a href="https://www.google.com/maps/search/?api=1&query=500+W+33rd+St%2C+New+York%2C+NY+10001" target="_blank" rel="noopener">Maps</a></div>
+    </div>
+    <div class="picks nearby">
+      <h4>Si nos sobra tiempo · cerca</h4>
+      <div class="pick"><b>The Shops at Hudson Yards</b> — 20 Hudson Yards, New York, NY 10001 · <a href="https://www.google.com/maps/search/?api=1&query=The+Shops+at+Hudson+Yards%2C+20+Hudson+Yards%2C+New+York%2C+NY+10001" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Edge (mirador pago)</b> — 30 Hudson Yards, New York, NY 10001 · <a href="https://www.google.com/maps/search/?api=1&query=Edge%2C+30+Hudson+Yards%2C+New+York%2C+NY+10001" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Chelsea Market (locales)</b> — 75 9th Ave, New York, NY 10011 · <a href="https://www.google.com/maps/search/?api=1&query=Chelsea+Market%2C+75+9th+Ave%2C+New+York%2C+NY+10011" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick" style="font-style:italic;color:var(--muted)">Es feriado: confirmar que estén abiertos.</div>
+    </div>
+  </section>
+
+  <!-- ===== VIE 27 ===== -->
+  <section class="day" id="d27">
+    <div class="day-head"><span class="day-num">27</span><span class="day-name">Viernes</span></div>
+    <div class="day-theme">Downtown · One World · Estatua de la Libertad</div>
+    <ol class="stops">
+      <li class="stop"><div class="time">09:00</div><div><div class="stop-title">Charging Bull / National Museum of the American Indian</div><div class="stop-addr">1 Bowling Green · <a href="https://www.google.com/maps/search/?api=1&query=1+Bowling+Green%2C+New+York%2C+NY+10004" target="_blank" rel="noopener">Maps</a></div></div></li>
+      <li class="stop tourok"><div class="time">09:15</div><div><div class="stop-title">Free Tour<span class="badge tourok">✓ Free tour reservado</span></div><div class="stop-meta">Escaleras del museo, termina en 9/11</div><div class="ticket t-rose">4 personas · Civitatis A41580377 · escaleras del Museo de los Indios Americanos, 10 min antes · guía con paraguas turquesa</div></div></li>
+      <li class="stop fijo"><div class="time">12:00</div><div><div class="stop-title">Oculus + One World Observatory<span class="badge ok">✓ Entrada sacada</span></div><div class="stop-meta">1 h · 47,91 USD</div><div class="ticket">4 entradas · Civitatis A42183200 · llegar 15 min antes, no dejan entrar tarde · acceso West St y 285 Fulton St</div><div class="stop-addr">117 West St · <a href="https://www.google.com/maps/search/?api=1&query=117+West+St%2C+New+York%2C+NY+10007" target="_blank" rel="noopener">Maps</a></div></div></li>
+      <li class="stop"><div class="time">13:30</div><div><div class="stop-title">Almuerzo</div></div></li>
+      <li class="stop fijo"><div class="time">15:00</div><div><div class="stop-title">Estatua de la Libertad + Ellis Island<span class="badge ok">✓ Entrada sacada</span></div><div class="stop-meta">Contar 3–4 h · 26 USD</div><div class="ticket">4 entradas · Statue City Cruises, General Admission · Confirmación i87387346 / 87387345 · control tipo aeropuerto, no hay lockers</div><div class="warn-note">El ticket dice control de seguridad a las 14:45; piden llegar 30 min antes (14:15).</div><div class="stop-addr">Salida: The Battery / Castle Clinton · <a href="https://www.google.com/maps/search/?api=1&query=The+Battery+%2F+Castle+Clinton%2C+New+York%2C+NY+10004" target="_blank" rel="noopener">Maps</a></div></div></li>
+      <li class="stop"><div class="time">19:30</div><div>
+        <div class="stop-title">En paralelo</div>
+        <div class="split">
+          <div class="side">
+            <h5>Top of the Rock</h5>
+            <div class="sstop fijo"><div class="t">20:30</div><div><div class="ti">Top of the Rock<span class="badge ok">✓ Entrada sacada</span></div><div class="m">53,35 USD · 3 entradas · Civitatis A42183421 · entrada por W 50th St (alfombra roja), no hacer fila antes de la hora · <a href="https://www.google.com/maps/search/?api=1&query=30+Rockefeller+Plaza%2C+New+York%2C+NY+10112" target="_blank" rel="noopener">Maps</a></div></div></div>
+          </div>
+          <div class="side">
+            <h5>Morgan Library</h5>
+            <div class="sstop"><div class="t">19:30</div><div><div class="ti">Morgan Library &amp; Museum</div><div class="m">Free Friday, gratis de 17:00 a 20:00 · con la Estatua recién terminando puede no llegarse a tiempo · 225 Madison Ave · <a href="https://www.google.com/maps/search/?api=1&query=225+Madison+Ave%2C+New+York%2C+NY+10016" target="_blank" rel="noopener">Maps</a></div></div></div>
+          </div>
+        </div>
+      </div></li>
+      <li class="stop"><div class="time">22:30</div><div><div class="stop-title">Cena</div></div></li>
+    </ol>
+
+    <div class="picks">
+      <h4>Almuerzo</h4>
+      <div class="pick"><b>Shake Shack Fulton Center</b> — 200 Broadway, New York, NY 10038 · <a href="https://www.google.com/maps/search/?api=1&query=200+Broadway%2C+New+York%2C+NY+10038" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Los Tacos No.1</b> — 75 9th Ave (Chelsea Market), New York, NY 10011 · <a href="https://www.google.com/maps/search/?api=1&query=75+9th+Ave%2C+New+York%2C+NY+10011" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Shake Shack Hudson Yards</b> — 500 W 33rd St, New York, NY 10001 · <a href="https://www.google.com/maps/search/?api=1&query=500+W+33rd+St%2C+New+York%2C+NY+10001" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Papi Pasta &amp; Pizza</b> — 485 7th Ave, New York, NY 10018 · <a href="https://www.google.com/maps/search/?api=1&query=485+7th+Ave%2C+New+York%2C+NY+10018" target="_blank" rel="noopener">Maps</a></div>
+    </div>
+    <div class="picks">
+      <h4>Cena</h4>
+      <div class="pick"><b>Carmine's</b> — 200 W 44th St, New York, NY 10036 · <a href="https://www.google.com/maps/search/?api=1&query=200+W+44th+St%2C+New+York%2C+NY+10036" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Ellen's Stardust Diner</b> — 1650 Broadway, New York, NY 10019 · <a href="https://www.google.com/maps/search/?api=1&query=1650+Broadway%2C+New+York%2C+NY+10019" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Pasta de Pasta</b> — 673 9th Ave, New York, NY 10036 · <a href="https://www.google.com/maps/search/?api=1&query=673+9th+Ave%2C+New+York%2C+NY+10036" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Halal Cart 53rd &amp; 6th</b> — W 53rd St &amp; 6th Ave · <a href="https://www.google.com/maps/search/?api=1&query=W+53rd+St+%26+6th+Ave%2C+New+York%2C+NY" target="_blank" rel="noopener">Maps</a></div>
+    </div>
+    <div class="picks nearby">
+      <h4>Si nos sobra tiempo · cerca</h4>
+      <div class="pick"><b>Century 21</b> — 22 Cortlandt St, New York, NY 10007 · <a href="https://www.google.com/maps/search/?api=1&query=Century+21%2C+22+Cortlandt+St%2C+New+York%2C+NY+10007" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Brookfield Place / Winter Garden</b> — 230 Vesey St, New York, NY 10281 · <a href="https://www.google.com/maps/search/?api=1&query=Brookfield+Place+%2F+Winter+Garden%2C+230+Vesey+St%2C+New+York%2C+NY+10281" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Stone Street</b> — Stone St, New York, NY 10004 · <a href="https://www.google.com/maps/search/?api=1&query=Stone+Street%2C+Stone+St%2C+New+York%2C+NY+10004" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Fearless Girl</b> — 11 Wall St, New York, NY 10005 · <a href="https://www.google.com/maps/search/?api=1&query=Fearless+Girl%2C+11+Wall+St%2C+New+York%2C+NY+10005" target="_blank" rel="noopener">Maps</a></div>
+    </div>
+  </section>
+
+  <!-- ===== SAB 28 ===== -->
+  <section class="day" id="d28">
+    <div class="day-head"><span class="day-num">28</span><span class="day-name">Sábado</span></div>
+    <div class="day-theme">The Mills · helicóptero · Saks Light Show</div>
+    <ol class="stops">
+      <li class="stop"><div class="time">08:00</div><div><div class="stop-title">Salida hacia The Mills at Jersey Gardens</div><div class="stop-meta">Bus NJ Transit línea 111 desde Port Authority (~35–40 min)</div><div class="stop-addr">Port Authority: 625 8th Ave · <a href="https://www.google.com/maps/search/?api=1&query=625+8th+Ave%2C+New+York%2C+NY+10018" target="_blank" rel="noopener">Maps</a> · The Mills: <a href="https://www.google.com/maps/search/?api=1&query=651+Kapkowski+Rd%2C+Elizabeth%2C+NJ+07201" target="_blank" rel="noopener">Maps</a></div></div></li>
+      <li class="stop"><div class="time">13:00<br>18:30</div><div>
+        <div class="stop-title">Nos dividimos</div>
+        <div class="split">
+          <div class="side">
+            <h5>Los chicos · helicóptero</h5>
+            <div class="sstop"><div class="t">13:00</div><div><div class="ti">De The Mills directo al helipuerto</div><div class="m">Taxi/Uber, ~20 min (los dos quedan en New Jersey)</div></div></div>
+            <div class="sstop fijo"><div class="t">14:40</div><div><div class="ti">Estar en el helipuerto<span class="badge fijo">Fijo</span></div><div class="m">FlyNYON · 78 John Miller Way, Kearny, NJ · llevar documento con foto · el límite del ticket es 14:55 · <a href="https://www.google.com/maps/search/?api=1&query=78+John+Miller+Way%2C+Kearny%2C+NJ+07032" target="_blank" rel="noopener">Maps</a></div></div></div>
+            <div class="sstop fijo"><div class="t">16:10</div><div><div class="ti">Vuelta en helicóptero<span class="badge ok">✓ Entrada sacada</span></div><div class="m">NYC Helicopter Intro – Sunset · 15 min · puertas cerradas · 3 pasajeros · Orden O-344973</div></div></div>
+            <div class="sstop"><div class="t">17:00</div><div><div class="ti">Vuelta a Manhattan</div><div class="m">Uber, o PATH desde Journal Square</div></div></div>
+          </div>
+          <div class="side">
+            <h5>Reni · sin helicóptero</h5>
+            <div class="sstop"><div class="t">13:00</div><div><div class="ti">Vuelta al hotel</div><div class="m">Bus NJ Transit 111 de The Mills a Port Authority (~40 min)</div></div></div>
+            <div class="sstop"><div class="t">~14:00</div><div><div class="ti">Dejar las cosas en el hotel</div><div class="m">330 W 40th St, a una cuadra de Port Authority</div></div></div>
+            <div class="sstop"><div class="t">15:00</div><div><div class="ti">Roosevelt Island Tramway</div><div class="m">Se paga con OMNY · 2nd Ave y E 59th St · <a href="https://www.google.com/maps/search/?api=1&query=Tram+Plaza%2C+2nd+Ave+%26+E+59th+St%2C+New+York%2C+NY+10022" target="_blank" rel="noopener">Maps</a></div></div></div>
+            <div class="sstop"><div class="t">~15:15</div><div><div class="ti">Recorrer Roosevelt Island</div><div class="m">Caminar hacia la punta sur hasta Four Freedoms Park, con vista a Manhattan y al edificio de la ONU · <a href="https://www.google.com/maps/search/?api=1&query=Four+Freedoms+Park%2C+Roosevelt+Island%2C+New+York%2C+NY+10044" target="_blank" rel="noopener">Maps</a></div></div></div>
+            <div class="sstop"><div class="t">~16:00</div><div><div class="ti">Queensbridge Park</div><div class="m">Tren F de Roosevelt Island a 21 St–Queensbridge · <a href="https://www.google.com/maps/search/?api=1&query=Queensbridge+Park%2C+Long+Island+City%2C+NY+11101" target="_blank" rel="noopener">Maps</a></div></div></div>
+            <div class="sstop"><div class="t">~16:45</div><div><div class="ti">Hunters Point South Park (skyline al anochecer)</div><div class="m">Vista del skyline · vuelta con el tren 7 desde Vernon Blvd hasta Times Sq · <a href="https://www.google.com/maps/search/?api=1&query=Hunters+Point+South+Park%2C+Long+Island+City%2C+NY+11101" target="_blank" rel="noopener">Maps</a></div></div></div>
+          </div>
+        </div>
+      </div></li>
+      <li class="stop"><div class="time">18:30</div><div><div class="stop-title">Todos en el hotel</div><div class="stop-meta">Encuentro del grupo completo</div></div></li>
+      <li class="stop"><div class="time">20:00</div><div><div class="stop-title">Saks Fifth Avenue Light Show</div><div class="warn-note">Averiguar cuándo empieza: puede que el 28 todavía no esté encendido.</div><div class="stop-addr">611 5th Ave · <a href="https://www.google.com/maps/search/?api=1&query=611+5th+Ave%2C+New+York%2C+NY+10022" target="_blank" rel="noopener">Maps</a></div></div></li>
+      <li class="stop"><div class="time">22:00</div><div><div class="stop-title">Cena</div></div></li>
+      <li class="stop reminder"><div class="time">Antes de dormir</div><div><div class="stop-title">Esta noche cerramos las valijas</div><div class="stop-meta">Mañana el check-out es a las 8:00 y salimos directo al tour: dejar todo armado y listo para conserjería.</div></div></li>
+    </ol>
+
+    <div class="picks">
+      <h4>En paralelo al helicóptero</h4>
+      <div class="pick"><b>Roosevelt Island Tramway / Roosevelt Island</b> — <a href="https://www.google.com/maps/search/?api=1&query=Tram+Plaza%2C+2nd+Ave+%26+E+59th+St%2C+New+York%2C+NY+10022" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Queensbridge Park</b> — Long Island City · <a href="https://www.google.com/maps/search/?api=1&query=Queensbridge+Park%2C+Long+Island+City%2C+NY+11101" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Hunters Point South Park</b> — Long Island City · <a href="https://www.google.com/maps/search/?api=1&query=Hunters+Point+South+Park%2C+Long+Island+City%2C+NY+11101" target="_blank" rel="noopener">Maps</a></div>
+    </div>
+    <div class="picks">
+      <h4>Cena</h4>
+      <div class="pick"><b>230 Fifth Rooftop</b> — 1150 Broadway, New York, NY 10001 · <a href="https://www.google.com/maps/search/?api=1&query=1150+Broadway%2C+New+York%2C+NY+10001" target="_blank" rel="noopener">Maps</a> — reconfirmar cover/evento y política de acceso para el sábado de Thanksgiving weekend.</div>
+    </div>
+    <div class="picks nearby">
+      <h4>Si nos sobra tiempo · cerca</h4>
+      <div class="pick"><b>Gantry Plaza State Park</b> — 4-09 47th Rd, Long Island City, NY 11101 · <a href="https://www.google.com/maps/search/?api=1&query=Gantry+Plaza+State+Park%2C+4-09+47th+Rd%2C+Long+Island+City%2C+NY+11101" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Árbol del Rockefeller Center</b> — 30 Rockefeller Plaza, New York, NY 10112 · <a href="https://www.google.com/maps/search/?api=1&query=%C3%81rbol+del+Rockefeller+Center%2C+30+Rockefeller+Plaza%2C+New+York%2C+NY+10112" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick" style="font-style:italic;color:var(--muted)">El árbol se enciende a principios de diciembre; el 28 puede estar sin luces.</div>
+    </div>
+  </section>
+
+  <!-- ===== DOM 29 ===== -->
+  <section class="day" id="d29">
+    <div class="day-head"><span class="day-num">29</span><span class="day-name">Domingo</span></div>
+    <div class="day-theme">Tour de los Contrastes · Despedida</div>
+    <ol class="stops">
+      <li class="stop checkin"><div class="time">08:00</div><div><div class="stop-title">Check-out<span class="badge checkin">Check-out</span></div><div class="stop-meta">Dejar valijas en conserjería — check-out formal es a las 12:00</div></div></li>
+      <li class="stop pend"><div class="time">08:15</div><div><div class="stop-title">Tour de los Contrastes<span class="badge falta">⚠ Falta reservar</span></div><div class="stop-meta">Hasta las 13:00 · los tickets se sacan allá</div></div></li>
+      <li class="stop"><div class="time">13:30</div><div><div class="stop-title">Almuerzo</div></div></li>
+      <li class="stop pend"><div class="time">14:30</div><div><div class="stop-title">AMNH<span class="badge opt">Opción</span><span class="badge falta">⚠ Falta reservar</span></div></div></li>
+      <li class="stop checkin"><div class="time">17:00</div><div><div class="stop-title">Volver al hotel + retirar valijas<span class="badge checkin">Check-out</span></div></div></li>
+      <li class="stop"><div class="time">17:30</div><div><div class="stop-title">Salir hacia JFK</div></div></li>
+      <li class="stop"><div class="time">18:15</div><div><div class="stop-title">Llegada al aeropuerto</div><div class="stop-addr">JFK Airport · <a href="https://www.google.com/maps/search/?api=1&query=John+F.+Kennedy+International+Airport%2C+Queens%2C+NY+11430" target="_blank" rel="noopener">Maps</a></div></div></li>
+      <li class="stop"><div class="time">22:00</div><div><div class="stop-title">Vuelo</div></div></li>
+    </ol>
+
+    <div class="picks">
+      <h4>Almuerzo</h4>
+      <div class="pick"><b>Yumpling</b> — 49-11 Vernon Blvd, Long Island City, NY 11101 · <a href="https://www.google.com/maps/search/?api=1&query=49-11+Vernon+Blvd%2C+Long+Island+City%2C+NY+11101" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Osteria Brooklyn @ LIC On the Water</b> — 1-50 50th Ave, Long Island City, NY 11101 · <a href="https://www.google.com/maps/search/?api=1&query=1-50+50th+Ave%2C+Long+Island+City%2C+NY+11101" target="_blank" rel="noopener">Maps</a></div>
+      <div class="pick"><b>Matsuzuki Sakura</b> — 2-23 50th Ave, Long Island City, NY 11101 · <a href="https://www.google.com/maps/search/?api=1&query=2-23+50th+Ave%2C+Long+Island+City%2C+NY+11101" target="_blank" rel="noopener">Maps</a></div>
+    </div>
+  </section>
+
+  <!-- ===== DIRECTORIO ===== -->
+  <section class="directorio" id="directorio">
+    <div class="section-head"><h2>Directorio</h2></div>
+    <div class="section-sub">Comidas del viaje — todos los lugares que aparecen como opción, con dirección y acceso directo a Maps.</div>
+    <div class="dtable-wrap">
+      <table class="dtable">
+        <thead><tr><th>Lugar</th><th>Dirección</th><th>Link</th></tr></thead>
+        <tbody>
+          <tr><td class="lugar">$1.50 Fresh Pizza</td><td>Buscar sucursal más cercana en Times Square</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=%241.50+Fresh+Pizza+Times+Square+New+York" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">230 Fifth Rooftop</td><td>1150 Broadway, New York, NY 10001</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=1150+Broadway%2C+New+York%2C+NY+10001" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Bubby's Tribeca</td><td>120 Hudson St, New York, NY 10013</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=120+Hudson+St%2C+New+York%2C+NY+10013" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Carlo's Bakery</td><td>625 8th Ave, New York, NY 10018</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=625+8th+Ave%2C+New+York%2C+NY+10018" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Carmine's Times Square</td><td>200 W 44th St, New York, NY 10036</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=200+W+44th+St%2C+New+York%2C+NY+10036" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Chick-fil-A Herald Square</td><td>219 W 34th St, New York, NY 10001</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=219+W+34th+St%2C+New+York%2C+NY+10001" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Ellen's Stardust Diner</td><td>1650 Broadway, New York, NY 10019</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=1650+Broadway%2C+New+York%2C+NY+10019" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Emily West Village</td><td>35 Downing St, New York, NY 10014</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=35+Downing+St%2C+New+York%2C+NY+10014" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Hamburger America</td><td>155 W Houston St, New York, NY 10012</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=155+W+Houston+St%2C+New+York%2C+NY+10012" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">I'm Donut? Times Square</td><td>154 W 45th St, New York, NY 10036</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=154+W+45th+St%2C+New+York%2C+NY+10036" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Joe's Pizza Broadway</td><td>1435 Broadway, New York, NY 10018</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=1435+Broadway%2C+New+York%2C+NY+10018" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Katz's Delicatessen</td><td>205 E Houston St, New York, NY 10002</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=205+E+Houston+St%2C+New+York%2C+NY+10002" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Krispy Kreme Times Square</td><td>1601 Broadway, New York, NY 10019</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=1601+Broadway%2C+New+York%2C+NY+10019" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Lafayette Grand Café &amp; Bakery</td><td>380 Lafayette St, New York, NY 10003</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=380+Lafayette+St%2C+New+York%2C+NY+10003" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Leon's Bagels</td><td>169 Thompson St, New York, NY 10012</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=169+Thompson+St%2C+New+York%2C+NY+10012" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Levain Bakery UWS</td><td>351 Amsterdam Ave, New York, NY 10024</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=351+Amsterdam+Ave%2C+New+York%2C+NY+10024" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Lexington Candy Shop</td><td>1226 Lexington Ave, New York, NY 10028</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=1226+Lexington+Ave%2C+New+York%2C+NY+10028" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Los Tacos No.1 Chelsea Market</td><td>75 9th Ave, New York, NY 10011</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=75+9th+Ave%2C+New+York%2C+NY+10011" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Magnolia Bakery UWS</td><td>200 Columbus Ave, New York, NY 10023</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=200+Columbus+Ave%2C+New+York%2C+NY+10023" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Matsuzuki Sakura</td><td>2-23 50th Ave, Long Island City, NY 11101</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=2-23+50th+Ave%2C+Long+Island+City%2C+NY+11101" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Nathan's Famous</td><td>1251 6th Ave, New York, NY 10020</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=1251+6th+Ave%2C+New+York%2C+NY+10020" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Osteria Brooklyn @ LIC On the Water</td><td>1-50 50th Ave, Long Island City, NY 11101</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=1-50+50th+Ave%2C+Long+Island+City%2C+NY+11101" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Papi Pasta &amp; Pizza</td><td>485 7th Ave, New York, NY 10018</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=485+7th+Ave%2C+New+York%2C+NY+10018" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Pasta de Pasta</td><td>673 9th Ave, New York, NY 10036</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=673+9th+Ave%2C+New+York%2C+NY+10036" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Pasta Rullo</td><td>441 E 9th St, New York, NY 10009</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=441+E+9th+St%2C+New+York%2C+NY+10009" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">S'MAC</td><td>197 1st Ave, New York, NY 10003</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=197+1st+Ave%2C+New+York%2C+NY+10003" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Shake Shack Battery Park City</td><td>215 Murray St, New York, NY 10282</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=215+Murray+St%2C+New+York%2C+NY+10282" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Shake Shack DUMBO</td><td>2 Water St, Brooklyn, NY 11201</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=2+Water+St%2C+Brooklyn%2C+NY+11201" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Shake Shack Fulton Center</td><td>200 Broadway, New York, NY 10038</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=200+Broadway%2C+New+York%2C+NY+10038" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Shake Shack Hudson Yards</td><td>500 W 33rd St, New York, NY 10001</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=500+W+33rd+St%2C+New+York%2C+NY+10001" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">The Halal Guys / halal cart 53rd-6th</td><td>W 53rd St &amp; 6th Ave, New York, NY</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=W+53rd+St+%26+6th+Ave%2C+New+York%2C+NY" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Time Out Market New York</td><td>55 Water St, Brooklyn, NY 11201</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=55+Water+St%2C+Brooklyn%2C+NY+11201" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Wafels &amp; Dinges Bryant Park</td><td>6th Ave &amp; W 42nd St, New York, NY 10018</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=6th+Ave+%26+W+42nd+St%2C+New+York%2C+NY+10018" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Westway Diner</td><td>614 9th Ave, New York, NY 10036</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=614+9th+Ave%2C+New+York%2C+NY+10036" target="_blank" rel="noopener">Maps</a></td></tr>
+          <tr><td class="lugar">Yumpling</td><td>49-11 Vernon Blvd, Long Island City, NY 11101</td><td class="maps"><a href="https://www.google.com/maps/search/?api=1&query=49-11+Vernon+Blvd%2C+Long+Island+City%2C+NY+11101" target="_blank" rel="noopener">Maps</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===== INFO ÚTIL ===== -->
+  <section class="infoutil" id="infoutil">
+    <div class="section-head"><h2>Info útil</h2></div>
+    <div class="section-sub">Transporte, dinero y checklist final — lo que conviene tener a mano durante el viaje.</div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <h3>Transporte</h3>
+        <ul>
+          <li>OMNY: usen siempre la misma tarjeta/dispositivo contactless para que el sistema reconozca los viajes y posibles topes semanales.</li>
+          <li>JFK → Manhattan: con 4 personas, comparar taxi/Uber con AirTrain + subway. Con valijas, el ahorro del transporte público puede no compensar comodidad/tiempo.</li>
+          <li>Roosevelt Island Tram: se paga con OMNY/contactless; no necesita reserva.</li>
+          <li>Abajo de cada día hay una lista "Si nos sobra tiempo · cerca" con lugares y tiendas que no están en el itinerario.</li>
+          <li>Prioridad del viaje: caminar. Usar subway cuando el traslado a pie les quite 30–40 min útiles.</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Compras y equipaje</h3>
+        <ul>
+          <li>El sábado 28 el bloque de compras/K-Beauty se cubre con The Mills a la mañana. Esa misma noche, antes de dormir, armar las valijas.</li>
+          <li>Guardar tickets importantes y revisar límite de equipaje/segunda valija de la aerolínea antes del Black Friday weekend.</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Thanksgiving</h3>
+        <ul>
+          <li>Jueves 26: no asumir horarios normales. Varias tiendas (incluido Louis Vuitton 57th St) cierran Thanksgiving. Confirmar restaurantes y free tour.</li>
+          <li>Macy's: las zonas exactas de viewing público 2026 serán gestionadas/publicadas más cerca de la fecha. No existen tickets públicos para las gradas.</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Clima / luz</h3>
+        <ul>
+          <li>A fines de noviembre oscurece alrededor de las 16:30. Llevar capas, guantes y calzado cómodo; el viento en puentes, waterfront y miradores se siente más.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="info-grid" style="margin-top:16px;">
+      <div class="info-card">
+        <h3>Checklist 48 h antes de cada actividad</h3>
+        <ul class="checklist">
+          <li>Captura/offline del ticket + dirección exacta</li>
+          <li>Revisar horario del día y closures</li>
+          <li>Tiempo de traslado desde la actividad anterior</li>
+          <li>Política de mochila/seguridad</li>
+          <li>Pronóstico y plan alternativo si llueve</li>
+          <li>Confirmar reserva de cena si la actividad termina tarde</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Links rápidos</h3>
+        <div class="quicklinks">
+          <a href="https://www.google.com/maps/search/?api=1&query=330+West+40th+Street%2C+New+York%2C+NY+10018" target="_blank" rel="noopener">Hotel Marriott</a>
+          <a href="https://www.tdf.org/tkts/" target="_blank" rel="noopener">TKTS Live</a>
+          <a href="https://new.mta.info/" target="_blank" rel="noopener">MTA / subway</a>
+          <a href="https://www.macys.com/social/parade/" target="_blank" rel="noopener">Macy's Parade FAQs</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="sig">Nueva York, 2026</span>
+    Reni · Benja · Teo · Nico — 21 al 29 de noviembre
+  </div>
+</footer>
+
+</body></html>
